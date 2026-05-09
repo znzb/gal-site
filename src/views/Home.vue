@@ -83,7 +83,7 @@ onUnmounted(() => {
       <div class="relative rounded-xl shadow-lg overflow-hidden bg-white">
         <div class="relative h-40">
           <div class="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
-            <div v-if="!bannersLoaded" class="absolute inset-0 flex items-center justify-center">
+            <div v-if="!bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
               <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
             </div>
           </div>
