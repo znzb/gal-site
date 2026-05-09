@@ -104,8 +104,8 @@ onUnmounted(() => {
                 @error="handleBannerError(index)"
               />
               <div class="absolute bottom-0 left-0 right-0 p-3">
-                <h3 class="text-white text-lg font-bold drop-shadow-lg">{{ banner.title }}</h3>
-                <p class="text-white/80 text-xs mt-0.5 drop-shadow-md">{{ banner.subtitle }}</p>
+                <h3 class="text-white text-lg font-bold">{{ banner.title }}</h3>
+                <p class="text-white/80 text-xs mt-0.5">{{ banner.subtitle }}</p>
               </div>
             </div>
           </transition-group>
