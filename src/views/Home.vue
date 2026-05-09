@@ -80,9 +80,9 @@ onUnmounted(() => {
     <Header />
     
     <div class="mx-4 mt-4">
-      <div class="relative rounded-xl shadow-lg overflow-hidden bg-white">
+      <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-gray-100">
         <div class="relative h-40">
-          <div class="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
+          <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
             <div v-if="!bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
               <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
             </div>
@@ -103,9 +103,9 @@ onUnmounted(() => {
                 @load="handleBannerLoad(index)"
                 @error="handleBannerError(index)"
               />
-              <div class="absolute bottom-0 left-0 right-0 p-3">
-                <h3 class="text-white text-lg font-bold">{{ banner.title }}</h3>
-                <p class="text-white/80 text-xs mt-0.5">{{ banner.subtitle }}</p>
+              <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                <h3 class="text-white text-lg font-bold drop-shadow-lg">{{ banner.title }}</h3>
+                <p class="text-white/90 text-xs mt-0.5 drop-shadow-md">{{ banner.subtitle }}</p>
               </div>
             </div>
           </transition-group>

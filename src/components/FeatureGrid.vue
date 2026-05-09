@@ -11,17 +11,30 @@ const iconMap: Record<string, typeof Megaphone> = {
 </script>
 
 <template>
-  <div class="bg-white rounded-xl p-4 mx-4 mt-4 shadow-sm">
+  <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-4 mx-4 mt-4 shadow-lg border border-gray-100/50">
     <div class="grid grid-cols-4 gap-2">
       <button 
         v-for="feature in features" 
         :key="feature.id"
-        class="flex flex-col items-center py-3 rounded-lg hover:bg-gray-50 transition-colors"
+        class="flex flex-col items-center py-3 rounded-xl hover:bg-gradient-to-br hover:from-primary/5 hover:to-secondary/5 transition-all duration-300 transform hover:scale-105 active:scale-95"
       >
-        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center mb-2">
-          <component :is="iconMap[feature.icon]" class="w-6 h-6 text-orange-600" />
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-md transition-shadow hover:shadow-lg"
+             :class="{
+               'bg-gradient-to-br from-primary/10 to-primary/20': feature.id === '1',
+               'bg-gradient-to-br from-secondary/10 to-secondary/20': feature.id === '2',
+               'bg-gradient-to-br from-accent/20 to-accent/30': feature.id === '3',
+               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '4'
+             }">
+          <component :is="iconMap[feature.icon]" 
+                     class="w-6 h-6 transition-transform group-hover:scale-110"
+                     :class="{
+                       'text-primary': feature.id === '1',
+                       'text-secondary': feature.id === '2',
+                       'text-yellow-600': feature.id === '3',
+                       'text-pink-500': feature.id === '4'
+                     }" />
         </div>
-        <span class="text-xs text-gray-600">{{ feature.name }}</span>
+        <span class="text-xs text-gray-700 font-medium">{{ feature.name }}</span>
       </button>
     </div>
   </div>
