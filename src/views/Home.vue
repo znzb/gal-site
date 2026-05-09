@@ -15,7 +15,7 @@ const handleGameClick = (id: string) => {
 const banners = [
   {
     id: '1',
-    image: 'https://gips0.baidu.com/it/u=4255327230,12332888&fm=3074&app=3074&f=JPEG?w=1089&h=1050&type=normal&func=',
+    image: 'https://gips0.baidu.com/it/u=4255327230,12332888&fm=3074&app=3074&f=JPEG?w=1089&h=1050&type=normal',
     title: '精选推荐',
     subtitle: '热门游戏'
   },
@@ -40,7 +40,7 @@ const banners = [
 ]
 
 const currentBanner = ref(0)
-const bannersLoaded = ref(false)
+const bannersLoaded = ref<boolean[]>([false, false, false, false])
 let timer: number | null = null
 
 const nextBanner = () => {
@@ -55,8 +55,13 @@ const goToBanner = (index: number) => {
   currentBanner.value = index
 }
 
-const handleBannerLoad = () => {
-  bannersLoaded.value = true
+const handleBannerLoad = (index: number) => {
+  bannersLoaded.value[index] = true
+}
+
+const handleBannerError = (index: number) => {
+  console.warn(`Banner ${index + 1} failed to load`)
+  bannersLoaded.value[index] = true
 }
 
 onMounted(() => {
@@ -91,8 +96,9 @@ onUnmounted(() => {
               :src="banner.image" 
               :alt="banner.title"
               class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
-              :class="bannersLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
-              @load="handleBannerLoad"
+              :class="bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
+              @load="handleBannerLoad(index)"
+              @error="handleBannerError(index)"
             />
           </transition-group>
           
