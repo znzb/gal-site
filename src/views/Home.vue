@@ -103,7 +103,7 @@ onUnmounted(() => {
                 @load="handleBannerLoad(index)"
                 @error="handleBannerError(index)"
               />
-              <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+              <div class="absolute bottom-0 left-0 right-0 p-3">
                 <h3 class="text-white text-lg font-bold drop-shadow-lg">{{ banner.title }}</h3>
                 <p class="text-white/80 text-xs mt-0.5 drop-shadow-md">{{ banner.subtitle }}</p>
               </div>
