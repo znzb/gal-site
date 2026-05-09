@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { Megaphone, MessageCircle, Music, FileText } from 'lucide-vue-next'
-import { features } from '@/data/mockData'
+import { featureApi, type Feature } from '@/api/api'
+
+const features = ref<Feature[]>([])
+const isLoading = ref(true)
 
 const iconMap: Record<string, typeof Megaphone> = {
   megaphone: Megaphone,
@@ -8,11 +12,28 @@ const iconMap: Record<string, typeof Megaphone> = {
   music: Music,
   'file-text': FileText
 }
+
+const loadFeatures = async () => {
+  try {
+    features.value = await featureApi.getAllFeatures()
+  } catch (error) {
+    console.error('Failed to load features:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadFeatures()
+})
 </script>
 
 <template>
   <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-4 mx-4 mt-4 shadow-lg border border-gray-100/50">
-    <div class="grid grid-cols-4 gap-2">
+    <div v-if="isLoading" class="flex items-center justify-center h-20">
+      <div class="w-6 h-6 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+    </div>
+    <div v-else class="grid grid-cols-4 gap-2">
       <button 
         v-for="feature in features" 
         :key="feature.id"

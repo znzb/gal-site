@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar } from 'lucide-vue-next'
-import { games } from '@/data/mockData'
+import { gameApi, type Game } from '@/api/api'
 
 const route = useRoute()
 const router = useRouter()
 
 const gameId = route.params.id as string
-const game = computed(() => games.find(g => g.id === gameId))
+const game = ref<Game | null>(null)
+const isLoading = ref(true)
 
 const isFavorite = ref(false)
 const isDownloading = ref(false)
@@ -18,8 +19,9 @@ const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
-const handleDownload = () => {
-  if (isDownloading.value) return
+const handleDownload = async () => {
+  if (isDownloading.value || !game.value) return
+  
   isDownloading.value = true
   downloadProgress.value = 0
   
@@ -28,21 +30,54 @@ const handleDownload = () => {
     if (downloadProgress.value >= 100) {
       downloadProgress.value = 100
       clearInterval(interval)
-      setTimeout(() => {
-        isDownloading.value = false
-        downloadProgress.value = 0
-      }, 1000)
     }
   }, 300)
+  
+  try {
+    const result = await gameApi.downloadGame(game.value!.id)
+    if (game.value) {
+      game.value.downloads = result.downloads
+    }
+  } catch (error) {
+    console.error('Download failed:', error)
+    if (game.value) {
+      game.value.downloads += 1
+    }
+  } finally {
+    setTimeout(() => {
+      isDownloading.value = false
+      downloadProgress.value = 0
+    }, 500)
+  }
 }
 
-const relatedGames = computed(() => 
-  games.filter(g => g.id !== gameId && g.category === game.value?.category).slice(0, 3)
-)
+const relatedGames = ref<Game[]>([])
+
+const loadData = async () => {
+  try {
+    const gameData = await gameApi.getGameById(gameId)
+    game.value = gameData
+    
+    const allGames = await gameApi.getAllGames()
+    relatedGames.value = allGames.filter(g => g.id !== gameId && g.category === gameData.category).slice(0, 3)
+  } catch (error) {
+    console.error('Failed to load game data:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadData()
+})
 </script>
 
 <template>
-  <div v-if="game" class="min-h-screen bg-gray-100 pb-24">
+  <div v-if="isLoading" class="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+  </div>
+  
+  <div v-else-if="game" class="min-h-screen bg-gray-100 pb-24">
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
@@ -156,5 +191,9 @@ const relatedGames = computed(() =>
         </div>
       </div>
     </div>
+  </div>
+  
+  <div v-else class="min-h-screen bg-gray-100 flex items-center justify-center">
+    <p class="text-gray-500">游戏不存在</p>
   </div>
 </template>

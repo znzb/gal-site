@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Download } from 'lucide-vue-next'
-import type { Game } from '@/data/mockData'
+import { gameApi, type Game } from '@/api/api'
 
 defineProps<{
   game: Game
@@ -13,6 +13,21 @@ const emit = defineEmits<{
 
 const imageLoaded = ref(false)
 const imageError = ref(false)
+const downloads = ref(0)
+const isDownloading = ref(false)
+
+const handleDownload = async (gameId: string, currentDownloads: number) => {
+  isDownloading.value = true
+  try {
+    const result = await gameApi.downloadGame(gameId)
+    downloads.value = result.downloads
+  } catch (error) {
+    console.error('Download failed:', error)
+    downloads.value = currentDownloads + 1
+  } finally {
+    isDownloading.value = false
+  }
+}
 </script>
 
 <template>
@@ -71,10 +86,14 @@ const imageError = ref(false)
       </div>
       
       <div class="flex items-center justify-between">
-        <span class="text-xs text-gray-500">{{ game.downloads.toLocaleString() }} 下载</span>
-        <button class="flex items-center bg-gradient-to-r from-primary to-pink-500 text-white text-xs px-4 py-1.5 rounded-full hover:from-pink-500 hover:to-primary transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg font-medium whitespace-nowrap">
+        <span class="text-xs text-gray-500">{{ (downloads || game.downloads).toLocaleString() }} 下载</span>
+        <button 
+          @click.stop="handleDownload(game.id, downloads || game.downloads)"
+          :disabled="isDownloading"
+          class="flex items-center bg-gradient-to-r from-primary to-pink-500 text-white text-xs px-4 py-1.5 rounded-full hover:from-pink-500 hover:to-primary transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg font-medium whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           <Download class="w-3 h-3 mr-1" />
-          下载
+          {{ isDownloading ? '下载中...' : '下载' }}
         </button>
       </div>
     </div>

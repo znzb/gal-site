@@ -1,18 +1,30 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from 'lucide-vue-next'
 import GameCard from '@/components/GameCard.vue'
-import { games } from '@/data/mockData'
+import { gameApi, type Game } from '@/api/api'
 
 const route = useRoute()
 const router = useRouter()
 
 const categoryType = route.params.type as string
+const filteredGames = ref<Game[]>([])
+const isLoading = ref(true)
 
-const filteredGames = computed(() => 
-  games.filter(g => g.category === categoryType)
-)
+const loadGames = async () => {
+  try {
+    filteredGames.value = await gameApi.getGamesByCategory(categoryType)
+  } catch (error) {
+    console.error('Failed to load games:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadGames()
+})
 </script>
 
 <template>
@@ -29,7 +41,11 @@ const filteredGames = computed(() =>
       </div>
     </header>
     
-    <div class="pt-14 px-4 mt-4">
+    <div v-if="isLoading" class="pt-14 flex items-center justify-center h-40">
+      <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+    </div>
+    
+    <div v-else class="pt-14 px-4 mt-4">
       <div v-if="filteredGames.length > 0" class="grid grid-cols-2 gap-3">
         <GameCard 
           v-for="game in filteredGames" 
