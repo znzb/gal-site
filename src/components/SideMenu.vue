@@ -16,7 +16,8 @@ const router = useRouter()
 
 const menuItems = [
   { id: 'home', name: '主页', icon: Home },
-  { id: 'pcgame', name: 'PC游戏', icon: Gamepad2, hasChildren: true },
+  { id: 'android', name: '安卓直装', icon: Gamepad2, hasChildren: true },
+  { id: 'kr', name: 'kr资源', icon: Image },
   { id: 'gamecg', name: '游戏CG', icon: Image },
   { id: 'gallery', name: '图集资源', icon: Images, hasChildren: true },
   { id: 'guide', name: '新人必读', icon: BookOpen, highlight: true }
@@ -25,8 +26,10 @@ const menuItems = [
 const handleMenuClick = (id: string) => {
   if (id === 'home') {
     router.push('/')
-  } else if (id === 'pcgame') {
-    router.push('/category/PC游戏')
+  } else if (id === 'android') {
+    router.push('/category/安卓直装')
+  } else if (id === 'kr') {
+    router.push('/category/kr资源')
   }
   emit('close')
   emit('navigate')
