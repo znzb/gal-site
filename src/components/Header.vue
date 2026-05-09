@@ -30,7 +30,7 @@ import { appState } from '@/store/appStore'
     </div>
     
     <div class="flex items-center justify-around py-2.5 bg-gradient-to-r from-primary via-secondary to-accent text-white text-sm font-medium">
-      <span class="relative after:content-[''] after:absolute after:-bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-4 after:h-0.5 after:bg-white after:rounded-full">历史公告</span>
+      <span class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all">历史公告</span>
       <span class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all">Gal专区</span>
       <span class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all">帮助中心</span>
     </div>
