@@ -80,7 +80,7 @@ const relatedGames = computed(() =>
         </div>
       </div>
       
-      <div class="bg-white mx-4 -mt-3 rounded-2xl shadow-xl relative z-10 overflow-hidden">
+      <div class="bg-white mx-4 mt-4 rounded-2xl shadow-xl relative z-10 overflow-hidden">
         <div class="p-4 border-b border-gray-100">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center">
