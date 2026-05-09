@@ -1,45 +1,16 @@
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import gamesRouter from './routes/games.js';
-import categoriesRouter from './routes/categories.js';
-import featuresRouter from './routes/features.js';
-import bannersRouter from './routes/banners.js';
-import Game from './models/Game.js';
-import Category from './models/Category.js';
-import Feature from './models/Feature.js';
-import Banner from './models/Banner.js';
+import { MongoClient } from 'mongodb';
 
-dotenv.config();
+const uri = 'mongodb+srv://Gal:gal147.0.@cluster0.yasunyk.mongodb.net/game_download_db?retryWrites=true&w=majority&appName=Cluster0';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const client = new MongoClient(uri);
 
-app.use(cors({
-  origin: ['https://galzb.cc.cd', 'https://www.galzb.cc.cd', 'http://localhost:5173', 'http://localhost:5174', '*'],
-  credentials: true
-}));
-app.use(express.json());
-
-app.use('/api/games', gamesRouter);
-app.use('/api/categories', categoriesRouter);
-app.use('/api/features', featuresRouter);
-app.use('/api/banners', bannersRouter);
-
-app.get('/', (req, res) => {
-  res.json({ message: '游戏下载网站 API 服务运行中' });
-});
-
-const initData = async () => {
+async function initDatabase() {
   try {
-    const existingGames = await Game.countDocuments();
-    if (existingGames > 0) {
-      console.log(`数据已存在，共有 ${existingGames} 个游戏`);
-      return;
-    }
+    console.log('连接到MongoDB...');
+    await client.connect();
+    console.log('✅ 连接成功!');
 
-    console.log('初始化数据库数据...');
+    const db = client.db('game_download_db');
 
     const categories = [
       { id: '1', name: '安卓直装', icon: 'gamepad-2' },
@@ -48,7 +19,6 @@ const initData = async () => {
       { id: '4', name: '图集资源', icon: 'images' },
       { id: '5', name: '新人必读', icon: 'book-open' }
     ];
-    await Category.insertMany(categories);
 
     const games = [
       { id: '1', name: '夏日物语', cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20summer%20visual%20novel%20game%20cover%20beautiful%20girl%20beach&image_size=portrait_4_3', description: '一款温馨浪漫的夏日恋爱冒险游戏，讲述主角在海边小镇度过的难忘夏天。', category: '安卓直装', size: '2.5GB', releaseDate: '2024-06-15', downloads: 12500, tags: ['恋爱', '校园', '治愈'] },
@@ -60,7 +30,6 @@ const initData = async () => {
       { id: '7', name: '游戏CG精选', cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20CG%20collection%20beautiful%20artwork%20gallery&image_size=portrait_4_3', description: '精选游戏CG合集，包含各种精美游戏插画。', category: '游戏CG', size: '1.2GB', releaseDate: '2024-06-01', downloads: 5600, tags: ['CG', '插画', '合集'] },
       { id: '8', name: '高清图集', cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20high%20quality%20image%20collection%20beautiful%20girls&image_size=portrait_4_3', description: '高清精美图集，包含各种主题的精美图片。', category: '图集资源', size: '3.8GB', releaseDate: '2024-05-15', downloads: 8200, tags: ['图集', '高清', '壁纸'] }
     ];
-    await Game.insertMany(games);
 
     const features = [
       { id: '1', name: '网站公告', icon: 'megaphone' },
@@ -68,7 +37,6 @@ const initData = async () => {
       { id: '3', name: '柚子社', icon: 'music' },
       { id: '4', name: '补档记录', icon: 'file-text' }
     ];
-    await Feature.insertMany(features);
 
     const banners = [
       { id: '1', image: '/banners/banner1.jpg', title: '夏空彼方', subtitle: 'Summer Pockets' },
@@ -76,49 +44,32 @@ const initData = async () => {
       { id: '3', image: '/banners/banner3.jpg', title: '魔女的夜宴', subtitle: "Witch's Night" },
       { id: '4', image: '/banners/banner4.jpg', title: '天使☆嚣嚣 RE-BOOT', subtitle: 'Tenshi Hoshii' }
     ];
-    await Banner.insertMany(banners);
 
-    console.log('✅ 数据初始化完成!');
-    console.log(`   - 分类: ${categories.length} 个`);
-    console.log(`   - 游戏: ${games.length} 个`);
-    console.log(`   - 功能: ${features.length} 个`);
-    console.log(`   - 轮播图: ${banners.length} 个`);
-  } catch (error) {
-    console.error('❌ 数据初始化失败:', error.message);
-  }
-};
+    await db.collection('categories').deleteMany({});
+    await db.collection('games').deleteMany({});
+    await db.collection('features').deleteMany({});
+    await db.collection('banners').deleteMany({});
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-    console.log('Connected to MongoDB');
-    await initData();
+    await db.collection('categories').insertMany(categories);
+    console.log(`✅ 插入 ${categories.length} 个分类`);
+
+    await db.collection('games').insertMany(games);
+    console.log(`✅ 插入 ${games.length} 个游戏`);
+
+    await db.collection('features').insertMany(features);
+    console.log(`✅ 插入 ${features.length} 个功能`);
+
+    await db.collection('banners').insertMany(banners);
+    console.log(`✅ 插入 ${banners.length} 个轮播图`);
+
+    console.log('\n🎉 数据库初始化完成!');
+
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error('❌ 初始化失败:', error.message);
     process.exit(1);
+  } finally {
+    await client.close();
   }
-};
+}
 
-const startServer = async () => {
-  await connectDB();
-
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-
-    if (process.env.RENDER_EXTERNAL_URL) {
-      const pingInterval = 14 * 60 * 1000;
-      setInterval(() => {
-        console.log(`[${new Date().toISOString()}] Pinging to prevent cold start...`);
-        fetch(process.env.RENDER_EXTERNAL_URL)
-          .then(res => console.log(`Ping response: ${res.status}`))
-          .catch(err => console.error(`Ping error: ${err.message}`));
-      }, pingInterval);
-      console.log(`Cold start prevention active - will ping every ${pingInterval / 60000} minutes`);
-    }
-  });
-};
-
-startServer();
+initDatabase();

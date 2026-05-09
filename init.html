@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>初始化数据库</title>
+    <script>
+        async function init() {
+            document.getElementById('btn').disabled = true;
+            document.getElementById('result').innerHTML = '初始化中...';
+            
+            try {
+                const res = await fetch('https://game-api-p1zc.onrender.com/api/init', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    document.getElementById('result').innerHTML = '✅ 成功! 添加了 ' + data.counts.games + ' 个游戏';
+                } else {
+                    document.getElementById('result').innerHTML = '❌ 失败: ' + data.error;
+                }
+            } catch (e) {
+                document.getElementById('result').innerHTML = '❌ 错误: ' + e.message;
+            }
+            
+            document.getElementById('btn').disabled = false;
+        }
+    </script>
+</head>
+<body>
+    <h1>游戏网站数据库初始化</h1>
+    <button id="btn" onclick="init()">点击初始化</button>
+    <div id="result"></div>
+</body>
+</html>

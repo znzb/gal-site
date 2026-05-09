@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初始化游戏网站数据</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        .api-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .api-url {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .loading {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+        
+        .data-summary {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .test-api {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        
+        .test-api h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .api-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #e9ecef;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: background 0.2s;
+        }
+        
+        .api-link:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 游戏网站数据库初始化</h1>
+        
+        <div class="api-info">
+            <strong>后端地址:</strong> <span class="api-url" id="apiUrl"></span>
+        </div>
+        
+        <button id="initBtn" onclick="initData()">
+            🚀 点击初始化数据
+        </button>
+        
+        <div id="loading" class="result loading">
+            ⏳ 正在初始化数据，请稍候...
+        </div>
+        
+        <div id="success" class="result success">
+            ✅ 数据初始化成功！
+            <div class="data-summary" id="successData"></div>
+        </div>
+        
+        <div id="error" class="result error">
+            ❌ 初始化失败：
+            <div id="errorMsg"></div>
+        </div>
+        
+        <div class="test-api">
+            <h3>🔗 测试API端点</h3>
+            <div id="apiLinks"></div>
+        </div>
+    </div>
+    
+    <script>
+        const apiBase = 'https://game-api-p1zc.onrender.com';
+        const endpoints = [
+            { name: '游戏列表', path: '/api/games' },
+            { name: '分类列表', path: '/api/categories' },
+            { name: '功能入口', path: '/api/features' },
+            { name: '轮播图', path: '/api/banners' }
+        ];
+        
+        document.getElementById('apiUrl').textContent = apiBase;
+        
+        const linksContainer = document.getElementById('apiLinks');
+        endpoints.forEach(endpoint => {
+            const link = document.createElement('a');
+            link.className = 'api-link';
+            link.href = apiBase + endpoint.path;
+            link.textContent = endpoint.name;
+            link.target = '_blank';
+            linksContainer.appendChild(link);
+        });
+        
+        async function initData() {
+            const btn = document.getElementById('initBtn');
+            const loading = document.getElementById('loading');
+            const success = document.getElementById('success');
+            const error = document.getElementById('error');
+            
+            btn.disabled = true;
+            loading.style.display = 'block';
+            success.style.display = 'none';
+            error.style.display = 'none';
+            
+            try {
+                const response = await fetch(apiBase + '/api/init', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                loading.style.display = 'none';
+                
+                if (response.ok) {
+                    success.style.display = 'block';
+                    document.getElementById('successData').innerHTML = `
+                        <strong>已添加数据:</strong><br>
+                        - 分类: ${data.counts.categories} 个<br>
+                        - 游戏: ${data.counts.games} 个<br>
+                        - 功能: ${data.counts.features} 个<br>
+                        - 轮播图: ${data.counts.banners} 个
+                    `;
+                } else {
+                    error.style.display = 'block';
+                    document.getElementById('errorMsg').textContent = data.error || '未知错误';
+                }
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                document.getElementById('errorMsg').textContent = err.message;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

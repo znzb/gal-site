@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: game-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: PORT
+        value: 3000
