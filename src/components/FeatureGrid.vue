@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Megaphone, Rocket, Music, FileText } from 'lucide-vue-next'
+import { Megaphone, MessageCircle, Music, FileText } from 'lucide-vue-next'
 import { features } from '@/data/mockData'
 
 const iconMap: Record<string, typeof Megaphone> = {
   megaphone: Megaphone,
-  rocket: Rocket,
+  'message-circle': MessageCircle,
   music: Music,
   'file-text': FileText
 }
@@ -21,7 +21,7 @@ const iconMap: Record<string, typeof Megaphone> = {
         <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-md transition-shadow hover:shadow-lg"
              :class="{
                'bg-gradient-to-br from-primary/10 to-primary/20': feature.id === '1',
-               'bg-gradient-to-br from-secondary/10 to-secondary/20': feature.id === '2',
+               'bg-gradient-to-br from-blue-100 to-blue-200': feature.id === '2',
                'bg-gradient-to-br from-accent/20 to-accent/30': feature.id === '3',
                'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '4'
              }">
@@ -29,7 +29,7 @@ const iconMap: Record<string, typeof Megaphone> = {
                      class="w-6 h-6 transition-transform group-hover:scale-110"
                      :class="{
                        'text-primary': feature.id === '1',
-                       'text-secondary': feature.id === '2',
+                       'text-blue-500': feature.id === '2',
                        'text-yellow-600': feature.id === '3',
                        'text-pink-500': feature.id === '4'
                      }" />

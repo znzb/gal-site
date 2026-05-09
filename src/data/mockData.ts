@@ -94,7 +94,7 @@ export const games: Game[] = [
 
 export const features = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
-  { id: '2', name: '秒传脚本', icon: 'rocket' },
+  { id: '2', name: '加入Q群', icon: 'message-circle' },
   { id: '3', name: '柚子社', icon: 'music' },
   { id: '4', name: '补档记录', icon: 'file-text' }
 ]
