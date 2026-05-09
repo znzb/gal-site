@@ -22,7 +22,7 @@ const handleNavClick = (id: string) => {
           { id: 'home', name: '首页', icon: Home },
           { id: 'budang', name: '补档', icon: FileText },
           { id: 'qiandao', name: '签到', icon: CalendarCheck },
-          { id: 'add', name: '+', icon: Plus },
+          { id: 'add', name: '', icon: Plus },
           { id: 'search', name: '搜索', icon: Search },
           { id: 'menu', name: '菜单', icon: Menu },
           { id: 'mine', name: '我的', icon: User }
