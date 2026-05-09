@@ -72,7 +72,7 @@ const imageError = ref(false)
       
       <div class="flex items-center justify-between">
         <span class="text-xs text-gray-500">{{ game.downloads.toLocaleString() }} 下载</span>
-        <button class="flex items-center bg-gradient-to-r from-primary to-pink-500 text-white text-xs px-4 py-1.5 rounded-full hover:from-pink-500 hover:to-primary transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg font-medium">
+        <button class="flex items-center bg-gradient-to-r from-primary to-pink-500 text-white text-xs px-4 py-1.5 rounded-full hover:from-pink-500 hover:to-primary transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg font-medium whitespace-nowrap">
           <Download class="w-3 h-3 mr-1" />
           下载
         </button>
