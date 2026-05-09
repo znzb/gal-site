@@ -6,6 +6,13 @@ import { featureApi, type Feature } from '@/api/api'
 const features = ref<Feature[]>([])
 const isLoading = ref(true)
 
+const mockFeatures: Feature[] = [
+  { id: '1', name: '网站公告', icon: 'megaphone' },
+  { id: '2', name: '加入Q群', icon: 'message-circle' },
+  { id: '3', name: '柚子社', icon: 'music' },
+  { id: '4', name: '补档记录', icon: 'file-text' }
+]
+
 const iconMap: Record<string, typeof Megaphone> = {
   megaphone: Megaphone,
   'message-circle': MessageCircle,
@@ -17,7 +24,8 @@ const loadFeatures = async () => {
   try {
     features.value = await featureApi.getAllFeatures()
   } catch (error) {
-    console.error('Failed to load features:', error)
+    console.error('Failed to load features, using mock data:', error)
+    features.value = mockFeatures
   } finally {
     isLoading.value = false
   }
