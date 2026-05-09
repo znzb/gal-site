@@ -40,6 +40,7 @@ const banners = [
 ]
 
 const currentBanner = ref(0)
+const bannersLoaded = ref(false)
 let timer: number | null = null
 
 const nextBanner = () => {
@@ -52,6 +53,10 @@ const prevBanner = () => {
 
 const goToBanner = (index: number) => {
   currentBanner.value = index
+}
+
+const handleBannerLoad = () => {
+  bannersLoaded.value = true
 }
 
 onMounted(() => {
@@ -70,6 +75,12 @@ onUnmounted(() => {
     <Header />
     
     <div class="relative h-40 overflow-hidden mx-4 mt-4 rounded-xl shadow-lg">
+      <div class="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
+        <div v-if="!bannersLoaded" class="absolute inset-0 flex items-center justify-center">
+          <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      </div>
+      
       <transition-group name="fade">
         <img 
           v-for="(banner, index) in banners" 
@@ -77,13 +88,28 @@ onUnmounted(() => {
           v-show="currentBanner === index"
           :src="banner.image" 
           :alt="banner.title"
-          class="absolute inset-0 w-full h-full object-cover"
+          class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
+          :class="bannersLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
+          @load="handleBannerLoad"
         />
       </transition-group>
       
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
+      
+      <div class="absolute bottom-4 left-4 right-4">
+        <transition-group name="fade">
+          <div v-for="(banner, index) in banners" :key="banner.id" v-show="currentBanner === index" class="transform transition-all duration-300">
+            <span class="inline-block px-2 py-0.5 bg-primary/90 text-white text-xs rounded-full mb-1 shadow-md">
+              {{ banner.subtitle }}
+            </span>
+            <h3 class="text-white font-bold text-lg drop-shadow-md">{{ banner.title }}</h3>
+          </div>
+        </transition-group>
+      </div>
+      
       <button 
         @click="prevBanner" 
-        class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+        class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 active:bg-white/40 transition-all duration-300 transform hover:scale-110 active:scale-95"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -92,7 +118,7 @@ onUnmounted(() => {
       
       <button 
         @click="nextBanner" 
-        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 active:bg-white/40 transition-all duration-300 transform hover:scale-110 active:scale-95"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -104,8 +130,8 @@ onUnmounted(() => {
           v-for="(banner, index) in banners" 
           :key="banner.id"
           @click="goToBanner(index)"
-          class="w-2 h-2 rounded-full transition-all duration-300"
-          :class="currentBanner === index ? 'bg-primary w-4' : 'bg-white/50'"
+          class="w-2 h-2 rounded-full transition-all duration-300 transform hover:scale-125"
+          :class="currentBanner === index ? 'bg-primary w-4' : 'bg-white/50 hover:bg-white/70'"
         ></button>
       </div>
     </div>
