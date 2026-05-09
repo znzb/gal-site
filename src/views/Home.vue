@@ -16,26 +16,26 @@ const banners = [
   {
     id: '1',
     image: '/banners/banner1.jpg',
-    title: '精选推荐',
-    subtitle: '热门游戏'
+    title: '夏空彼方',
+    subtitle: 'Summer Pockets'
   },
   {
     id: '2',
     image: '/banners/banner2.jpg',
-    title: '新游速递',
-    subtitle: '限时优惠'
+    title: '千恋*万花',
+    subtitle: 'Senren Banka'
   },
   {
     id: '3',
     image: '/banners/banner3.jpg',
-    title: '经典回归',
-    subtitle: '玩家之选'
+    title: '魔女的夜宴',
+    subtitle: "Witch's Night"
   },
   {
     id: '4',
     image: '/banners/banner4.jpg',
-    title: '独家首发',
-    subtitle: '不容错过'
+    title: '天使☆嚣嚣 RE-BOOT',
+    subtitle: 'Tenshi Hoshii'
   }
 ]
 
@@ -89,17 +89,25 @@ onUnmounted(() => {
           </div>
           
           <transition-group name="fade">
-            <img 
+            <div 
               v-for="(banner, index) in banners" 
               :key="banner.id"
               v-show="currentBanner === index"
-              :src="banner.image" 
-              :alt="banner.title"
-              class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
-              :class="bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
-              @load="handleBannerLoad(index)"
-              @error="handleBannerError(index)"
-            />
+              class="absolute inset-0"
+            >
+              <img 
+                :src="banner.image" 
+                :alt="banner.title"
+                class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
+                :class="bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
+                @load="handleBannerLoad(index)"
+                @error="handleBannerError(index)"
+              />
+              <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+                <h3 class="text-white text-lg font-bold drop-shadow-lg">{{ banner.title }}</h3>
+                <p class="text-white/80 text-xs mt-0.5 drop-shadow-md">{{ banner.subtitle }}</p>
+              </div>
+            </div>
           </transition-group>
           
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
