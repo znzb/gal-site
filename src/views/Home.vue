@@ -15,25 +15,25 @@ const handleGameClick = (id: string) => {
 const banners = [
   {
     id: '1',
-    image: 'https://i2.hdslb.com/bfs/archive/c2eca7bd078c55e4dd0759079802dad473010341.jpg',
+    image: '/banners/banner1.jpg',
     title: '精选推荐',
     subtitle: '热门游戏'
   },
   {
     id: '2',
-    image: 'https://c-ssl.dtstatic.com/uploads/item/201912/06/20191206044934_ufrfu.thumb.1000_0.jpg',
+    image: '/banners/banner2.jpg',
     title: '新游速递',
     subtitle: '限时优惠'
   },
   {
     id: '3',
-    image: 'https://i0.hdslb.com/bfs/archive/14fe11fcd6ee7d715fd4f159849f83dea7e9c6c3.jpg',
+    image: '/banners/banner3.jpg',
     title: '经典回归',
     subtitle: '玩家之选'
   },
   {
     id: '4',
-    image: 'https://i2.hdslb.com/bfs/archive/6eb962e3cddb56eadb9b40d1d708fe41b515106f.jpg',
+    image: '/banners/banner4.jpg',
     title: '独家首发',
     subtitle: '不容错过'
   }
