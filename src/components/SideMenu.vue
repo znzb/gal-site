@@ -16,10 +16,10 @@ const router = useRouter()
 
 const menuItems = [
   { id: 'home', name: '主页', icon: Home },
-  { id: 'android', name: '安卓直装', icon: Gamepad2, hasChildren: true },
+  { id: 'android', name: '安卓直装', icon: Gamepad2 },
   { id: 'kr', name: 'kr资源', icon: Image },
   { id: 'gamecg', name: '游戏CG', icon: Image },
-  { id: 'gallery', name: '图集资源', icon: Images, hasChildren: true },
+  { id: 'gallery', name: '图集资源', icon: Images },
   { id: 'guide', name: '新人必读', icon: BookOpen, highlight: true }
 ]
 
