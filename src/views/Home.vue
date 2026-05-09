@@ -15,7 +15,7 @@ const handleGameClick = (id: string) => {
 const banners = [
   {
     id: '1',
-    image: 'https://gips0.baidu.com/it/u=4255327230,12332888&fm=3074&app=3074&f=JPEG?w=1089&h=1050&type=normal',
+    image: 'https://i2.hdslb.com/bfs/archive/c2eca7bd078c55e4dd0759079802dad473010341.jpg',
     title: '精选推荐',
     subtitle: '热门游戏'
   },
@@ -27,13 +27,13 @@ const banners = [
   },
   {
     id: '3',
-    image: 'https://i2.hdslb.com/bfs/archive/6eb962e3cddb56eadb9b40d1d708fe41b515106f.jpg',
+    image: 'https://i0.hdslb.com/bfs/archive/14fe11fcd6ee7d715fd4f159849f83dea7e9c6c3.jpg',
     title: '经典回归',
     subtitle: '玩家之选'
   },
   {
     id: '4',
-    image: 'https://i0.hdslb.com/bfs/archive/14fe11fcd6ee7d715fd4f159849f83dea7e9c6c3.jpg',
+    image: 'https://i2.hdslb.com/bfs/archive/6eb962e3cddb56eadb9b40d1d708fe41b515106f.jpg',
     title: '独家首发',
     subtitle: '不容错过'
   }
