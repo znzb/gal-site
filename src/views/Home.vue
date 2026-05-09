@@ -90,7 +90,7 @@ onUnmounted(() => {
               v-show="currentBanner === index"
               :src="banner.image" 
               :alt="banner.title"
-              class="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 transform"
+              class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
               :class="bannersLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
               @load="handleBannerLoad"
             />
@@ -116,26 +116,15 @@ onUnmounted(() => {
             </svg>
           </button>
           
-          <div class="absolute bottom-3 left-4 right-4 z-10">
-            <transition-group name="fade">
-              <div v-for="(banner, index) in banners" :key="banner.id" v-show="currentBanner === index" class="transform transition-all duration-300">
-                <span class="inline-block px-2 py-0.5 bg-primary/90 text-white text-xs rounded-full mb-1 shadow-md">
-                  {{ banner.subtitle }}
-                </span>
-                <h3 class="text-white font-bold text-lg drop-shadow-md">{{ banner.title }}</h3>
-              </div>
-            </transition-group>
+          <div class="absolute bottom-3 left-0 right-0 z-10 flex items-center justify-center gap-1.5">
+            <button 
+              v-for="(banner, index) in banners" 
+              :key="banner.id"
+              @click="goToBanner(index)"
+              class="w-2 h-2 rounded-full transition-all duration-300 transform hover:scale-125"
+              :class="currentBanner === index ? 'bg-white w-4' : 'bg-white/50 hover:bg-white/70'"
+            ></button>
           </div>
-        </div>
-        
-        <div class="flex items-center justify-center gap-2 py-3 bg-white rounded-b-xl">
-          <button 
-            v-for="(banner, index) in banners" 
-            :key="banner.id"
-            @click="goToBanner(index)"
-            class="w-2 h-2 rounded-full transition-all duration-300 transform hover:scale-125"
-            :class="currentBanner === index ? 'bg-primary w-4' : 'bg-gray-300 hover:bg-gray-400'"
-          ></button>
         </div>
       </div>
     </div>
