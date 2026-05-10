@@ -20,7 +20,7 @@ const mockGamesWithId = mockGames.map(game => ({ ...game, _id: game.id }));
 
 export async function request(url, options = {}) {
   const headers = {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
     ...options.headers
   };
   
@@ -95,7 +95,7 @@ export async function createResource(gameId, resource) {
   try {
     const response = await fetch(`${API_BASE_URL}/games/${gameId}/resources`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(resource),
       signal: AbortSignal.timeout(5000)
     });
@@ -110,7 +110,7 @@ export async function updateResource(gameId, resourceId, resource) {
   try {
     const response = await fetch(`${API_BASE_URL}/games/${gameId}/resources/${resourceId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(resource),
       signal: AbortSignal.timeout(5000)
     });
@@ -149,7 +149,7 @@ export async function createComment(gameId, comment) {
   try {
     const response = await fetch(`${API_BASE_URL}/games/${gameId}/comments`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(comment),
       signal: AbortSignal.timeout(5000)
     });

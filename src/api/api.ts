@@ -111,7 +111,7 @@ export const gameApi = {
   createGame: async (game: Game): Promise<Game> => {
     return fetchWithFallback(`${BASE_URL}/games`, game, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(game)
     });
   },
@@ -119,7 +119,7 @@ export const gameApi = {
   updateGame: async (id: string, game: Partial<Game>): Promise<Game> => {
     return fetchWithFallback(`${BASE_URL}/games/${id}`, { ...mockGames.find(g => g.id === id), ...game } as Game, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(game)
     });
   },
@@ -170,7 +170,7 @@ export const categoryApi = {
   createCategory: async (category: CategoryItem): Promise<CategoryItem> => {
     return fetchWithFallback(`${BASE_URL}/categories`, category, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(category)
     });
   }
@@ -226,7 +226,7 @@ export const resourceApi = {
     try {
       const response = await fetch(`${BASE_URL}/games/${gameId}/resources`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: JSON.stringify(resource),
         signal: AbortSignal.timeout(5000)
       });
@@ -241,7 +241,7 @@ export const resourceApi = {
     try {
       const response = await fetch(`${BASE_URL}/games/${gameId}/resources/${resourceId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: JSON.stringify(resource),
         signal: AbortSignal.timeout(5000)
       });
@@ -300,7 +300,7 @@ export const commentApi = {
     try {
       const response = await fetch(`${BASE_URL}/games/${gameId}/comments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: JSON.stringify(comment),
         signal: AbortSignal.timeout(5000)
       });
