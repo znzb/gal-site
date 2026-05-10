@@ -1,31 +1,24 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowLeft } from 'lucide-vue-next'
 
 const router = useRouter()
 const patchRequests = ref([])
 const isLoading = ref(true)
-const activeTab = ref('all')
 
-const allRecords = computed(() => patchRequests.value)
-const completedRecords = computed(() => 
-  patchRequests.value.filter(r => r.status === 'completed' || r.status === '已处理')
-)
-const pendingRecords = computed(() => 
-  patchRequests.value.filter(r => r.status === 'pending' || r.status === '待处理' || r.status === 'processing')
-)
-
-const displayedRecords = computed(() => {
-  switch (activeTab.value) {
-    case 'completed':
-      return completedRecords.value
-    case 'pending':
-      return pendingRecords.value
-    default:
-      return allRecords.value
+const loadPatchRecords = async () => {
+  try {
+    const response = await fetch('https://game-api-p1zc.onrender.com/api/patch-requests')
+    const data = await response.json()
+    patchRequests.value = data.requests || data || []
+  } catch (error) {
+    console.error('Failed to load patch records:', error)
+    patchRequests.value = []
+  } finally {
+    isLoading.value = false
   }
-})
+}
 
 const formatDate = (date) => {
   if (!date) return '未知时间'
@@ -60,17 +53,8 @@ const getStatusClass = (status) => {
   return classMap[status] || 'bg-gray-100 text-gray-800'
 }
 
-onMounted(async () => {
-  try {
-    const response = await fetch('https://game-api-p1zc.onrender.com/api/patch-requests')
-    const data = await response.json()
-    patchRequests.value = data.requests || data || []
-  } catch (error) {
-    console.error('Failed to load patch records:', error)
-    patchRequests.value = []
-  } finally {
-    isLoading.value = false
-  }
+onMounted(() => {
+  loadPatchRecords()
 })
 </script>
 
@@ -93,40 +77,8 @@ onMounted(async () => {
     </div>
     
     <div v-else class="pt-14 px-4 mt-4">
-      <div class="bg-white rounded-xl p-4 mb-4">
-        <p class="text-sm text-gray-600">补档是指游戏资源失效后重新上传的文件</p>
-      </div>
-      
-      <div class="flex gap-2 mb-4 overflow-x-auto">
-        <button 
-          :class="['px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors', 
-            activeTab === 'all' ? 'bg-primary text-white' : 'bg-white text-gray-600']"
-          @click="activeTab = 'all'"
-        >
-          全部 ({{ allRecords.length }})
-        </button>
-        <button 
-          :class="['px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors', 
-            activeTab === 'completed' ? 'bg-primary text-white' : 'bg-white text-gray-600']"
-          @click="activeTab = 'completed'"
-        >
-          已完成 ({{ completedRecords.length }})
-        </button>
-        <button 
-          :class="['px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors', 
-            activeTab === 'pending' ? 'bg-primary text-white' : 'bg-white text-gray-600']"
-          @click="activeTab = 'pending'"
-        >
-          处理中 ({{ pendingRecords.length }})
-        </button>
-      </div>
-      
-      <div v-if="displayedRecords.length === 0" class="text-center py-20">
-        <p class="text-gray-400">暂无相关记录</p>
-      </div>
-      
-      <div v-else class="space-y-3">
-        <div v-for="record in displayedRecords" :key="record.id || record._id" class="bg-white rounded-xl p-4">
+      <div v-if="patchRequests.length > 0" class="space-y-3">
+        <div v-for="record in patchRequests" :key="record.id || record._id" class="bg-white rounded-xl p-4">
           <div class="flex items-start justify-between mb-3">
             <div class="flex-1">
               <h3 class="font-bold text-gray-800 mb-1">{{ record.gameName || '未知游戏' }}</h3>
@@ -150,6 +102,16 @@ onMounted(async () => {
             </a>
           </div>
         </div>
+      </div>
+      
+      <div v-else class="text-center py-20">
+        <p class="text-gray-400">暂无补档记录</p>
+        <button 
+          @click="router.push('/')"
+          class="mt-4 text-primary text-sm"
+        >
+          返回首页
+        </button>
       </div>
     </div>
   </div>
