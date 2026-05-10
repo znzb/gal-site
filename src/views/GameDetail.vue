@@ -111,6 +111,10 @@ const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
+const goToGame = (gameId: string) => {
+  router.push(`/game/${gameId}`)
+}
+
 const handleDownload = async () => {
   if (isDownloading.value || !game.value) return
   
@@ -312,9 +316,9 @@ onMounted(() => {
         <div class="flex gap-3 overflow-x-auto pb-2">
           <div 
             v-for="related in relatedGames" 
-            :key="related.id"
-            @click="router.push(`/game/${related.id}`)"
-            class="flex-shrink-0 w-28 cursor-pointer"
+            :key="related.id || related._id"
+            @click="goToGame(related.id || related._id)"
+            class="flex-shrink-0 w-28 cursor-pointer active:scale-95 transition-transform"
           >
             <div class="aspect-[3/4] rounded-lg overflow-hidden mb-2">
               <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" />
