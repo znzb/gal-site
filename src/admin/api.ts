@@ -28,16 +28,6 @@ export async function request(url, options = {}) {
     headers['Authorization'] = `Bearer ${token.value}`;
   }
 
-  if (url === '/admin/categories' && (!options.method || options.method === 'GET')) {
-    return mockCategoriesWithId;
-  }
-  if (url === '/admin/games' && (!options.method || options.method === 'GET')) {
-    return mockGamesWithId;
-  }
-  if (url.startsWith('/categories')) {
-    return mockCategoriesWithId;
-  }
-
   try {
     const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
@@ -51,6 +41,15 @@ export async function request(url, options = {}) {
   } catch (error) {
     console.warn(`API call failed, using mock data: ${error}`);
     
+    if (url === '/admin/categories' && (!options.method || options.method === 'GET')) {
+      return mockCategoriesWithId;
+    }
+    if (url === '/admin/games' && (!options.method || options.method === 'GET')) {
+      return mockGamesWithId;
+    }
+    if (url.startsWith('/categories')) {
+      return mockCategoriesWithId;
+    }
     if (url.startsWith('/admin/games/') && options.method === 'DELETE') {
       return { success: true };
     }
@@ -77,5 +76,98 @@ export async function request(url, options = {}) {
     }
     
     throw error;
+  }
+}
+
+export async function getResourcesByGameId(gameId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/games/${gameId}/resources`, {
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) throw new Error('Resources not found');
+    return response.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function createResource(gameId, resource) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/games/${gameId}/resources`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(resource),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) throw new Error('Failed to create resource');
+    return response.json();
+  } catch {
+    return { ...resource, id: Date.now().toString() };
+  }
+}
+
+export async function updateResource(gameId, resourceId, resource) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/games/${gameId}/resources/${resourceId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(resource),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) throw new Error('Failed to update resource');
+    return response.json();
+  } catch {
+    return { ...resource, id: resourceId };
+  }
+}
+
+export async function deleteResource(gameId, resourceId) {
+  try {
+    await fetch(`${API_BASE_URL}/games/${gameId}/resources/${resourceId}`, {
+      method: 'DELETE',
+      signal: AbortSignal.timeout(5000)
+    });
+    return { success: true };
+  } catch {
+    return { success: true };
+  }
+}
+
+export async function getCommentsByGameId(gameId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/games/${gameId}/comments`, {
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) throw new Error('Comments not found');
+    return response.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function createComment(gameId, comment) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/games/${gameId}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(comment),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) throw new Error('Failed to create comment');
+    return response.json();
+  } catch {
+    return { ...comment, id: Date.now().toString() };
+  }
+}
+
+export async function deleteComment(gameId, commentId) {
+  try {
+    await fetch(`${API_BASE_URL}/games/${gameId}/comments/${commentId}`, {
+      method: 'DELETE',
+      signal: AbortSignal.timeout(5000)
+    });
+    return { success: true };
+  } catch {
+    return { success: true };
   }
 }

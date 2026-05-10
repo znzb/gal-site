@@ -238,10 +238,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { request } from '../api';
+import { useGameStore } from '@/store/gameStore';
 
 const games = ref([]);
 const categories = ref([]);
 const searchQuery = ref('');
+const { setResources, setComments } = useGameStore();
 const filterCategory = ref('');
 const filterSubCategory = ref('');
 const showAddModal = ref(false);
@@ -305,6 +307,7 @@ async function loadCategories() {
 
 function editGame(game) {
   editingGame.value = game;
+  
   gameForm.value = {
     name: game.name,
     category: game.category,
@@ -314,7 +317,8 @@ function editGame(game) {
     size: game.size,
     releaseDate: game.releaseDate,
     tagsInput: game.tags?.join(', ') || '',
-    resources: game.resources?.map(r => ({
+    resources: game.resources && game.resources.length > 0 ? game.resources.map(r => ({
+      id: r.id,
       name: r.name || '',
       type: r.type || 'main',
       language: r.language || '简体中文',
@@ -326,7 +330,7 @@ function editGame(game) {
       authorName: r.authorName || '愚者',
       authorAvatar: r.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
       authorResources: r.authorResources || 198
-    })) || [{
+    })) : [{
       name: '',
       type: 'main',
       language: '简体中文',
@@ -339,14 +343,15 @@ function editGame(game) {
       authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
       authorResources: 198
     }],
-    comments: game.comments?.map(c => ({
+    comments: game.comments && game.comments.length > 0 ? game.comments.map(c => ({
+      id: c.id,
       user: c.user || '',
       avatar: c.avatar || '',
       content: c.content || '',
       rating: c.rating || 5,
       date: c.date || '',
       likes: c.likes || 0
-    })) || [{
+    })) : [{
       user: '',
       avatar: '',
       content: '',
@@ -359,11 +364,21 @@ function editGame(game) {
 }
 
 async function saveGame() {
+  const resources = gameForm.value.resources.filter(r => r.name && r.url);
+  const comments = gameForm.value.comments.filter(c => c.user && c.content);
+  
   const gameData = {
     ...gameForm.value,
     tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
-    downloads: editingGame.value ? editingGame.value.downloads : 0
+    downloads: editingGame.value ? editingGame.value.downloads : 0,
+    resources,
+    comments
   };
+
+  const gameId = editingGame.value?.id || editingGame.value?._id || Date.now().toString();
+  
+  setResources(gameId, resources);
+  setComments(gameId, comments);
 
   if (editingGame.value) {
     await request('/admin/games/' + editingGame.value._id, {

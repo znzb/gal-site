@@ -48,7 +48,57 @@ export const games: Game[] = [
     size: '2.5GB',
     releaseDate: '2024-06-15',
     downloads: 12500,
-    tags: ['恋爱', '校园', '治愈']
+    tags: ['恋爱', '校园', '治愈'],
+    resources: [
+      {
+        id: '1',
+        name: '完整版游戏本体',
+        url: 'https://example.com/download1',
+        type: 'main',
+        size: '2.5GB',
+        date: '2024-06-15',
+        language: '简体中文',
+        platform: 'Android',
+        dateDisplay: '3天前',
+        authorName: '愚者',
+        authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
+        authorResources: 198
+      },
+      {
+        id: '2',
+        name: '简体中文补丁',
+        url: 'https://example.com/download2',
+        type: 'patch',
+        size: '150MB',
+        date: '2024-06-20',
+        language: '简体中文',
+        platform: 'Android',
+        dateDisplay: '1周前',
+        authorName: '翻译组',
+        authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20girl%20blue%20hair&image_size=square',
+        authorResources: 56
+      }
+    ],
+    comments: [
+      {
+        id: '1',
+        user: '玩家小明',
+        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20anime%20avatar%20girl%20portrait&image_size=square',
+        content: '非常棒的游戏！剧情很感人，画面也很漂亮，强烈推荐！',
+        rating: 5,
+        date: '2天前',
+        likes: 128
+      },
+      {
+        id: '2',
+        user: '樱花控',
+        avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20girl%20pink%20hair&image_size=square',
+        content: '夏日的氛围营造得很好，音乐也很治愈，很享受游戏过程。',
+        rating: 4,
+        date: '5天前',
+        likes: 76
+      }
+    ]
   },
   {
     id: '2',

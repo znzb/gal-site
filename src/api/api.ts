@@ -4,6 +4,31 @@ const RENDER_URL = 'https://game-api-p1zc.onrender.com';
 
 const BASE_URL = RENDER_URL + '/api';
 
+export interface ResourceLink {
+  id?: string;
+  name: string;
+  url: string;
+  type: 'main' | 'patch' | 'update';
+  size: string;
+  date: string;
+  language: string;
+  platform: string;
+  dateDisplay: string;
+  authorName: string;
+  authorAvatar: string;
+  authorResources: number;
+}
+
+export interface Comment {
+  id?: string;
+  user: string;
+  avatar: string;
+  content: string;
+  rating: number;
+  date: string;
+  likes: number;
+}
+
 export interface Game {
   id: string;
   name: string;
@@ -15,6 +40,8 @@ export interface Game {
   releaseDate: string;
   downloads: number;
   tags: string[];
+  resources?: ResourceLink[];
+  comments?: Comment[];
 }
 
 export interface CategoryItem {
@@ -164,5 +191,147 @@ export const bannerApi = {
 export const announcementApi = {
   getAllAnnouncements: async (): Promise<Announcement[]> => {
     return fetchWithFallback(`${BASE_URL}/announcements`, []);
+  }
+};
+
+export const resourceApi = {
+  getResourcesByGameId: async (gameId: string): Promise<ResourceLink[]> => {
+    try {
+      const response = await fetch(`${BASE_URL}/games/${gameId}/resources`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!response.ok) throw new Error('Resources not found');
+      return response.json();
+    } catch {
+      return [
+        {
+          id: '1',
+          name: '完整版游戏本体',
+          url: '#',
+          type: 'main',
+          size: '2.5GB',
+          date: '2024-06-15',
+          language: '简体中文',
+          platform: 'Android',
+          dateDisplay: '3天前',
+          authorName: '愚者',
+          authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
+          authorResources: 198
+        }
+      ];
+    }
+  },
+
+  createResource: async (gameId: string, resource: ResourceLink): Promise<ResourceLink> => {
+    try {
+      const response = await fetch(`${BASE_URL}/games/${gameId}/resources`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(resource),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!response.ok) throw new Error('Failed to create resource');
+      return response.json();
+    } catch {
+      return resource;
+    }
+  },
+
+  updateResource: async (gameId: string, resourceId: string, resource: Partial<ResourceLink>): Promise<ResourceLink> => {
+    try {
+      const response = await fetch(`${BASE_URL}/games/${gameId}/resources/${resourceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(resource),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!response.ok) throw new Error('Failed to update resource');
+      return response.json();
+    } catch {
+      return { id: resourceId, ...resource } as ResourceLink;
+    }
+  },
+
+  deleteResource: async (gameId: string, resourceId: string): Promise<void> => {
+    try {
+      await fetch(`${BASE_URL}/games/${gameId}/resources/${resourceId}`, {
+        method: 'DELETE',
+        signal: AbortSignal.timeout(5000)
+      });
+    } catch {
+      console.warn('Delete resource failed');
+    }
+  }
+};
+
+export const commentApi = {
+  getCommentsByGameId: async (gameId: string): Promise<Comment[]> => {
+    try {
+      const response = await fetch(`${BASE_URL}/games/${gameId}/comments`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!response.ok) throw new Error('Comments not found');
+      return response.json();
+    } catch {
+      return [
+        {
+          id: '1',
+          user: '玩家小明',
+          avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20anime%20avatar%20girl%20portrait&image_size=square',
+          content: '非常棒的游戏！剧情很感人，画面也很漂亮，强烈推荐！',
+          rating: 5,
+          date: '2天前',
+          likes: 128
+        },
+        {
+          id: '2',
+          user: '樱花控',
+          avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20girl%20pink%20hair&image_size=square',
+          content: '夏日的氛围营造得很好，音乐也很治愈，很享受游戏过程。',
+          rating: 4,
+          date: '5天前',
+          likes: 76
+        }
+      ];
+    }
+  },
+
+  createComment: async (gameId: string, comment: Comment): Promise<Comment> => {
+    try {
+      const response = await fetch(`${BASE_URL}/games/${gameId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(comment),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!response.ok) throw new Error('Failed to create comment');
+      return response.json();
+    } catch {
+      return comment;
+    }
+  },
+
+  deleteComment: async (gameId: string, commentId: string): Promise<void> => {
+    try {
+      await fetch(`${BASE_URL}/games/${gameId}/comments/${commentId}`, {
+        method: 'DELETE',
+        signal: AbortSignal.timeout(5000)
+      });
+    } catch {
+      console.warn('Delete comment failed');
+    }
+  },
+
+  likeComment: async (gameId: string, commentId: string): Promise<{ likes: number }> => {
+    try {
+      const response = await fetch(`${BASE_URL}/games/${gameId}/comments/${commentId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(5000)
+      });
+      return response.json();
+    } catch {
+      return { likes: 0 };
+    }
   }
 };

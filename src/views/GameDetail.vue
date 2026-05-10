@@ -2,41 +2,17 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar, MessageSquare, Link2, User, ChevronDown, ChevronUp } from 'lucide-vue-next'
-import { gameApi, type Game } from '@/api/api'
+import { gameApi, type Game, type ResourceLink, type Comment } from '@/api/api'
+import { useGameStore } from '@/store/gameStore'
 
 const route = useRoute()
 const router = useRouter()
+const { getResources, getComments } = useGameStore()
 
 const gameId = ref(route.params.id as string)
 const game = ref<Game | null>(null)
 const isLoading = ref(true)
 const activeTab = ref('info')
-
-interface ResourceLink {
-  id: string
-  name: string
-  url: string
-  type: 'main' | 'patch' | 'update'
-  size: string
-  date: string
-  language: string
-  platform: string
-  dateDisplay: string
-  authorName: string
-  authorAvatar: string
-  authorResources: number
-}
-
-interface Comment {
-  id: string
-  user: string
-  avatar: string
-  content: string
-  rating: number
-  date: string
-  likes: number
-  liked: boolean
-}
 
 interface GameInfo {
   developer: string
@@ -217,66 +193,6 @@ const mockGames: Game[] = [
   }
 ]
 
-const mockResources: ResourceLink[] = [
-  {
-    id: '1',
-    name: '完整版游戏本体',
-    url: '#',
-    type: 'main',
-    size: '2.5GB',
-    date: '2024-06-15'
-  },
-  {
-    id: '2',
-    name: '简体中文补丁',
-    url: '#',
-    type: 'patch',
-    size: '150MB',
-    date: '2024-06-20'
-  },
-  {
-    id: '3',
-    name: '1.1更新包',
-    url: '#',
-    type: 'update',
-    size: '320MB',
-    date: '2024-07-01'
-  }
-]
-
-const mockComments: Comment[] = [
-  {
-    id: '1',
-    user: '玩家小明',
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20anime%20avatar%20girl%20portrait&image_size=square',
-    content: '非常棒的游戏！剧情很感人，画面也很漂亮，强烈推荐！',
-    rating: 5,
-    date: '2天前',
-    likes: 128,
-    liked: false
-  },
-  {
-    id: '2',
-    user: '樱花控',
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20girl%20pink%20hair&image_size=square',
-    content: '夏日的氛围营造得很好，音乐也很治愈，很享受游戏过程。',
-    rating: 4,
-    date: '5天前',
-    likes: 76,
-    liked: true
-  },
-  {
-    id: '3',
-    user: 'GAL爱好者',
-    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20portrait&image_size=square',
-    content: '经典的作品，值得一玩！角色塑造很成功，每个人物都有自己的故事。',
-    rating: 5,
-    date: '1周前',
-    likes: 234,
-    liked: false
-  }
-]
-
 const mockGameInfo: GameInfo = {
   developer: 'Studio Summer',
   publisher: 'Gal Games Co.',
@@ -285,8 +201,8 @@ const mockGameInfo: GameInfo = {
   requirements: 'Android 8.0+ / Windows 10+, 4GB RAM'
 }
 
-const resources = ref<ResourceLink[]>(mockResources)
-const comments = ref<Comment[]>(mockComments)
+const resources = ref<ResourceLink[]>([])
+const comments = ref<Comment[]>([])
 const gameInfo = ref<GameInfo>(mockGameInfo)
 const isFavorite = ref(false)
 const isDownloading = ref(false)
@@ -416,10 +332,92 @@ const loadData = async () => {
       
       filtered.forEach(g => preloadImage(g.cover))
     }
+    
+    const storeResources = getResources(gameId.value)
+    const storeComments = getComments(gameId.value)
+    const mockGame = mockGames.find(g => g.id === gameId.value)
+    
+    if (storeResources.length > 0) {
+      resources.value = storeResources
+    } else if (mockGame && mockGame.resources && mockGame.resources.length > 0) {
+      resources.value = mockGame.resources
+    } else if (gameData.resources && gameData.resources.length > 0) {
+      resources.value = gameData.resources
+    } else {
+      resources.value = [
+        {
+          id: '1',
+          name: '完整版游戏本体',
+          url: '#',
+          type: 'main',
+          size: '2.5GB',
+          date: '2024-06-15',
+          language: '简体中文',
+          platform: 'Android',
+          dateDisplay: '3天前',
+          authorName: '愚者',
+          authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
+          authorResources: 198
+        },
+        {
+          id: '2',
+          name: '简体中文补丁',
+          url: '#',
+          type: 'patch',
+          size: '150MB',
+          date: '2024-06-20',
+          language: '简体中文',
+          platform: 'Android',
+          dateDisplay: '1周前',
+          authorName: '翻译组',
+          authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20girl%20blue%20hair&image_size=square',
+          authorResources: 56
+        }
+      ]
+    }
+    
+    if (storeComments.length > 0) {
+      comments.value = storeComments.map(c => ({ ...c, liked: false }))
+    } else if (mockGame && mockGame.comments && mockGame.comments.length > 0) {
+      comments.value = mockGame.comments.map(c => ({ ...c, liked: false }))
+    } else if (gameData.comments && gameData.comments.length > 0) {
+      comments.value = gameData.comments.map(c => ({ ...c, liked: false }))
+    } else {
+      comments.value = [
+        {
+          id: '1',
+          user: '玩家小明',
+          avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20anime%20avatar%20girl%20portrait&image_size=square',
+          content: '非常棒的游戏！剧情很感人，画面也很漂亮，强烈推荐！',
+          rating: 5,
+          date: '2天前',
+          likes: 128,
+          liked: false
+        },
+        {
+          id: '2',
+          user: '樱花控',
+          avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20girl%20pink%20hair&image_size=square',
+          content: '夏日的氛围营造得很好，音乐也很治愈，很享受游戏过程。',
+          rating: 4,
+          date: '5天前',
+          likes: 76,
+          liked: false
+        }
+      ]
+    }
   } else if (mockGame) {
     const filtered = mockGames.filter(g => g.id !== gameId.value && g.category === mockGame.category).slice(0, 3)
     relatedGames.value = filtered
     relatedCache.value.set(gameId.value, filtered)
+    
+    if (mockGame.resources && mockGame.resources.length > 0) {
+      resources.value = mockGame.resources
+    }
+    
+    if (mockGame.comments && mockGame.comments.length > 0) {
+      comments.value = mockGame.comments.map(c => ({ ...c, liked: false }))
+    }
   }
   
   isLoading.value = false
