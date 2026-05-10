@@ -41,11 +41,14 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const game = await Game.findByIdAndUpdate(
-      req.params.id,
+    const game = await Game.findOneAndUpdate(
+      { id: req.params.id },
       req.body,
       { new: true }
     );
+    if (!game) {
+      return res.status(404).json({ error: '游戏不存在' });
+    }
     res.json(game);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -54,7 +57,10 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    await Game.findByIdAndDelete(req.params.id);
+    const game = await Game.findOneAndDelete({ id: req.params.id });
+    if (!game) {
+      return res.status(404).json({ error: '游戏不存在' });
+    }
     res.json({ message: '删除成功' });
   } catch (error) {
     res.status(500).json({ error: error.message });
