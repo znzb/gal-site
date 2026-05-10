@@ -7,8 +7,13 @@ services:
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /
+    autoDeploy: true
     envVars:
       - key: MONGODB_URI
         sync: false
       - key: PORT
         value: 3000
+      - key: JWT_SECRET
+        value: your-secret-key-here-must-be-at-least-32-characters-long
+      - key: NODE_ENV
+        value: production

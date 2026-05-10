@@ -8,7 +8,6 @@ const router = useRouter()
 
 const features = ref<Feature[]>([])
 const isLoading = ref(true)
-const showQrCode = ref(false)
 
 const mockFeatures: Feature[] = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
@@ -38,16 +37,16 @@ const loadFeatures = async () => {
 const handleFeatureClick = (featureId: string) => {
   switch (featureId) {
     case '1':
-      document.getElementById('announcements')?.scrollIntoView({ behavior: 'smooth' })
+      router.push('/announcements')
       break
     case '2':
-      showQrCode.value = true
+      router.push('/join-group')
       break
     case '3':
-      router.push('/category/柚子社')
+      router.push('/yuzusoft')
       break
     case '4':
-      document.getElementById('patch-records')?.scrollIntoView({ behavior: 'smooth' })
+      router.push('/patch-records')
       break
   }
 }
@@ -87,18 +86,6 @@ onMounted(() => {
         </div>
         <span class="text-xs text-gray-700 font-medium">{{ feature.name }}</span>
       </button>
-    </div>
-  </div>
-
-  <div v-if="showQrCode" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click="showQrCode = false">
-    <div class="bg-white rounded-2xl p-6 text-center max-w-sm mx-4" @click.stop>
-      <h3 class="text-xl font-bold mb-4">加入Q群</h3>
-      <div class="w-48 h-48 bg-gray-100 rounded-xl flex items-center justify-center mb-4 mx-auto">
-        <span class="text-6xl">🐧</span>
-      </div>
-      <p class="text-gray-600 mb-2">群号：123456789</p>
-      <p class="text-gray-400 text-sm mb-4">扫码或搜索群号加入</p>
-      <button @click="showQrCode = false" class="px-6 py-2 bg-primary text-white rounded-lg">关闭</button>
     </div>
   </div>
 </template>
