@@ -119,11 +119,23 @@ const handleBannerError = (index: number) => {
   bannersLoaded.value[index] = true
 }
 
+const preloadBannerImages = () => {
+  banners.value.forEach((banner, index) => {
+    if (!bannersLoaded.value[index]) {
+      const img = new Image()
+      img.onload = () => handleBannerLoad(index)
+      img.onerror = () => handleBannerError(index)
+      img.src = banner.image
+    }
+  })
+}
+
 const loadData = async () => {
   games.value = mockGames
   banners.value = mockBanners
   bannersLoaded.value = new Array(mockBanners.length).fill(false)
   isLoading.value = false
+  preloadBannerImages()
   
   setTimeout(async () => {
     try {
@@ -136,6 +148,7 @@ const loadData = async () => {
       if (bannersData && bannersData.length > 0) {
         banners.value = bannersData
         bannersLoaded.value = new Array(bannersData.length).fill(false)
+        preloadBannerImages()
       }
       announcements.value = (announcementsData || []).filter(a => a.isVisible)
     } catch (error) {
