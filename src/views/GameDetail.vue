@@ -111,7 +111,9 @@ const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
-const goToGame = (gameId: string) => {
+const goToGame = (event: Event, gameId: string) => {
+  event.preventDefault()
+  event.stopPropagation()
   console.log('goToGame called with id:', gameId)
   router.push(`/game/${gameId}`).then(() => {
     console.log('Navigation successful')
@@ -322,8 +324,9 @@ onMounted(() => {
           <button
             v-for="related in relatedGames" 
             :key="related.id || related._id"
-            @click="goToGame(related.id || related._id)"
+            @click="(event) => goToGame(event, related.id || related._id)"
             class="flex-shrink-0 w-28 p-0 border-none bg-transparent cursor-pointer"
+            type="button"
           >
             <div class="aspect-[3/4] rounded-lg overflow-hidden mb-2">
               <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" />
