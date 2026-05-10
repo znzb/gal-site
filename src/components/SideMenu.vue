@@ -24,15 +24,22 @@ const menuItems = [
 ]
 
 const handleMenuClick = (id: string) => {
+  emit('close')
+  emit('navigate')
+  
   if (id === 'home') {
     router.push('/')
   } else if (id === 'android') {
     router.push('/category/安卓直装')
   } else if (id === 'kr') {
     router.push('/category/kr资源')
+  } else if (id === 'gamecg') {
+    router.push('/category/游戏CG')
+  } else if (id === 'gallery') {
+    router.push('/category/图集资源')
+  } else if (id === 'guide') {
+    router.push('/help')
   }
-  emit('close')
-  emit('navigate')
 }
 </script>
 

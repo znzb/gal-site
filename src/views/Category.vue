@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Menu } from 'lucide-vue-next'
 import GameCard from '@/components/GameCard.vue'
@@ -138,6 +138,28 @@ const loadGames = async () => {
 const setSubCategory = (sub: 'all' | 'raw' | 'cooked') => {
   activeSubCategory.value = sub
 }
+
+const loadGamesForCategory = async (type: string) => {
+  isLoading.value = true
+  activeSubCategory.value = 'all'
+  try {
+    filteredGames.value = await gameApi.getGamesByCategory(type)
+  } catch (error) {
+    console.error('Failed to load games from API, using mock data:', error)
+    filteredGames.value = mockGames.filter(g => g.category === type)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+watch(
+  () => route.params.type,
+  (newType) => {
+    if (newType) {
+      loadGamesForCategory(newType as string)
+    }
+  }
+)
 
 onMounted(() => {
   loadGames()
