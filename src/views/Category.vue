@@ -9,7 +9,7 @@ import { appState } from '@/store/appStore'
 const route = useRoute()
 const router = useRouter()
 
-const categoryType = route.params.type as string
+const categoryType = computed(() => route.params.type as string)
 const filteredGames = ref<Game[]>([])
 const isLoading = ref(true)
 const activeSubCategory = ref<'all' | 'raw' | 'cooked'>('all')
@@ -114,7 +114,7 @@ const mockGames: Game[] = [
 ]
 
 const showSubCategory = computed(() => {
-  return ['安卓直装', 'kr资源'].includes(categoryType)
+  return ['安卓直装', 'kr资源'].includes(categoryType.value)
 })
 
 const displayGames = computed(() => {
@@ -126,10 +126,10 @@ const displayGames = computed(() => {
 
 const loadGames = async () => {
   try {
-    filteredGames.value = await gameApi.getGamesByCategory(categoryType)
+    filteredGames.value = await gameApi.getGamesByCategory(categoryType.value)
   } catch (error) {
     console.error('Failed to load games from API, using mock data:', error)
-    filteredGames.value = mockGames.filter(g => g.category === categoryType)
+    filteredGames.value = mockGames.filter(g => g.category === categoryType.value)
   } finally {
     isLoading.value = false
   }
