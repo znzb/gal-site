@@ -189,4 +189,57 @@ h1 {
   border-radius: 4px;
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .request-card {
+    padding: 16px;
+  }
+  
+  .request-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .request-header h3 {
+    font-size: 16px;
+  }
+  
+  .email {
+    font-size: 12px;
+  }
+  
+  .description {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .request-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 12px;
+  }
+  
+  .request-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .approve-btn,
+  .reject-btn,
+  .complete-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .filters select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+}
 </style>

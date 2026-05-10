@@ -273,4 +273,76 @@ function resetForm() {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .add-btn {
+    width: 100%;
+    padding: 14px;
+  }
+  
+  .announcements-list {
+    gap: 12px;
+  }
+  
+  .announcement-card {
+    padding: 16px;
+  }
+  
+  .announcement-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .announcement-header h3 {
+    font-size: 16px;
+  }
+  
+  .announcement-card p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .announcement-meta {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12px;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .modal {
+    padding: 20px;
+    margin: 10px;
+    max-width: none;
+    width: calc(100% - 20px);
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+}
 </style>

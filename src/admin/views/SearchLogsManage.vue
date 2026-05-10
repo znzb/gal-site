@@ -77,4 +77,45 @@ h1 {
 .count {
   color: #666;
 }
+
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  .stats-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-number {
+    font-size: 24px;
+  }
+  
+  .top-keywords {
+    padding: 16px;
+  }
+  
+  .keyword-item {
+    padding: 12px;
+  }
+  
+  .rank {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+  
+  .keyword {
+    font-size: 14px;
+  }
+  
+  .count {
+    font-size: 14px;
+  }
+}
 </style>

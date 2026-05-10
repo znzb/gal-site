@@ -232,4 +232,72 @@ function resetForm() {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .add-btn {
+    width: 100%;
+    padding: 14px;
+  }
+  
+  .banners-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .banner-preview {
+    height: 120px;
+  }
+  
+  .banner-info {
+    padding: 12px;
+  }
+  
+  .banner-info h4 {
+    font-size: 14px;
+  }
+  
+  .banner-info p {
+    font-size: 12px;
+  }
+  
+  .banner-actions {
+    padding: 0 12px 12px 12px;
+    gap: 4px;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .modal {
+    padding: 20px;
+    margin: 10px;
+    max-width: none;
+    width: calc(100% - 20px);
+  }
+  
+  .form-group input {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+}
 </style>

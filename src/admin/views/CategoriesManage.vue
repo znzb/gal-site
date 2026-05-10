@@ -426,4 +426,109 @@ th, td {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .add-btn {
+    width: 100%;
+    padding: 14px;
+  }
+  
+  .detail-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .back-btn,
+  .add-game-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .category-card {
+    padding: 16px;
+  }
+  
+  .category-icon {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  
+  .category-card h3 {
+    font-size: 14px;
+  }
+  
+  .game-count {
+    font-size: 12px;
+  }
+  
+  .category-actions {
+    gap: 4px;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .games-table {
+    overflow-x: auto;
+  }
+  
+  .games-table table {
+    min-width: 500px;
+  }
+  
+  .games-table th,
+  .games-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .game-cover-small {
+    width: 40px;
+    height: 55px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .modal {
+    padding: 20px;
+    margin: 10px;
+    max-width: none;
+    width: calc(100% - 20px);
+    max-height: 95vh;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+}
 </style>

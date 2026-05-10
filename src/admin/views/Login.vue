@@ -114,4 +114,36 @@ button:disabled {
   text-align: center;
   margin-top: 15px;
 }
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 20px;
+  }
+  
+  .login-box {
+    padding: 24px;
+    margin: 10px;
+    max-width: none;
+    width: calc(100% - 20px);
+  }
+  
+  .login-box h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group input {
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  button {
+    padding: 16px;
+    font-size: 16px;
+  }
+}
 </style>

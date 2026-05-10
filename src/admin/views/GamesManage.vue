@@ -379,4 +379,74 @@ th, td {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
+
+@media (max-width: 768px) {
+  .search-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-bar input,
+  .search-bar select,
+  .add-btn {
+    width: 100%;
+  }
+  
+  .games-table {
+    overflow-x: auto;
+    display: block;
+  }
+  
+  .games-table table {
+    width: 100%;
+    min-width: 600px;
+  }
+  
+  .games-table th,
+  .games-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+  
+  .subcategory-tag {
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .modal {
+    padding: 20px;
+    margin: 10px;
+    max-width: none;
+    width: calc(100% - 20px);
+    max-height: 95vh;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+}
 </style>

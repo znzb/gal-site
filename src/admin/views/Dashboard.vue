@@ -144,4 +144,57 @@ onMounted(async () => {
   color: #666;
   font-size: 14px;
 }
+
+@media (max-width: 768px) {
+  .dashboard h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-icon {
+    font-size: 36px;
+  }
+  
+  .stat-content h3 {
+    font-size: 12px;
+  }
+  
+  .stat-number {
+    font-size: 24px;
+  }
+  
+  .recent-section {
+    padding: 16px;
+  }
+  
+  .games-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .game-item {
+    padding: 10px;
+  }
+  
+  .game-cover {
+    width: 50px;
+    height: 65px;
+  }
+  
+  .game-info h4 {
+    font-size: 14px;
+  }
+  
+  .game-info p {
+    font-size: 12px;
+  }
+}
 </style>
