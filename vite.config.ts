@@ -4,16 +4,18 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
+  base: '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
     }
   },
   build: {
+    outDir: 'dist',
     rollupOptions: {
       input: {
-        main: './index.html',
-        admin: './admin.html'
+        main: resolve(__dirname, 'index.html'),
+        admin: resolve(__dirname, 'admin.html')
       }
     }
   }
