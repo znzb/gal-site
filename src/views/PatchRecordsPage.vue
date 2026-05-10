@@ -76,7 +76,7 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen bg-gray-100">
-    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-[60]">
       <div class="flex items-center px-4 py-3">
         <button 
           @click="router.back()"
