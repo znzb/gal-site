@@ -131,32 +131,35 @@ const preloadBannerImages = () => {
 }
 
 const loadData = async () => {
-  games.value = mockGames
-  banners.value = mockBanners
-  bannersLoaded.value = new Array(mockBanners.length).fill(false)
-  isLoading.value = false
-  preloadBannerImages()
-  
-  setTimeout(async () => {
-    try {
-      const [gamesData, bannersData, announcementsData] = await Promise.all([
-        gameApi.getAllGames(),
-        bannerApi.getAllBanners(),
-        announcementApi.getAllAnnouncements()
-      ])
-      if (gamesData && gamesData.length > 0) games.value = gamesData
-      if (bannersData && bannersData.length > 0) {
-        banners.value = bannersData
-        bannersLoaded.value = new Array(bannersData.length).fill(false)
-        preloadBannerImages()
-      }
-      announcements.value = (announcementsData || []).filter(a => a.isVisible)
-    } catch (error) {
-      console.error('Failed to load from API:', error)
-    } finally {
-      isDataLoaded.value = true
+  try {
+    const [gamesData, bannersData, announcementsData] = await Promise.all([
+      gameApi.getAllGames(),
+      bannerApi.getAllBanners(),
+      announcementApi.getAllAnnouncements()
+    ])
+    if (gamesData && gamesData.length > 0) {
+      games.value = gamesData
+    } else {
+      games.value = mockGames
     }
-  }, 100)
+    if (bannersData && bannersData.length > 0) {
+      banners.value = bannersData
+    } else {
+      banners.value = mockBanners
+    }
+    bannersLoaded.value = new Array(banners.value.length).fill(false)
+    preloadBannerImages()
+    announcements.value = (announcementsData || []).filter(a => a.isVisible)
+  } catch (error) {
+    console.error('Failed to load from API, using mock data:', error)
+    games.value = mockGames
+    banners.value = mockBanners
+    bannersLoaded.value = new Array(mockBanners.length).fill(false)
+    preloadBannerImages()
+  } finally {
+    isLoading.value = false
+    isDataLoaded.value = true
+  }
 }
 
 onMounted(() => {

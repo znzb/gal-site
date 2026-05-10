@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ArrowLeft, Download, Monitor, HardDrive, Calendar } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
-import type { Game } from '@/api/api'
+import { gameApi, type Game } from '@/api/api'
 
 const router = useRouter()
 const activeCategory = ref<'all' | 'raw' | 'cooked'>('all')
+const pcGames = ref<Game[]>([])
+const isLoading = ref(true)
 
-const pcGames = ref<Game[]>([
+const mockGames: Game[] = [
   {
     id: 'pc1',
     name: '恋爱物语~夏日回忆',
@@ -80,7 +82,7 @@ const pcGames = ref<Game[]>([
     tags: ['魔法', '学园', '冒险'],
     subCategory: 'raw'
   }
-])
+]
 
 const filteredGames = computed(() => {
   if (activeCategory.value === 'all') {
@@ -89,6 +91,22 @@ const filteredGames = computed(() => {
   return pcGames.value.filter(game => game.subCategory === activeCategory.value)
 })
 
+const loadGames = async () => {
+  try {
+    const data = await gameApi.getGamesByCategory('PC资源')
+    if (data && data.length > 0) {
+      pcGames.value = data
+    } else {
+      pcGames.value = mockGames
+    }
+  } catch (error) {
+    console.error('Failed to load games, using mock data:', error)
+    pcGames.value = mockGames
+  } finally {
+    isLoading.value = false
+  }
+}
+
 const goToGame = (gameId: string) => {
   router.push(`/game/${gameId}`)
 }
@@ -96,6 +114,10 @@ const goToGame = (gameId: string) => {
 const setCategory = (category: 'all' | 'raw' | 'cooked') => {
   activeCategory.value = category
 }
+
+onMounted(() => {
+  loadGames()
+})
 </script>
 
 <template>
@@ -113,7 +135,11 @@ const setCategory = (category: 'all' | 'raw' | 'cooked') => {
       </div>
     </header>
     
-    <div class="pt-14 px-4">
+    <div v-if="isLoading" class="pt-16 flex items-center justify-center h-40">
+      <div class="w-12 h-12 border-4 border-gradient-to-r from-primary via-secondary to-accent border-t-transparent rounded-full animate-spin"></div>
+    </div>
+    
+    <div v-else class="pt-14 px-4">
       <div class="bg-gradient-to-r from-primary via-secondary to-accent rounded-2xl p-4 mt-4 text-white">
         <div class="flex items-center gap-3">
           <Monitor class="w-8 h-8" />
