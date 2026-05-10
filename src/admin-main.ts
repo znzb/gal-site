@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import AdminRouter from './admin/router';
-import AdminLayout from './admin/AdminLayout.vue';
+import App from './admin/App.vue';
 
-const app = createApp(AdminLayout);
+const app = createApp(App);
 app.use(AdminRouter);
 app.mount('#admin-app');
