@@ -111,9 +111,11 @@ const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
-const goToGame = (gameId: string) => {
-  console.log('goToGame called with id:', gameId)
-  router.push(`/game/${gameId}`)
+const goToGame = (targetGameId: string) => {
+  console.log('goToGame called with id:', targetGameId)
+  console.log('Current gameId:', gameId.value)
+  console.log('Pushing to:', `/game/${targetGameId}`)
+  router.push(`/game/${targetGameId}`)
 }
 
 const handleDownload = async () => {
@@ -161,11 +163,11 @@ const preloadImage = (url: string) => {
 }
 
 const loadData = async () => {
-  const cachedGame = gameCache.value.get(gameId)
+  const cachedGame = gameCache.value.get(gameId.value)
   
   if (cachedGame) {
     game.value = cachedGame
-    const cachedRelated = relatedCache.value.get(gameId)
+    const cachedRelated = relatedCache.value.get(gameId.value)
     if (cachedRelated) {
       relatedGames.value = cachedRelated
       isLoading.value = false
@@ -173,33 +175,33 @@ const loadData = async () => {
     }
   }
   
-  const mockGame = mockGames.find(g => g.id === gameId) || mockGames[0]
+  const mockGame = mockGames.find(g => g.id === gameId.value) || mockGames[0]
   game.value = mockGame
   
   await preloadImage(mockGame.cover)
   
   const [gameData, allGames] = await Promise.all([
-    gameApi.getGameById(gameId).catch(() => null),
+    gameApi.getGameById(gameId.value).catch(() => null),
     gameApi.getAllGames().catch(() => [])
   ])
   
   if (gameData) {
     game.value = gameData
-    gameCache.value.set(gameId, gameData)
+    gameCache.value.set(gameId.value, gameData)
     
     await preloadImage(gameData.cover)
     
     if (allGames.length > 0) {
-      const filtered = allGames.filter(g => g.id !== gameId && g.category === gameData.category).slice(0, 3)
+      const filtered = allGames.filter(g => g.id !== gameId.value && g.category === gameData.category).slice(0, 3)
       relatedGames.value = filtered
-      relatedCache.value.set(gameId, filtered)
+      relatedCache.value.set(gameId.value, filtered)
       
       filtered.forEach(g => preloadImage(g.cover))
     }
   } else if (mockGame) {
-    const filtered = mockGames.filter(g => g.id !== gameId && g.category === mockGame.category).slice(0, 3)
+    const filtered = mockGames.filter(g => g.id !== gameId.value && g.category === mockGame.category).slice(0, 3)
     relatedGames.value = filtered
-    relatedCache.value.set(gameId, filtered)
+    relatedCache.value.set(gameId.value, filtered)
   }
   
   isLoading.value = false
@@ -226,7 +228,7 @@ watch(
     <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
   </div>
   
-  <div v-else-if="game" class="min-h-screen bg-gray-100 pb-24">
+  <div v-else-if="game" :key="gameId" class="min-h-screen bg-gray-100 pb-24">
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
@@ -329,7 +331,7 @@ watch(
           <div 
             v-for="related in relatedGames" 
             :key="related.id || related._id"
-            @click="goToGame(related.id || related._id)"
+            @click="(e) => { e.preventDefault(); goToGame(related.id || related._id) }"
             class="flex-shrink-0 w-28 cursor-pointer"
           >
             <div class="aspect-[3/4] rounded-lg overflow-hidden mb-2">
