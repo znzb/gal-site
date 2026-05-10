@@ -29,10 +29,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ['https://galzb.cc.cd', 'https://www.galzb.cc.cd', 'http://localhost:5173', 'http://localhost:5174', '*'],
+  origin: ['https://galzb.cc.cd', 'https://www.galzb.cc.cd', 'http://localhost:5173', 'http://localhost:5174'],
   credentials: true
 }));
-app.use(express.json());
+
+app.use(express.json({ limit: '10kb' }));
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.removeHeader('X-Powered-By');
+  next();
+});
 
 app.use('/api/games', gamesRouter);
 app.use('/api/categories', categoriesRouter);
@@ -86,14 +96,25 @@ const initAdmin = async () => {
   try {
     const existingAdmin = await Admin.findOne({ username: 'admin' });
     if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeThisPassword123!';
+      if (process.env.ADMIN_PASSWORD) {
+        console.log('使用自定义管理员密码初始化');
+      } else {
+        console.warn('⚠️ 警告: 未设置 ADMIN_PASSWORD 环境变量，请尽快修改默认密码！');
+      }
+      const hashedPassword = await bcrypt.hash(adminPassword, 12);
       const admin = new Admin({
         username: 'admin',
         password: hashedPassword,
         role: 'superadmin'
       });
       await admin.save();
-      console.log('✅ 初始化管理员账户成功 (用户名: admin, 密码: admin123)');
+      console.log('✅ 初始化管理员账户成功');
+      if (!process.env.ADMIN_PASSWORD) {
+        console.log('   默认用户名: admin');
+        console.log('   默认密码: ChangeThisPassword123!');
+        console.log('   ⚠️ 请立即修改为强密码！');
+      }
     }
   } catch (error) {
     console.error('❌ 初始化管理员失败:', error.message);
