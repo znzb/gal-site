@@ -75,8 +75,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-[60]">
+  <div class="min-h-screen bg-gray-100 pb-20">
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-30">
       <div class="flex items-center px-4 py-3">
         <button 
           @click="router.back()"
@@ -88,12 +88,12 @@ onMounted(async () => {
       </div>
     </header>
     
-    <div v-if="isLoading" class="pt-16 flex items-center justify-center h-40">
+    <div v-if="isLoading" class="pt-14 flex items-center justify-center h-40">
       <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
     </div>
     
-    <div v-else class="pt-16 px-4 pb-24">
-      <div class="bg-white rounded-xl p-4 mb-4 mt-4">
+    <div v-else class="pt-14 px-4 mt-4">
+      <div class="bg-white rounded-xl p-4 mb-4">
         <p class="text-sm text-gray-600">补档是指游戏资源失效后重新上传的文件</p>
       </div>
       
@@ -121,7 +121,7 @@ onMounted(async () => {
         </button>
       </div>
       
-      <div v-if="displayedRecords.length === 0" class="bg-white rounded-xl p-8 text-center">
+      <div v-if="displayedRecords.length === 0" class="text-center py-20">
         <p class="text-gray-400">暂无相关记录</p>
       </div>
       
