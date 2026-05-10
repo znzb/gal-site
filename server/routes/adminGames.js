@@ -25,7 +25,13 @@ router.get('/', async (req, res) => {
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const game = new Game(req.body);
+    const maxGame = await Game.findOne().sort({ id: -1 });
+    const newId = maxGame ? String(parseInt(maxGame.id) + 1) : '1';
+    
+    const game = new Game({
+      ...req.body,
+      id: newId
+    });
     await game.save();
     res.status(201).json(game);
   } catch (error) {
