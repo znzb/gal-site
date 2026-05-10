@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import type { Game } from '@/api/api'
 
 const router = useRouter()
-const activeCategory = ref<'raw' | 'cooked'>('raw')
+const activeCategory = ref<'all' | 'raw' | 'cooked'>('all')
 
 const pcGames = ref<Game[]>([
   {
@@ -83,6 +83,9 @@ const pcGames = ref<Game[]>([
 ])
 
 const filteredGames = computed(() => {
+  if (activeCategory.value === 'all') {
+    return pcGames.value
+  }
   return pcGames.value.filter(game => game.subCategory === activeCategory.value)
 })
 
@@ -90,7 +93,7 @@ const goToGame = (gameId: string) => {
   router.push(`/game/${gameId}`)
 }
 
-const setCategory = (category: 'raw' | 'cooked') => {
+const setCategory = (category: 'all' | 'raw' | 'cooked') => {
   activeCategory.value = category
 }
 </script>
@@ -123,6 +126,16 @@ const setCategory = (category: 'raw' | 'cooked') => {
       
       <div class="flex gap-2 mt-6">
         <button 
+          @click="setCategory('all')"
+          class="flex-1 py-3 rounded-xl font-medium transition-all"
+          :class="activeCategory === 'all' 
+            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
+            : 'bg-white text-gray-600 hover:bg-gray-50'"
+        >
+          <span class="block">📦 全部</span>
+          <span class="text-xs opacity-75">所有资源</span>
+        </button>
+        <button 
           @click="setCategory('raw')"
           class="flex-1 py-3 rounded-xl font-medium transition-all"
           :class="activeCategory === 'raw' 
@@ -146,7 +159,7 @@ const setCategory = (category: 'raw' | 'cooked') => {
       
       <div class="flex items-center justify-between mt-4">
         <h3 class="text-lg font-bold text-gray-800">
-          {{ activeCategory === 'raw' ? '生肉资源' : '熟肉资源' }}
+          {{ activeCategory === 'all' ? '全部资源' : activeCategory === 'raw' ? '生肉资源' : '熟肉资源' }}
         </h3>
         <span class="text-sm text-gray-500">{{ filteredGames.length }} 个游戏</span>
       </div>

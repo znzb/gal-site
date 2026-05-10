@@ -10,6 +10,15 @@ import SearchPage from '@/views/SearchPage.vue'
 import ToolDownloadPage from '@/views/ToolDownloadPage.vue'
 import PCResourcePage from '@/views/PCResourcePage.vue'
 import HelpCenterPage from '@/views/HelpCenterPage.vue'
+import AdminLayout from '@/admin/AdminLayout.vue'
+import Login from '@/admin/views/Login.vue'
+import Dashboard from '@/admin/views/Dashboard.vue'
+import GamesManage from '@/admin/views/GamesManage.vue'
+import CategoriesManage from '@/admin/views/CategoriesManage.vue'
+import BannersManage from '@/admin/views/BannersManage.vue'
+import AnnouncementsManage from '@/admin/views/AnnouncementsManage.vue'
+import PatchRequestsManage from '@/admin/views/PatchRequestsManage.vue'
+import SearchLogsManage from '@/admin/views/SearchLogsManage.vue'
 
 const routes = [
   {
@@ -66,6 +75,56 @@ const routes = [
     path: '/help',
     name: 'HelpCenter',
     component: HelpCenterPage
+  },
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: Login
+  },
+  {
+    path: '/admin',
+    component: AdminLayout,
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: Dashboard
+      },
+      {
+        path: 'dashboard',
+        component: Dashboard
+      },
+      {
+        path: 'games',
+        name: 'GamesManage',
+        component: GamesManage
+      },
+      {
+        path: 'categories',
+        name: 'CategoriesManage',
+        component: CategoriesManage
+      },
+      {
+        path: 'banners',
+        name: 'BannersManage',
+        component: BannersManage
+      },
+      {
+        path: 'announcements',
+        name: 'AnnouncementsManage',
+        component: AnnouncementsManage
+      },
+      {
+        path: 'patch-requests',
+        name: 'PatchRequestsManage',
+        component: PatchRequestsManage
+      },
+      {
+        path: 'search-logs',
+        name: 'SearchLogsManage',
+        component: SearchLogsManage
+      }
+    ]
   }
 ]
 

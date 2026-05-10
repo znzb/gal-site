@@ -19,6 +19,12 @@ interface ResourceLink {
   type: 'main' | 'patch' | 'update'
   size: string
   date: string
+  language: string
+  platform: string
+  dateDisplay: string
+  authorName: string
+  authorAvatar: string
+  authorResources: number
 }
 
 interface Comment {
@@ -136,6 +142,78 @@ const mockGames: Game[] = [
     releaseDate: '2024-05-15',
     downloads: 8200,
     tags: ['图集', '高清', '壁纸']
+  },
+  {
+    id: 'pc1',
+    name: '恋爱物语~夏日回忆',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20visual%20novel%20game%20cover%20summer%20beach%20romance&image_size=portrait_4_3',
+    description: '一款精美的恋爱冒险游戏，在夏日的海边小镇展开一段浪漫的爱情故事。',
+    category: 'PC资源',
+    subCategory: 'cooked',
+    size: '8.5GB',
+    releaseDate: '2024-06-15',
+    downloads: 12500,
+    tags: ['恋爱', '校园', '治愈']
+  },
+  {
+    id: 'pc2',
+    name: '永恒幻想',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20fantasy%20game%20cover%20magic%20sword%20heroes&image_size=portrait_4_3',
+    description: '史诗级奇幻冒险游戏，探索神秘的魔法世界，成为传奇英雄。',
+    category: 'PC资源',
+    subCategory: 'raw',
+    size: '12.3GB',
+    releaseDate: '2024-03-20',
+    downloads: 8900,
+    tags: ['奇幻', '冒险', '战斗']
+  },
+  {
+    id: 'pc3',
+    name: '樱花树下的约定',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20sakura%20cherry%20blossom%20school%20romance&image_size=portrait_4_3',
+    description: '在樱花纷飞的季节，邂逅一段纯真的校园爱情故事。',
+    category: 'PC资源',
+    subCategory: 'cooked',
+    size: '6.8GB',
+    releaseDate: '2024-04-10',
+    downloads: 15600,
+    tags: ['恋爱', '校园', '青春']
+  },
+  {
+    id: 'pc4',
+    name: '星际旅者',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20space%20adventure%20game%20cover%20spaceship%20stars&image_size=portrait_4_3',
+    description: '穿越浩瀚宇宙，探索未知星球，展开一段惊心动魄的星际冒险。',
+    category: 'PC资源',
+    subCategory: 'raw',
+    size: '15.2GB',
+    releaseDate: '2024-01-15',
+    downloads: 9800,
+    tags: ['科幻', '冒险', '探索']
+  },
+  {
+    id: 'pc5',
+    name: '机械之心',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20robot%20mecha%20game%20cover%20sci-fi&image_size=portrait_4_3',
+    description: '在机械与人类共存的世界，探索人工智能的情感与意识。',
+    category: 'PC资源',
+    subCategory: 'cooked',
+    size: '10.1GB',
+    releaseDate: '2024-05-20',
+    downloads: 7200,
+    tags: ['科幻', '剧情', '机器人']
+  },
+  {
+    id: 'pc6',
+    name: '魔法学园',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20magic%20academy%20game%20cover%20wizard&image_size=portrait_4_3',
+    description: '进入魔法学院，学习各种神奇的魔法，与伙伴们一起冒险。',
+    category: 'PC资源',
+    subCategory: 'raw',
+    size: '9.8GB',
+    releaseDate: '2024-02-15',
+    downloads: 11000,
+    tags: ['魔法', '学园', '冒险']
   }
 ]
 
@@ -215,6 +293,7 @@ const isDownloading = ref(false)
 const downloadProgress = ref(0)
 const relatedGames = ref<Game[]>([])
 const expandedComments = ref<string[]>([])
+const expandedResources = ref<string[]>([])
 
 const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
@@ -240,6 +319,24 @@ const toggleComment = (commentId: string) => {
     expandedComments.value.splice(index, 1)
   } else {
     expandedComments.value.push(commentId)
+  }
+}
+
+const toggleResourceExpand = (resourceId: string) => {
+  const index = expandedResources.value.indexOf(resourceId)
+  if (index > -1) {
+    expandedResources.value.splice(index, 1)
+  } else {
+    expandedResources.value.push(resourceId)
+  }
+}
+
+const copyLink = async (url: string) => {
+  try {
+    await navigator.clipboard.writeText(url)
+    alert('链接已复制到剪贴板')
+  } catch (err) {
+    console.error('复制失败:', err)
   }
 }
 
@@ -293,17 +390,8 @@ const preloadImage = (url: string) => {
 }
 
 const loadData = async () => {
-  const cachedGame = gameCache.value.get(gameId.value)
-  
-  if (cachedGame) {
-    game.value = cachedGame
-    const cachedRelated = relatedCache.value.get(gameId.value)
-    if (cachedRelated) {
-      relatedGames.value = cachedRelated
-      isLoading.value = false
-      return
-    }
-  }
+  gameCache.value.clear()
+  relatedCache.value.clear()
   
   const mockGame = mockGames.find(g => g.id === gameId.value) || mockGames[0]
   game.value = mockGame
@@ -339,6 +427,10 @@ const loadData = async () => {
 
 onMounted(() => {
   loadData()
+  const tab = route.query.tab as string
+  if (tab === 'resources') {
+    activeTab.value = 'resources'
+  }
 })
 
 watch(
@@ -346,7 +438,8 @@ watch(
   (newId) => {
     if (newId) {
       gameId.value = newId as string
-      activeTab.value = 'info'
+      const tab = route.query.tab as string
+      activeTab.value = tab === 'resources' ? 'resources' : 'info'
       loadData()
     }
   }
@@ -375,14 +468,13 @@ watch(
     </header>
     
     <div class="pt-14">
-      <div class="relative h-72 sm:h-80">
+      <div class="relative aspect-[3/4] sm:aspect-[4/3] mx-4 mt-2 rounded-2xl overflow-hidden shadow-xl">
         <img 
           :src="game.cover" 
           :alt="game.name"
-          class="w-full h-full object-cover"
+          class="w-full h-full object-contain"
         />
         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-      </div>
         
         <div class="absolute bottom-0 left-0 right-0 p-4">
           <div class="flex items-end gap-4">
@@ -496,6 +588,30 @@ watch(
               <p class="text-gray-600 leading-relaxed text-base">{{ game.description }}</p>
             </div>
             
+            <div>
+              <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <span class="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
+                游戏截图
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <img 
+                  :src="game.cover" 
+                  :alt="game.name"
+                  class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                />
+                <img 
+                  src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20visual%20novel%20game%20screenshot%20beach%20romance&image_size=landscape_16_9" 
+                  alt="游戏截图2"
+                  class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                />
+                <img 
+                  src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20visual%20novel%20game%20screenshot%20sunset%20scene&image_size=landscape_16_9" 
+                  alt="游戏截图3"
+                  class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                />
+              </div>
+            </div>
+            
             <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5">
               <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <span class="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
@@ -535,43 +651,91 @@ watch(
           </div>
           
           <div v-if="activeTab === 'resources'" id="resources-section" class="space-y-4">
-            <div v-for="resource in resources" :key="resource.id" class="group">
-              <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100 hover:shadow-xl transition-all hover:scale-[1.02]">
-                <div class="flex items-start gap-4">
-                  <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
-                    <Link2 class="w-6 h-6 text-white" />
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-start justify-between">
-                      <div>
-                        <h4 class="font-bold text-gray-800 mb-1">{{ resource.name }}</h4>
-                        <div class="flex items-center gap-3 text-sm text-gray-500">
-                          <span>{{ resource.size }}</span>
-                          <span>•</span>
-                          <span>{{ resource.date }}</span>
-                        </div>
-                      </div>
-                      <span 
-                        class="text-xs px-3 py-1 rounded-full font-medium"
-                        :class="{
-                          'bg-green-100 text-green-700': resource.type === 'main',
-                          'bg-blue-100 text-blue-700': resource.type === 'patch',
-                          'bg-orange-100 text-orange-700': resource.type === 'update'
-                        }"
-                      >
-                        {{ resource.type === 'main' ? '本体' : resource.type === 'patch' ? '补丁' : '更新' }}
-                      </span>
+            <div v-for="resource in resources" :key="resource.id" class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+              <div class="p-4">
+                <div class="flex flex-wrap gap-2 mb-4">
+                  <span class="px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-sm font-medium">
+                    {{ resource.type === 'main' ? '游戏本体' : resource.type === 'patch' ? '汉化资源' : '更新资源' }}
+                  </span>
+                  <span class="px-4 py-1.5 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">
+                    简体中文
+                  </span>
+                  <span class="px-4 py-1.5 bg-green-100 text-green-600 rounded-full text-sm font-medium">
+                    {{ resource.type === 'main' ? 'Android' : 'Windows' }}
+                  </span>
+                  <button class="ml-auto p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                    <ChevronDown class="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <h4 class="text-lg font-bold text-gray-800 mb-4">{{ resource.name }}</h4>
+                
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <img 
+                      src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square" 
+                      alt="用户头像"
+                      class="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <p class="font-medium text-gray-800">愚者</p>
+                      <p class="text-sm text-gray-400">3天前 · 已发布资源 198 个</p>
                     </div>
                   </div>
+                  
+                  <div class="flex items-center gap-3">
+                    <button class="flex items-center gap-1 text-gray-400 hover:text-red-500 transition-colors">
+                      <Heart class="w-6 h-6" />
+                      <span class="text-sm">0</span>
+                    </button>
+                    <button 
+                      @click="toggleResourceExpand(resource.id)"
+                      class="w-12 h-12 bg-blue-400 rounded-xl flex items-center justify-center text-white hover:bg-blue-500 transition-colors shadow-md"
+                    >
+                      <Download class="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-                <button 
-                  @click="handleDownload"
-                  class="w-full mt-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:scale-[1.02]"
-                  :disabled="isDownloading"
+                
+                <div 
+                  v-if="expandedResources.includes(resource.id)" 
+                  class="mt-4 pt-4 border-t border-gray-100"
                 >
-                  <Download class="w-5 h-5" />
-                  <span>下载资源</span>
-                </button>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">kisuacg 资源盘</span>
+                    <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1">
+                      <HardDrive class="w-3 h-3" />
+                      {{ resource.size }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500 mb-3">点击下面的链接以下载</p>
+                  <div class="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3">
+                    <Link2 class="w-4 h-4 text-blue-500 flex-shrink-0" />
+                    <a 
+                      href="https://c.acgll.com/@s/URQt2RXD" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="flex-1 text-blue-500 text-sm font-medium truncate hover:text-blue-600 transition-colors"
+                    >
+                      https://c.acgll.com/@s/URQt2RXD
+                    </a>
+                    <button 
+                      @click="copyLink('https://c.acgll.com/@s/URQt2RXD')"
+                      class="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all"
+                    >
+                      <Share2 class="w-4 h-4 text-gray-500" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 flex items-start gap-3">
+              <div class="w-10 h-10 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-xl">⚠️</span>
+              </div>
+              <div>
+                <p class="text-yellow-800 font-medium">使用资源前请认真阅读资源的备注（如果有），以免产生问题</p>
               </div>
             </div>
           </div>
@@ -616,20 +780,13 @@ watch(
           </div>
         </div>
         
-        <div class="p-5 bg-gradient-to-r from-purple-600 to-pink-600">
+        <div v-if="activeTab !== 'resources'" class="px-5 py-4 bg-gradient-to-r from-purple-500 to-pink-500">
           <button 
-            @click="handleDownload"
-            class="w-full py-4 bg-white text-purple-600 font-bold rounded-2xl flex items-center justify-center gap-2 transition-all hover:shadow-2xl hover:scale-[1.02]"
-            :disabled="isDownloading"
+            @click="scrollToResources"
+            class="w-full py-2 bg-white text-purple-600 text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:scale-[1.02]"
           >
-            <template v-if="isDownloading">
-              <div class="w-5 h-5 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
-              <span>{{ Math.round(downloadProgress) }}%</span>
-            </template>
-            <template v-else>
-              <Download class="w-6 h-6" />
-              <span>立即下载</span>
-            </template>
+            <Download class="w-4 h-4" />
+            <span>立即下载</span>
           </button>
         </div>
       </div>

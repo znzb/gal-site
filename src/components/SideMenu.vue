@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { X, Home, Gamepad2, Image, Images, BookOpen, ChevronDown } from 'lucide-vue-next'
+import { X, Home, Gamepad2, Monitor, Image, Images, BookOpen, ChevronDown } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { categories } from '@/data/mockData'
 
@@ -16,6 +16,7 @@ const router = useRouter()
 
 const menuItems = [
   { id: 'home', name: '主页', icon: Home },
+  { id: 'pc', name: 'PC资源', icon: Monitor },
   { id: 'android', name: '安卓直装', icon: Gamepad2 },
   { id: 'kr', name: 'kr资源', icon: Image },
   { id: 'gamecg', name: '游戏CG', icon: Image },
@@ -29,6 +30,8 @@ const handleMenuClick = (id: string) => {
   
   if (id === 'home') {
     router.push('/')
+  } else if (id === 'pc') {
+    router.push('/pc-resources')
   } else if (id === 'android') {
     router.push('/category/安卓直装')
   } else if (id === 'kr') {
