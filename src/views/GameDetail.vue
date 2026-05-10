@@ -143,23 +143,61 @@ const handleDownload = async () => {
   }
 }
 
+const gameCache = ref<Map<string, Game>>(new Map())
+const relatedCache = ref<Map<string, Game[]>>(new Map())
+
+const preloadImage = (url: string) => {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve(url)
+    img.onerror = () => resolve(url)
+    img.src = url
+  })
+}
+
 const loadData = async () => {
-  try {
-    const gameData = await gameApi.getGameById(gameId)
-    game.value = gameData
-    
-    const allGames = await gameApi.getAllGames()
-    relatedGames.value = allGames.filter(g => g.id !== gameId && g.category === gameData.category).slice(0, 3)
-  } catch (error) {
-    console.error('Failed to load game data from API, using mock data:', error)
-    game.value = mockGames.find(g => g.id === gameId) || mockGames[0]
-    
-    if (game.value) {
-      relatedGames.value = mockGames.filter(g => g.id !== gameId && g.category === game.value!.category).slice(0, 3)
+  const cachedGame = gameCache.value.get(gameId)
+  
+  if (cachedGame) {
+    game.value = cachedGame
+    const cachedRelated = relatedCache.value.get(gameId)
+    if (cachedRelated) {
+      relatedGames.value = cachedRelated
+      isLoading.value = false
+      return
     }
-  } finally {
-    isLoading.value = false
   }
+  
+  const mockGame = mockGames.find(g => g.id === gameId) || mockGames[0]
+  game.value = mockGame
+  
+  await preloadImage(mockGame.cover)
+  
+  const [gameData, allGames] = await Promise.all([
+    gameApi.getGameById(gameId).catch(() => null),
+    gameApi.getAllGames().catch(() => [])
+  ])
+  
+  if (gameData) {
+    game.value = gameData
+    gameCache.value.set(gameId, gameData)
+    
+    await preloadImage(gameData.cover)
+    
+    if (allGames.length > 0) {
+      const filtered = allGames.filter(g => g.id !== gameId && g.category === gameData.category).slice(0, 3)
+      relatedGames.value = filtered
+      relatedCache.value.set(gameId, filtered)
+      
+      filtered.forEach(g => preloadImage(g.cover))
+    }
+  } else if (mockGame) {
+    const filtered = mockGames.filter(g => g.id !== gameId && g.category === mockGame.category).slice(0, 3)
+    relatedGames.value = filtered
+    relatedCache.value.set(gameId, filtered)
+  }
+  
+  isLoading.value = false
 }
 
 onMounted(() => {
