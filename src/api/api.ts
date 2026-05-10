@@ -10,6 +10,7 @@ export interface Game {
   cover: string;
   description: string;
   category: string;
+  subCategory?: 'raw' | 'cooked';
   size: string;
   releaseDate: string;
   downloads: number;

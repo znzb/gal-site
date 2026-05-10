@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Menu } from 'lucide-vue-next'
 import GameCard from '@/components/GameCard.vue'
@@ -12,6 +12,7 @@ const router = useRouter()
 const categoryType = route.params.type as string
 const filteredGames = ref<Game[]>([])
 const isLoading = ref(true)
+const activeSubCategory = ref<'all' | 'raw' | 'cooked'>('all')
 
 const mockGames: Game[] = [
   {
@@ -23,7 +24,8 @@ const mockGames: Game[] = [
     size: '2.5GB',
     releaseDate: '2024-06-15',
     downloads: 12500,
-    tags: ['恋爱', '校园', '治愈']
+    tags: ['恋爱', '校园', '治愈'],
+    subCategory: 'cooked'
   },
   {
     id: '2',
@@ -34,7 +36,8 @@ const mockGames: Game[] = [
     size: '3.2GB',
     releaseDate: '2024-03-20',
     downloads: 8900,
-    tags: ['奇幻', '冒险', '魔法']
+    tags: ['奇幻', '冒险', '魔法'],
+    subCategory: 'raw'
   },
   {
     id: '3',
@@ -45,7 +48,8 @@ const mockGames: Game[] = [
     size: '1.8GB',
     releaseDate: '2024-04-10',
     downloads: 15600,
-    tags: ['恋爱', '校园', '青春']
+    tags: ['恋爱', '校园', '青春'],
+    subCategory: 'cooked'
   },
   {
     id: '4',
@@ -56,7 +60,8 @@ const mockGames: Game[] = [
     size: '4.1GB',
     releaseDate: '2024-01-15',
     downloads: 9800,
-    tags: ['奇幻', '爱情', '冒险']
+    tags: ['奇幻', '爱情', '冒险'],
+    subCategory: 'raw'
   },
   {
     id: '5',
@@ -67,7 +72,8 @@ const mockGames: Game[] = [
     size: '2.0GB',
     releaseDate: '2024-05-28',
     downloads: 7200,
-    tags: ['校园', '日常', '友情']
+    tags: ['校园', '日常', '友情'],
+    subCategory: 'cooked'
   },
   {
     id: '6',
@@ -78,7 +84,8 @@ const mockGames: Game[] = [
     size: '5.5GB',
     releaseDate: '2024-02-28',
     downloads: 11200,
-    tags: ['奇幻', '冒险', '战斗']
+    tags: ['奇幻', '冒险', '战斗'],
+    subCategory: 'raw'
   },
   {
     id: '7',
@@ -89,7 +96,8 @@ const mockGames: Game[] = [
     size: '1.2GB',
     releaseDate: '2024-06-01',
     downloads: 5600,
-    tags: ['CG', '插画', '合集']
+    tags: ['CG', '插画', '合集'],
+    subCategory: 'cooked'
   },
   {
     id: '8',
@@ -100,9 +108,21 @@ const mockGames: Game[] = [
     size: '3.8GB',
     releaseDate: '2024-05-15',
     downloads: 8200,
-    tags: ['图集', '高清', '壁纸']
+    tags: ['图集', '高清', '壁纸'],
+    subCategory: 'cooked'
   }
 ]
+
+const showSubCategory = computed(() => {
+  return ['安卓直装', 'kr资源'].includes(categoryType)
+})
+
+const displayGames = computed(() => {
+  if (!showSubCategory.value || activeSubCategory.value === 'all') {
+    return filteredGames.value
+  }
+  return filteredGames.value.filter(game => game.subCategory === activeSubCategory.value)
+})
 
 const loadGames = async () => {
   try {
@@ -113,6 +133,10 @@ const loadGames = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const setSubCategory = (sub: 'all' | 'raw' | 'cooked') => {
+  activeSubCategory.value = sub
 }
 
 onMounted(() => {
@@ -145,9 +169,39 @@ onMounted(() => {
     </div>
     
     <div v-else class="pt-16 px-4 mt-4">
-      <div v-if="filteredGames.length > 0" class="grid grid-cols-2 gap-4">
+      <div v-if="showSubCategory" class="flex gap-2 mb-4">
+        <button 
+          @click="setSubCategory('all')"
+          class="flex-1 py-2.5 rounded-xl font-medium transition-all text-sm"
+          :class="activeSubCategory === 'all' 
+            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
+            : 'bg-white text-gray-600 hover:bg-gray-50 shadow'"
+        >
+          全部
+        </button>
+        <button 
+          @click="setSubCategory('raw')"
+          class="flex-1 py-2.5 rounded-xl font-medium transition-all text-sm"
+          :class="activeSubCategory === 'raw' 
+            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
+            : 'bg-white text-gray-600 hover:bg-gray-50 shadow'"
+        >
+          🍖 生肉
+        </button>
+        <button 
+          @click="setSubCategory('cooked')"
+          class="flex-1 py-2.5 rounded-xl font-medium transition-all text-sm"
+          :class="activeSubCategory === 'cooked' 
+            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
+            : 'bg-white text-gray-600 hover:bg-gray-50 shadow'"
+        >
+          🍳 熟肉
+        </button>
+      </div>
+      
+      <div v-if="displayGames.length > 0" class="grid grid-cols-2 gap-4">
         <div 
-          v-for="game in filteredGames" 
+          v-for="game in displayGames" 
           :key="game.id" 
           class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
           @click="router.push(`/game/${game.id}`)"

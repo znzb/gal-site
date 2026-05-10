@@ -13,6 +13,11 @@
           {{ cat.name }}
         </option>
       </select>
+      <select v-model="filterSubCategory">
+        <option value="">全部类型</option>
+        <option value="raw">🍖 生肉</option>
+        <option value="cooked">🍳 熟肉</option>
+      </select>
     </div>
 
     <div class="games-table">
@@ -22,6 +27,7 @@
             <th>封面</th>
             <th>游戏名称</th>
             <th>分类</th>
+            <th>类型</th>
             <th>大小</th>
             <th>下载量</th>
             <th>操作</th>
@@ -32,6 +38,11 @@
             <td><img :src="game.cover" class="game-cover-small" /></td>
             <td>{{ game.name }}</td>
             <td><span class="category-tag">{{ game.category }}</span></td>
+            <td>
+              <span v-if="game.subCategory === 'raw'" class="subcategory-tag raw">🍖 生肉</span>
+              <span v-else-if="game.subCategory === 'cooked'" class="subcategory-tag cooked">🍳 熟肉</span>
+              <span v-else class="subcategory-tag none">-</span>
+            </td>
             <td>{{ game.size }}</td>
             <td>{{ game.downloads }}</td>
             <td class="actions">
@@ -57,6 +68,14 @@
               <option v-for="cat in categories" :key="cat._id" :value="cat.name">
                 {{ cat.name }}
               </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>类型 (生肉/熟肉)</label>
+            <select v-model="gameForm.subCategory">
+              <option value="">无</option>
+              <option value="raw">🍖 生肉 (未汉化)</option>
+              <option value="cooked">🍳 熟肉 (已汉化)</option>
             </select>
           </div>
           <div class="form-group">
@@ -97,12 +116,14 @@ const games = ref([]);
 const categories = ref([]);
 const searchQuery = ref('');
 const filterCategory = ref('');
+const filterSubCategory = ref('');
 const showAddModal = ref(false);
 const editingGame = ref(null);
 
 const gameForm = ref({
   name: '',
   category: '',
+  subCategory: '',
   cover: '',
   description: '',
   size: '',
@@ -114,7 +135,8 @@ const filteredGames = computed(() => {
   return games.value.filter(game => {
     const matchesSearch = game.name.toLowerCase().includes(searchQuery.value.toLowerCase());
     const matchesCategory = !filterCategory.value || game.category === filterCategory.value;
-    return matchesSearch && matchesCategory;
+    const matchesSubCategory = !filterSubCategory.value || game.subCategory === filterSubCategory.value;
+    return matchesSearch && matchesCategory && matchesSubCategory;
   });
 });
 
@@ -256,6 +278,27 @@ th, td {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
+}
+
+.subcategory-tag {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.subcategory-tag.raw {
+  background: #e74c3c;
+  color: white;
+}
+
+.subcategory-tag.cooked {
+  background: #27ae60;
+  color: white;
+}
+
+.subcategory-tag.none {
+  background: #e0e0e0;
+  color: #666;
 }
 
 .actions {
