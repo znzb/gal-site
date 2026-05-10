@@ -12,6 +12,8 @@ const handleNavClick = (id: string) => {
     appState.toggleSideMenu()
   } else if (id === 'budang') {
     router.push('/patch-records')
+  } else if (id === 'search') {
+    router.push('/search')
   }
 }
 </script>

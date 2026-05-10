@@ -6,6 +6,7 @@ import AnnouncementsPage from '@/views/AnnouncementsPage.vue'
 import JoinGroupPage from '@/views/JoinGroupPage.vue'
 import YuzusoftPage from '@/views/YuzusoftPage.vue'
 import PatchRecordsPage from '@/views/PatchRecordsPage.vue'
+import SearchPage from '@/views/SearchPage.vue'
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
     path: '/patch-records',
     name: 'PatchRecords',
     component: PatchRecordsPage
+  },
+  {
+    path: '/search',
+    name: 'Search',
+    component: SearchPage
   }
 ]
 
