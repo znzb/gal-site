@@ -35,6 +35,16 @@ export interface Banner {
   subtitle: string;
 }
 
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  isPinned: boolean;
+  isVisible: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const fetchWithFallback = async <T>(url: string, mockData: T[], options?: RequestInit): Promise<T> => {
   try {
     const response = await fetch(url, {
@@ -147,5 +157,11 @@ export const featureApi = {
 export const bannerApi = {
   getAllBanners: async (): Promise<Banner[]> => {
     return fetchWithFallback(`${BASE_URL}/banners`, mockBanners);
+  }
+};
+
+export const announcementApi = {
+  getAllAnnouncements: async (): Promise<Announcement[]> => {
+    return fetchWithFallback(`${BASE_URL}/announcements`, []);
   }
 };

@@ -2,14 +2,26 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 import gamesRouter from './routes/games.js';
 import categoriesRouter from './routes/categories.js';
 import featuresRouter from './routes/features.js';
 import bannersRouter from './routes/banners.js';
+import adminAuthRouter from './routes/adminAuth.js';
+import announcementsRouter from './routes/announcements.js';
+import adminGamesRouter from './routes/adminGames.js';
+import adminCategoriesRouter from './routes/adminCategories.js';
+import adminBannersRouter from './routes/adminBanners.js';
+import patchRequestsRouter from './routes/patchRequests.js';
+import searchLogsRouter from './routes/searchLogs.js';
+import operationLogsRouter from './routes/operationLogs.js';
 import Game from './models/Game.js';
 import Category from './models/Category.js';
 import Feature from './models/Feature.js';
 import Banner from './models/Banner.js';
+import Admin from './models/Admin.js';
+import Announcement from './models/Announcement.js';
+import PatchRequest from './models/PatchRequest.js';
 
 dotenv.config();
 
@@ -26,13 +38,72 @@ app.use('/api/games', gamesRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/features', featuresRouter);
 app.use('/api/banners', bannersRouter);
+app.use('/api/admin/auth', adminAuthRouter);
+app.use('/api/admin/announcements', announcementsRouter);
+app.use('/api/admin/games', adminGamesRouter);
+app.use('/api/admin/categories', adminCategoriesRouter);
+app.use('/api/admin/banners', adminBannersRouter);
+app.use('/api/admin/patch-requests', patchRequestsRouter);
+app.use('/api/admin/search-logs', searchLogsRouter);
+app.use('/api/admin/operation-logs', operationLogsRouter);
+app.use('/api/announcements', announcementsRouter);
+app.use('/api/patch-requests', patchRequestsRouter);
+app.use('/api/search', searchLogsRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: '游戏下载网站 API 服务运行中' });
 });
 
+app.get('/api/admin/stats', async (req, res) => {
+  try {
+    const [
+      totalGames,
+      totalCategories,
+      totalAnnouncements,
+      totalPatchRequests
+    ] = await Promise.all([
+      Game.countDocuments(),
+      Category.countDocuments(),
+      Announcement?.countDocuments() || 0,
+      PatchRequest?.countDocuments() || 0
+    ]);
+
+    const recentGames = await Game.find().sort({ createdAt: -1 }).limit(5);
+
+    res.json({
+      totalGames,
+      totalCategories,
+      totalAnnouncements,
+      totalPatchRequests,
+      recentGames
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+const initAdmin = async () => {
+  try {
+    const existingAdmin = await Admin.findOne({ username: 'admin' });
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const admin = new Admin({
+        username: 'admin',
+        password: hashedPassword,
+        role: 'superadmin'
+      });
+      await admin.save();
+      console.log('✅ 初始化管理员账户成功 (用户名: admin, 密码: admin123)');
+    }
+  } catch (error) {
+    console.error('❌ 初始化管理员失败:', error.message);
+  }
+};
+
 const initData = async () => {
   try {
+    await initAdmin();
+
     const existingGames = await Game.countDocuments();
     if (existingGames > 0) {
       console.log(`数据已存在，共有 ${existingGames} 个游戏`);

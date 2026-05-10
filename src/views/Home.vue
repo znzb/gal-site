@@ -4,12 +4,13 @@ import { useRouter } from 'vue-router'
 import Header from '@/components/Header.vue'
 import FeatureGrid from '@/components/FeatureGrid.vue'
 import GameCard from '@/components/GameCard.vue'
-import { gameApi, bannerApi, type Game, type Banner } from '@/api/api'
+import { gameApi, bannerApi, announcementApi, type Game, type Banner, type Announcement } from '@/api/api'
 
 const router = useRouter()
 
 const games = ref<Game[]>([])
 const banners = ref<Banner[]>([])
+const announcements = ref<Announcement[]>([])
 const isLoading = ref(true)
 
 const mockGames: Game[] = [
@@ -119,17 +120,20 @@ const handleBannerError = (index: number) => {
 
 const loadData = async () => {
   try {
-    const [gamesData, bannersData] = await Promise.all([
+    const [gamesData, bannersData, announcementsData] = await Promise.all([
       gameApi.getAllGames(),
-      bannerApi.getAllBanners()
+      bannerApi.getAllBanners(),
+      announcementApi.getAllAnnouncements()
     ])
     games.value = gamesData
     banners.value = bannersData
+    announcements.value = announcementsData.filter(a => a.isVisible)
     bannersLoaded.value = new Array(bannersData.length).fill(false)
   } catch (error) {
     console.error('Failed to load from API, using mock data:', error)
     games.value = mockGames
     banners.value = mockBanners
+    announcements.value = []
     bannersLoaded.value = new Array(mockBanners.length).fill(false)
   } finally {
     isLoading.value = false
@@ -222,6 +226,33 @@ onUnmounted(() => {
       </div>
       
       <FeatureGrid />
+      
+      <div v-if="announcements.length > 0" class="px-4 mt-6">
+        <div class="bg-white rounded-xl shadow-md p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xl">📢</span>
+            <h3 class="font-bold text-gray-800">公告</h3>
+          </div>
+          <div class="space-y-3">
+            <div 
+              v-for="announcement in announcements" 
+              :key="announcement.id"
+              class="p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-l-4 border-indigo-500"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-800 flex items-center gap-2">
+                    <span v-if="announcement.isPinned" class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">置顶</span>
+                    {{ announcement.title }}
+                  </h4>
+                  <p class="text-sm text-gray-600 mt-1">{{ announcement.content }}</p>
+                </div>
+                <span class="text-xs text-gray-400 whitespace-nowrap">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <div class="px-4 mt-6">
         <div class="flex items-center justify-between mb-3">
