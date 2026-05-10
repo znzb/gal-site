@@ -111,15 +111,9 @@ const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
-const goToGame = (event: Event, gameId: string) => {
-  event.preventDefault()
-  event.stopPropagation()
+const goToGame = (gameId: string) => {
   console.log('goToGame called with id:', gameId)
-  router.push(`/game/${gameId}`).then(() => {
-    console.log('Navigation successful')
-  }).catch((err) => {
-    console.error('Navigation error:', err)
-  })
+  router.push(`/game/${gameId}`)
 }
 
 const handleDownload = async () => {
@@ -321,18 +315,17 @@ onMounted(() => {
       <div v-if="relatedGames.length > 0" class="px-4 mt-6">
         <h3 class="text-lg font-bold text-gray-800 mb-3">相关推荐</h3>
         <div class="flex gap-3 overflow-x-auto pb-2">
-          <button
+          <div 
             v-for="related in relatedGames" 
             :key="related.id || related._id"
-            @click="(event) => goToGame(event, related.id || related._id)"
-            class="flex-shrink-0 w-28 p-0 border-none bg-transparent cursor-pointer"
-            type="button"
+            @click="goToGame(related.id || related._id)"
+            class="flex-shrink-0 w-28 cursor-pointer"
           >
             <div class="aspect-[3/4] rounded-lg overflow-hidden mb-2">
               <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" />
             </div>
             <p class="text-xs text-gray-700 truncate">{{ related.name }}</p>
-          </button>
+          </div>
         </div>
       </div>
     </div>
