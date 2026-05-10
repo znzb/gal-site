@@ -12,6 +12,7 @@ const games = ref<Game[]>([])
 const banners = ref<Banner[]>([])
 const announcements = ref<Announcement[]>([])
 const isLoading = ref(true)
+const isDataLoaded = ref(false)
 
 const mockGames: Game[] = [
   {
@@ -83,10 +84,10 @@ const mockGames: Game[] = [
 ]
 
 const mockBanners: Banner[] = [
-  { id: '1', image: '/banners/banner1.jpg', title: '夏空彼方', subtitle: 'Summer Pockets' },
-  { id: '2', image: '/banners/banner2.jpg', title: '千恋*万花', subtitle: 'Senren Banka' },
-  { id: '3', image: '/banners/banner3.jpg', title: '魔女的夜宴', subtitle: "Witch's Night" },
-  { id: '4', image: '/banners/banner4.jpg', title: '天使☆嚣嚣 RE-BOOT', subtitle: 'Tenshi Hoshii' }
+  { id: '1', image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20summer%20sky%20beautiful%20clouds%20romantic&image_size=landscape_16_9', title: '夏空彼方', subtitle: 'Summer Pockets' },
+  { id: '2', image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20romantic%20game%20cover%20cherry%20blossom%20samurai&image_size=landscape_16_9', title: '千恋*万花', subtitle: 'Senren Banka' },
+  { id: '3', image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20witch%20night%20magic%20moon%20fantasy&image_size=landscape_16_9', title: '魔女的夜宴', subtitle: "Witch's Night" },
+  { id: '4', image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20angel%20girl%20white%20wings%20heaven&image_size=landscape_16_9', title: '天使☆嚣嚣 RE-BOOT', subtitle: 'Tenshi Hoshii' }
 ]
 
 const handleGameClick = (id: string) => {
@@ -119,25 +120,30 @@ const handleBannerError = (index: number) => {
 }
 
 const loadData = async () => {
-  try {
-    const [gamesData, bannersData, announcementsData] = await Promise.all([
-      gameApi.getAllGames(),
-      bannerApi.getAllBanners(),
-      announcementApi.getAllAnnouncements()
-    ])
-    games.value = gamesData
-    banners.value = bannersData
-    announcements.value = announcementsData.filter(a => a.isVisible)
-    bannersLoaded.value = new Array(bannersData.length).fill(false)
-  } catch (error) {
-    console.error('Failed to load from API, using mock data:', error)
-    games.value = mockGames
-    banners.value = mockBanners
-    announcements.value = []
-    bannersLoaded.value = new Array(mockBanners.length).fill(false)
-  } finally {
-    isLoading.value = false
-  }
+  games.value = mockGames
+  banners.value = mockBanners
+  bannersLoaded.value = new Array(mockBanners.length).fill(false)
+  isLoading.value = false
+  
+  setTimeout(async () => {
+    try {
+      const [gamesData, bannersData, announcementsData] = await Promise.all([
+        gameApi.getAllGames(),
+        bannerApi.getAllBanners(),
+        announcementApi.getAllAnnouncements()
+      ])
+      if (gamesData && gamesData.length > 0) games.value = gamesData
+      if (bannersData && bannersData.length > 0) {
+        banners.value = bannersData
+        bannersLoaded.value = new Array(bannersData.length).fill(false)
+      }
+      announcements.value = (announcementsData || []).filter(a => a.isVisible)
+    } catch (error) {
+      console.error('Failed to load from API:', error)
+    } finally {
+      isDataLoaded.value = true
+    }
+  }, 100)
 }
 
 onMounted(() => {
@@ -156,9 +162,11 @@ onUnmounted(() => {
   <div class="min-h-screen bg-gray-100 pb-20">
     <Header />
     
-    <div v-if="isLoading" class="flex items-center justify-center h-40">
-      <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
-    </div>
+    <template v-if="isLoading">
+      <div class="flex items-center justify-center h-40 pt-10">
+        <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    </template>
     
     <template v-else>
       <div class="mx-4 mt-4">
@@ -166,7 +174,7 @@ onUnmounted(() => {
           <div class="relative h-40">
             <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
               <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
-                <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+                <div class="w-8 h-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
               </div>
             </div>
             
@@ -180,6 +188,7 @@ onUnmounted(() => {
                 <img 
                   :src="banner.image" 
                   :alt="banner.title"
+                  loading="lazy"
                   class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
                   :class="bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
                   @load="handleBannerLoad(index)"
