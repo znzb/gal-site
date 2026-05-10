@@ -47,6 +47,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20summer%20visual%20novel%20game%20cover%20beautiful%20girl%20beach&image_size=portrait_4_3',
     description: '一款温馨浪漫的夏日恋爱冒险游戏，讲述主角在海边小镇度过的难忘夏天。游戏以精美的画面和动人的剧情著称，让玩家沉浸在夏日的美好回忆中。',
     category: '安卓直装',
+    subCategory: 'cooked',
     size: '2.5GB',
     releaseDate: '2024-06-15',
     downloads: 12500,
@@ -58,6 +59,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20fantasy%20game%20cover%20starry%20night%20magic%20girl%20sword&image_size=portrait_4_3',
     description: '穿越星空的奇幻冒险，与神秘少女一同探索未知的世界。在浩瀚的宇宙中展开一段惊心动魄的旅程。',
     category: '安卓直装',
+    subCategory: 'raw',
     size: '3.2GB',
     releaseDate: '2024-03-20',
     downloads: 8900,
@@ -69,6 +71,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20sakura%20cherry%20blossom%20game%20cover%20school%20romance&image_size=portrait_4_3',
     description: '樱花纷飞的季节，一段青春恋爱故事正在上演。在樱花树下，邂逅命中注定的那个人。',
     category: '安卓直装',
+    subCategory: 'cooked',
     size: '1.8GB',
     releaseDate: '2024-04-10',
     downloads: 15600,
@@ -80,6 +83,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20eternal%20love%20game%20cover%20fantasy%20castle%20romance&image_size=portrait_4_3',
     description: '跨越时空的永恒约定，一段超越生死的爱情故事。无论时间如何流转，真爱永远不变。',
     category: 'kr资源',
+    subCategory: 'cooked',
     size: '4.1GB',
     releaseDate: '2024-01-15',
     downloads: 9800,
@@ -91,6 +95,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20school%20life%20game%20cover%20classroom%20students%20friends&image_size=portrait_4_3',
     description: '记录校园生活的点点滴滴，重温青春的美好时光。与朋友们一起度过难忘的校园生活。',
     category: 'kr资源',
+    subCategory: 'raw',
     size: '2.0GB',
     releaseDate: '2024-05-28',
     downloads: 7200,
@@ -102,6 +107,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20fantasy%20world%20game%20cover%20dragons%20magic%20heroes&image_size=portrait_4_3',
     description: '在充满魔法的幻想世界中展开冒险，成为传奇英雄。与恶龙战斗，拯救公主，书写属于你的传奇故事。',
     category: '安卓直装',
+    subCategory: 'raw',
     size: '5.5GB',
     releaseDate: '2024-02-28',
     downloads: 11200,
@@ -113,6 +119,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20CG%20collection%20beautiful%20artwork%20gallery&image_size=portrait_4_3',
     description: '精选游戏CG合集，包含各种精美游戏插画。收集了来自知名游戏的精美CG图片。',
     category: '游戏CG',
+    subCategory: 'cooked',
     size: '1.2GB',
     releaseDate: '2024-06-01',
     downloads: 5600,
@@ -124,6 +131,7 @@ const mockGames: Game[] = [
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20high%20quality%20image%20collection%20beautiful%20girls&image_size=portrait_4_3',
     description: '高清精美图集，包含各种主题的精美图片。适合作为壁纸或收藏使用。',
     category: '图集资源',
+    subCategory: 'cooked',
     size: '3.8GB',
     releaseDate: '2024-05-15',
     downloads: 8200,
@@ -380,6 +388,18 @@ watch(
         <div class="absolute bottom-0 left-0 right-0 p-4">
           <div class="flex items-end gap-4">
             <div class="flex-1">
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span 
+                  class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
+                >
+                  {{ game.category.includes('安卓') ? '安卓' : 'PC' }}
+                </span>
+                <span 
+                  class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
+                >
+                  {{ game.subCategory === 'raw' ? '生肉' : '熟肉' }}
+                </span>
+              </div>
               <h2 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">{{ game.name }}</h2>
               <div class="flex flex-wrap gap-2">
                 <span 
@@ -391,22 +411,23 @@ watch(
                 </span>
               </div>
             </div>
-            <button 
-              @click="toggleFavorite"
-              class="p-3 rounded-2xl bg-white/25 backdrop-blur-sm transition-all hover:scale-110"
-              :class="isFavorite ? 'text-red-500' : 'text-white'"
-            >
-              <Heart class="w-7 h-7" :class="{ 'fill-current': isFavorite }" />
-            </button>
+            <div class="flex gap-2">
+              <button 
+                @click="scrollToResources"
+                class="p-3 rounded-2xl bg-white/25 backdrop-blur-sm transition-all hover:bg-white/35 hover:scale-110"
+              >
+                <Download class="w-6 h-6 text-white" />
+              </button>
+              <button 
+                @click="toggleFavorite"
+                class="p-3 rounded-2xl bg-white/25 backdrop-blur-sm transition-all hover:scale-110"
+                :class="isFavorite ? 'text-red-500' : 'text-white'"
+              >
+                <Heart class="w-7 h-7" :class="{ 'fill-current': isFavorite }" />
+              </button>
+            </div>
           </div>
         </div>
-        
-        <button 
-          @click="scrollToResources"
-          class="absolute top-20 right-4 p-3 rounded-xl bg-white/25 backdrop-blur-sm transition-all hover:bg-white/35 hover:scale-110"
-        >
-          <Download class="w-6 h-6 text-white" />
-        </button>
       </div>
       
       <div class="bg-white mx-4 mt-4 rounded-3xl shadow-2xl relative z-10 overflow-hidden">
