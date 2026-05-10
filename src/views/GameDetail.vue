@@ -212,6 +212,16 @@ const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
+const scrollToResources = () => {
+  activeTab.value = 'resources'
+  setTimeout(() => {
+    const resourcesSection = document.getElementById('resources-section')
+    if (resourcesSection) {
+      resourcesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, 100)
+}
+
 const goToGame = (targetGameId: string) => {
   router.push(`/game/${targetGameId}`)
 }
@@ -364,7 +374,7 @@ watch(
             :alt="game.name"
             class="w-full h-full object-cover"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
         </div>
         
         <div class="absolute bottom-0 left-0 right-0 p-4">
@@ -390,9 +400,16 @@ watch(
             </button>
           </div>
         </div>
+        
+        <button 
+          @click="scrollToResources"
+          class="absolute top-20 right-4 p-3 rounded-xl bg-white/25 backdrop-blur-sm transition-all hover:bg-white/35 hover:scale-110"
+        >
+          <Download class="w-6 h-6 text-white" />
+        </button>
       </div>
       
-      <div class="bg-white mx-4 -mt-6 rounded-3xl shadow-2xl relative z-10 overflow-hidden">
+      <div class="bg-white mx-4 mt-4 rounded-3xl shadow-2xl relative z-10 overflow-hidden">
         <div class="p-5 border-b border-gray-100">
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
@@ -497,7 +514,7 @@ watch(
             </div>
           </div>
           
-          <div v-if="activeTab === 'resources'" class="space-y-4">
+          <div v-if="activeTab === 'resources'" id="resources-section" class="space-y-4">
             <div v-for="resource in resources" :key="resource.id" class="group">
               <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100 hover:shadow-xl transition-all hover:scale-[1.02]">
                 <div class="flex items-start gap-4">
