@@ -7,6 +7,9 @@ import JoinGroupPage from '@/views/JoinGroupPage.vue'
 import YuzusoftPage from '@/views/YuzusoftPage.vue'
 import PatchRecordsPage from '@/views/PatchRecordsPage.vue'
 import SearchPage from '@/views/SearchPage.vue'
+import ToolDownloadPage from '@/views/ToolDownloadPage.vue'
+import PCResourcePage from '@/views/PCResourcePage.vue'
+import HelpCenterPage from '@/views/HelpCenterPage.vue'
 
 const routes = [
   {
@@ -48,6 +51,21 @@ const routes = [
     path: '/search',
     name: 'Search',
     component: SearchPage
+  },
+  {
+    path: '/tools',
+    name: 'Tools',
+    component: ToolDownloadPage
+  },
+  {
+    path: '/pc-resources',
+    name: 'PCResources',
+    component: PCResourcePage
+  },
+  {
+    path: '/help',
+    name: 'HelpCenter',
+    component: HelpCenterPage
   }
 ]
 
