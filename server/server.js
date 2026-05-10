@@ -184,12 +184,7 @@ const initData = async () => {
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI;
-    const uriWithEncoding = mongoUri.includes('?') 
-      ? mongoUri + '&charset=utf-8' 
-      : mongoUri + '?charset=utf-8';
-    
-    await mongoose.connect(uriWithEncoding, {
+    await mongoose.connect(process.env.MONGODB_URI, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       useNewUrlParser: true,
