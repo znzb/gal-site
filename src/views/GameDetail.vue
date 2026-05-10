@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar } from 'lucide-vue-next'
+import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar, MessageSquare, Link2, User, ChevronDown, ChevronUp } from 'lucide-vue-next'
 import { gameApi, type Game } from '@/api/api'
 
 const route = useRoute()
@@ -10,6 +10,35 @@ const router = useRouter()
 const gameId = ref(route.params.id as string)
 const game = ref<Game | null>(null)
 const isLoading = ref(true)
+const activeTab = ref('info')
+
+interface ResourceLink {
+  id: string
+  name: string
+  url: string
+  type: 'main' | 'patch' | 'update'
+  size: string
+  date: string
+}
+
+interface Comment {
+  id: string
+  user: string
+  avatar: string
+  content: string
+  rating: number
+  date: string
+  likes: number
+  liked: boolean
+}
+
+interface GameInfo {
+  developer: string
+  publisher: string
+  platforms: string[]
+  languages: string[]
+  requirements: string
+}
 
 const mockGames: Game[] = [
   {
@@ -102,20 +131,103 @@ const mockGames: Game[] = [
   }
 ]
 
+const mockResources: ResourceLink[] = [
+  {
+    id: '1',
+    name: '完整版游戏本体',
+    url: '#',
+    type: 'main',
+    size: '2.5GB',
+    date: '2024-06-15'
+  },
+  {
+    id: '2',
+    name: '简体中文补丁',
+    url: '#',
+    type: 'patch',
+    size: '150MB',
+    date: '2024-06-20'
+  },
+  {
+    id: '3',
+    name: '1.1更新包',
+    url: '#',
+    type: 'update',
+    size: '320MB',
+    date: '2024-07-01'
+  }
+]
+
+const mockComments: Comment[] = [
+  {
+    id: '1',
+    user: '玩家小明',
+    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20anime%20avatar%20girl%20portrait&image_size=square',
+    content: '非常棒的游戏！剧情很感人，画面也很漂亮，强烈推荐！',
+    rating: 5,
+    date: '2天前',
+    likes: 128,
+    liked: false
+  },
+  {
+    id: '2',
+    user: '樱花控',
+    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20girl%20pink%20hair&image_size=square',
+    content: '夏日的氛围营造得很好，音乐也很治愈，很享受游戏过程。',
+    rating: 4,
+    date: '5天前',
+    likes: 76,
+    liked: true
+  },
+  {
+    id: '3',
+    user: 'GAL爱好者',
+    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20portrait&image_size=square',
+    content: '经典的作品，值得一玩！角色塑造很成功，每个人物都有自己的故事。',
+    rating: 5,
+    date: '1周前',
+    likes: 234,
+    liked: false
+  }
+]
+
+const mockGameInfo: GameInfo = {
+  developer: 'Studio Summer',
+  publisher: 'Gal Games Co.',
+  platforms: ['Android', 'Windows'],
+  languages: ['简体中文', '繁体中文', '日文'],
+  requirements: 'Android 8.0+ / Windows 10+, 4GB RAM'
+}
+
+const resources = ref<ResourceLink[]>(mockResources)
+const comments = ref<Comment[]>(mockComments)
+const gameInfo = ref<GameInfo>(mockGameInfo)
 const isFavorite = ref(false)
 const isDownloading = ref(false)
 const downloadProgress = ref(0)
 const relatedGames = ref<Game[]>([])
+const expandedComments = ref<string[]>([])
 
 const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
 }
 
 const goToGame = (targetGameId: string) => {
-  console.log('goToGame called with id:', targetGameId)
-  console.log('Current gameId:', gameId.value)
-  console.log('Pushing to:', `/game/${targetGameId}`)
   router.push(`/game/${targetGameId}`)
+}
+
+const toggleComment = (commentId: string) => {
+  const index = expandedComments.value.indexOf(commentId)
+  if (index > -1) {
+    expandedComments.value.splice(index, 1)
+  } else {
+    expandedComments.value.push(commentId)
+  }
+}
+
+const toggleLike = (comment: Comment) => {
+  comment.liked = !comment.liked
+  comment.likes += comment.liked ? 1 : -1
 }
 
 const handleDownload = async () => {
@@ -214,9 +326,9 @@ onMounted(() => {
 watch(
   () => route.params.id,
   (newId) => {
-    console.log('Route changed to id:', newId)
     if (newId) {
       gameId.value = newId as string
+      activeTab.value = 'info'
       loadData()
     }
   }
@@ -225,100 +337,260 @@ watch(
 
 <template>
   <div v-if="isLoading" class="min-h-screen bg-gray-100 flex items-center justify-center">
-    <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+    <div class="w-10 h-10 border-3 border-gray-300 border-t-purple-500 rounded-full animate-spin"></div>
   </div>
   
-  <div v-else-if="game" :key="gameId" class="min-h-screen bg-gray-100 pb-24">
-    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm">
+  <div v-else-if="game" :key="gameId" class="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 pb-24">
+    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 shadow-sm">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
           @click="router.back()"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
         >
-          <ArrowLeft class="w-6 h-6 text-gray-600" />
+          <ArrowLeft class="w-6 h-6 text-gray-700" />
         </button>
-        <h1 class="text-lg font-bold text-gray-800">游戏详情</h1>
-        <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-          <Share2 class="w-6 h-6 text-gray-600" />
+        <h1 class="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">游戏详情</h1>
+        <button class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors">
+          <Share2 class="w-6 h-6 text-gray-700" />
         </button>
       </div>
     </header>
     
     <div class="pt-14">
-      <div class="relative aspect-[3/4]">
-        <img 
-          :src="game.cover" 
-          :alt="game.name"
-          class="w-full h-full object-cover"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-        <div class="absolute bottom-4 left-4 right-4">
-          <h2 class="text-2xl font-bold text-white mb-2">{{ game.name }}</h2>
-          <div class="flex flex-wrap gap-2">
-            <span 
-              v-for="tag in game.tags" 
-              :key="tag"
-              class="bg-white/20 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm"
+      <div class="relative">
+        <div class="aspect-[3/4]">
+          <img 
+            :src="game.cover" 
+            :alt="game.name"
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+        </div>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4">
+          <div class="flex items-end gap-4">
+            <div class="flex-1">
+              <h2 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">{{ game.name }}</h2>
+              <div class="flex flex-wrap gap-2">
+                <span 
+                  v-for="tag in game.tags" 
+                  :key="tag"
+                  class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
+                >
+                  {{ tag }}
+                </span>
+              </div>
+            </div>
+            <button 
+              @click="toggleFavorite"
+              class="p-3 rounded-2xl bg-white/25 backdrop-blur-sm transition-all hover:scale-110"
+              :class="isFavorite ? 'text-red-500' : 'text-white'"
             >
-              {{ tag }}
-            </span>
+              <Heart class="w-7 h-7" :class="{ 'fill-current': isFavorite }" />
+            </button>
           </div>
         </div>
       </div>
       
-      <div class="bg-white mx-4 mt-4 rounded-2xl shadow-xl relative z-10 overflow-hidden">
-        <div class="p-4 border-b border-gray-100">
-          <div class="flex items-center justify-between mb-3">
+      <div class="bg-white mx-4 -mt-6 rounded-3xl shadow-2xl relative z-10 overflow-hidden">
+        <div class="p-5 border-b border-gray-100">
+          <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
-              <Star class="w-5 h-5 text-yellow-500 fill-yellow-500 mr-1" />
-              <span class="text-sm font-medium text-gray-700">4.9</span>
-              <span class="text-xs text-gray-400 ml-2">{{ game.downloads.toLocaleString() }} 下载</span>
+              <div class="flex">
+                <Star v-for="i in 5" :key="i" class="w-5 h-5" :class="i <= 4.9 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'" />
+              </div>
+              <span class="text-sm font-bold text-gray-800 ml-2">4.9</span>
+              <span class="text-xs text-gray-400 ml-2">({{ game.downloads.toLocaleString() }} 下载)</span>
             </div>
-            <button 
-              @click="toggleFavorite"
-              class="p-2 rounded-full"
-              :class="isFavorite ? 'text-red-500' : 'text-gray-400'"
-            >
-              <Heart class="w-6 h-6" :class="{ 'fill-current': isFavorite }" />
-            </button>
           </div>
           
-          <div class="grid grid-cols-3 gap-4 text-center">
-            <div class="bg-gray-50 rounded-lg py-2">
-              <HardDrive class="w-5 h-5 mx-auto text-gray-500 mb-1" />
-              <span class="text-xs text-gray-500">大小</span>
-              <p class="text-sm font-medium text-gray-800">{{ game.size }}</p>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl py-3 px-2 text-center">
+              <HardDrive class="w-6 h-6 mx-auto text-purple-600 mb-1" />
+              <span class="text-xs text-purple-600">大小</span>
+              <p class="text-sm font-bold text-purple-900">{{ game.size }}</p>
             </div>
-            <div class="bg-gray-50 rounded-lg py-2">
-              <Calendar class="w-5 h-5 mx-auto text-gray-500 mb-1" />
-              <span class="text-xs text-gray-500">发布</span>
-              <p class="text-sm font-medium text-gray-800">{{ game.releaseDate }}</p>
+            <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl py-3 px-2 text-center">
+              <Calendar class="w-6 h-6 mx-auto text-pink-600 mb-1" />
+              <span class="text-xs text-pink-600">发布</span>
+              <p class="text-sm font-bold text-pink-900">{{ game.releaseDate }}</p>
             </div>
-            <div class="bg-gray-50 rounded-lg py-2">
-              <Clock class="w-5 h-5 mx-auto text-gray-500 mb-1" />
-              <span class="text-xs text-gray-500">类型</span>
-              <p class="text-sm font-medium text-gray-800">{{ game.category }}</p>
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl py-3 px-2 text-center">
+              <Clock class="w-6 h-6 mx-auto text-blue-600 mb-1" />
+              <span class="text-xs text-blue-600">类型</span>
+              <p class="text-sm font-bold text-blue-900">{{ game.category }}</p>
             </div>
           </div>
         </div>
         
-        <div class="p-4">
-          <h3 class="font-bold text-gray-800 mb-2">游戏介绍</h3>
-          <p class="text-sm text-gray-600 leading-relaxed">{{ game.description }}</p>
+        <div class="px-1 py-2 bg-gray-50">
+          <div class="flex p-1 bg-gradient-to-r from-gray-100 to-gray-100 rounded-2xl">
+            <button 
+              @click="activeTab = 'info'"
+              class="flex-1 py-3 px-4 rounded-xl text-lg font-bold transition-all"
+              :class="activeTab === 'info' ? 'bg-white text-gray-900 shadow-lg scale-105' : 'text-gray-400'"
+            >
+              游戏信息
+            </button>
+            <button 
+              @click="activeTab = 'resources'"
+              class="flex-1 py-3 px-4 rounded-xl text-lg font-bold transition-all"
+              :class="activeTab === 'resources' ? 'bg-white text-gray-900 shadow-lg scale-105' : 'text-gray-400'"
+            >
+              资源链接
+            </button>
+            <button 
+              @click="activeTab = 'comments'"
+              class="flex-1 py-3 px-4 rounded-xl text-lg font-bold transition-all"
+              :class="activeTab === 'comments' ? 'bg-white text-gray-900 shadow-lg scale-105' : 'text-gray-400'"
+            >
+              游戏评论
+            </button>
+          </div>
         </div>
         
-        <div class="p-4 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div class="p-5">
+          <div v-if="activeTab === 'info'" class="space-y-6">
+            <div>
+              <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <span class="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
+                游戏介绍
+              </h3>
+              <p class="text-gray-600 leading-relaxed text-base">{{ game.description }}</p>
+            </div>
+            
+            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5">
+              <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span class="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
+                详细信息
+              </h3>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between py-2 border-b border-gray-200">
+                  <span class="text-gray-500">开发商</span>
+                  <span class="text-gray-800 font-medium">{{ gameInfo.developer }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-200">
+                  <span class="text-gray-500">发行商</span>
+                  <span class="text-gray-800 font-medium">{{ gameInfo.publisher }}</span>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-200">
+                  <span class="text-gray-500">支持平台</span>
+                  <div class="flex gap-2">
+                    <span v-for="platform in gameInfo.platforms" :key="platform" class="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
+                      {{ platform }}
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-200">
+                  <span class="text-gray-500">支持语言</span>
+                  <div class="flex gap-2 flex-wrap justify-end">
+                    <span v-for="lang in gameInfo.languages" :key="lang" class="text-xs px-2 py-1 bg-pink-100 text-pink-700 rounded-full font-medium">
+                      {{ lang }}
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-start justify-between py-2">
+                  <span class="text-gray-500">系统要求</span>
+                  <span class="text-gray-800 font-medium text-right text-sm max-w-[60%]">{{ gameInfo.requirements }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="activeTab === 'resources'" class="space-y-4">
+            <div v-for="resource in resources" :key="resource.id" class="group">
+              <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100 hover:shadow-xl transition-all hover:scale-[1.02]">
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
+                    <Link2 class="w-6 h-6 text-white" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <h4 class="font-bold text-gray-800 mb-1">{{ resource.name }}</h4>
+                        <div class="flex items-center gap-3 text-sm text-gray-500">
+                          <span>{{ resource.size }}</span>
+                          <span>•</span>
+                          <span>{{ resource.date }}</span>
+                        </div>
+                      </div>
+                      <span 
+                        class="text-xs px-3 py-1 rounded-full font-medium"
+                        :class="{
+                          'bg-green-100 text-green-700': resource.type === 'main',
+                          'bg-blue-100 text-blue-700': resource.type === 'patch',
+                          'bg-orange-100 text-orange-700': resource.type === 'update'
+                        }"
+                      >
+                        {{ resource.type === 'main' ? '本体' : resource.type === 'patch' ? '补丁' : '更新' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  @click="handleDownload"
+                  class="w-full mt-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:scale-[1.02]"
+                  :disabled="isDownloading"
+                >
+                  <Download class="w-5 h-5" />
+                  <span>下载资源</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="activeTab === 'comments'" class="space-y-4">
+            <div v-for="comment in comments" :key="comment.id" class="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-4 border border-gray-100">
+              <div class="flex items-start gap-3">
+                <img 
+                  :src="comment.avatar" 
+                  :alt="comment.user"
+                  class="w-12 h-12 rounded-full object-cover border-2 border-purple-200"
+                />
+                <div class="flex-1">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <User class="w-4 h-4 text-gray-400" />
+                      <span class="font-bold text-gray-800">{{ comment.user }}</span>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ comment.date }}</span>
+                  </div>
+                  <div class="flex mb-2">
+                    <Star v-for="i in 5" :key="i" class="w-4 h-4" :class="i <= comment.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'" />
+                  </div>
+                  <p class="text-gray-600 text-sm leading-relaxed mb-3">{{ comment.content }}</p>
+                  <div class="flex items-center gap-4">
+                    <button 
+                      @click="toggleLike(comment)"
+                      class="flex items-center gap-1 text-sm transition-colors"
+                      :class="comment.liked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'"
+                    >
+                      <Heart class="w-4 h-4" :class="{ 'fill-current': comment.liked }" />
+                      <span>{{ comment.likes }}</span>
+                    </button>
+                    <button class="flex items-center gap-1 text-sm text-gray-400 hover:text-blue-500 transition-colors">
+                      <MessageSquare class="w-4 h-4" />
+                      <span>回复</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="p-5 bg-gradient-to-r from-purple-600 to-pink-600">
           <button 
             @click="handleDownload"
-            class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-lg"
+            class="w-full py-4 bg-white text-purple-600 font-bold rounded-2xl flex items-center justify-center gap-2 transition-all hover:shadow-2xl hover:scale-[1.02]"
             :disabled="isDownloading"
           >
             <template v-if="isDownloading">
-              <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div class="w-5 h-5 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin"></div>
               <span>{{ Math.round(downloadProgress) }}%</span>
             </template>
             <template v-else>
-              <Download class="w-5 h-5" />
+              <Download class="w-6 h-6" />
               <span>立即下载</span>
             </template>
           </button>
@@ -326,18 +598,21 @@ watch(
       </div>
       
       <div v-if="relatedGames.length > 0" class="px-4 mt-6">
-        <h3 class="text-lg font-bold text-gray-800 mb-3">相关推荐</h3>
-        <div class="flex gap-3 overflow-x-auto pb-2">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <span class="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
+          相关推荐
+        </h3>
+        <div class="flex gap-4 overflow-x-auto pb-2">
           <div 
             v-for="related in relatedGames" 
             :key="related.id || related._id"
             @click="(e) => { e.preventDefault(); goToGame(related.id || related._id) }"
-            class="flex-shrink-0 w-28 cursor-pointer"
+            class="flex-shrink-0 w-32 cursor-pointer"
           >
-            <div class="aspect-[3/4] rounded-lg overflow-hidden mb-2">
+            <div class="aspect-[3/4] rounded-2xl overflow-hidden mb-2 shadow-lg">
               <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" />
             </div>
-            <p class="text-xs text-gray-700 truncate">{{ related.name }}</p>
+            <p class="text-sm text-gray-700 truncate font-medium">{{ related.name }}</p>
           </div>
         </div>
       </div>
@@ -348,3 +623,24 @@ watch(
     <p class="text-gray-500">游戏不存在</p>
   </div>
 </template>
+
+<style scoped>
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #a855f7, #ec4899);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #9333ea, #db2777);
+}
+</style>
