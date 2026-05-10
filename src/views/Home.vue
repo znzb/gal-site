@@ -254,18 +254,6 @@ onUnmounted(() => {
         </div>
       </div>
       
-      <div id="patch-records" class="px-4 mt-6">
-        <div class="bg-white rounded-xl shadow-md p-4">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="text-xl">📋</span>
-            <h3 class="font-bold text-gray-800">补档记录</h3>
-          </div>
-          <div class="text-sm text-gray-600">
-            <p>暂无补档记录</p>
-          </div>
-        </div>
-      </div>
-      
       <div class="px-4 mt-6">
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-lg font-bold text-gray-800">热门游戏</h2>
