@@ -45,7 +45,7 @@
 
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal" @click.stop>
-        <h2>{{ editingGame ? '编辑游戏' : '添加游戏'}</h2>
+        <h2>{{ editingGame ? '编辑游戏' : '添加游戏' }}</h2>
         <form @submit.prevent="saveGame">
           <div class="form-group">
             <label>游戏名称</label>
@@ -153,7 +153,7 @@ async function saveGame() {
   };
 
   if (editingGame.value) {
-    await request(`/admin/games/${editingGame.value._id}`, {
+    await request('/admin/games/' + editingGame.value._id, {
       method: 'PUT',
       body: JSON.stringify(gameData)
     });
@@ -172,7 +172,7 @@ async function saveGame() {
 
 async function deleteGame(id) {
   if (confirm('确定要删除这个游戏吗?')) {
-    await request(`/admin/games/${id}`, { method: 'DELETE' });
+    await request('/admin/games/' + id, { method: 'DELETE' });
     await loadGames();
   }
 }

@@ -24,7 +24,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { request, setToken } from './api';
+import { request, setToken } from '../api';
 
 const router = useRouter();
 const username = ref('');

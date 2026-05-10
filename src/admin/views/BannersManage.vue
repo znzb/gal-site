@@ -21,7 +21,7 @@
 
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal" @click.stop>
-        <h2>{{ editingBanner ? '编辑轮播图' : '添加轮播图'}</h2>
+        <h2>{{ editingBanner ? '编辑轮播图' : '添加轮播图' }}</h2>
         <form @submit.prevent="saveBanner">
           <div class="form-group">
             <label>标题</label>
@@ -79,7 +79,7 @@ function editBanner(banner) {
 
 async function saveBanner() {
   if (editingBanner.value) {
-    await request(`/admin/banners/${editingBanner.value._id}`, {
+    await request('/admin/banners/' + editingBanner.value._id, {
       method: 'PUT',
       body: JSON.stringify(bannerForm.value)
     });
@@ -97,7 +97,7 @@ async function saveBanner() {
 
 async function deleteBanner(id) {
   if (confirm('确定要删除这个轮播图吗?')) {
-    await request(`/admin/banners/${id}`, { method: 'DELETE' });
+    await request('/admin/banners/' + id, { method: 'DELETE' });
     await loadBanners();
   }
 }

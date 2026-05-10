@@ -18,7 +18,7 @@
 
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal" @click.stop>
-        <h2>{{ editingCategory ? '编辑分类' : '添加分类'}</h2>
+        <h2>{{ editingCategory ? '编辑分类' : '添加分类' }}</h2>
         <form @submit.prevent="saveCategory">
           <div class="form-group">
             <label>分类名称</label>
@@ -67,7 +67,7 @@ function editCategory(cat) {
 
 async function saveCategory() {
   if (editingCategory.value) {
-    await request(`/admin/categories/${editingCategory.value._id}`, {
+    await request('/admin/categories/' + editingCategory.value._id, {
       method: 'PUT',
       body: JSON.stringify(categoryForm.value)
     });
@@ -85,7 +85,7 @@ async function saveCategory() {
 
 async function deleteCategory(id) {
   if (confirm('确定要删除这个分类吗?')) {
-    await request(`/admin/categories/${id}`, { method: 'DELETE' });
+    await request('/admin/categories/' + id, { method: 'DELETE' });
     await loadCategories();
   }
 }

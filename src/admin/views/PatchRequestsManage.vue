@@ -16,7 +16,7 @@
       <div v-for="req in filteredRequests" :key="req._id" class="request-card">
         <div class="request-header">
           <h3>{{ req.gameName }}</h3>
-          <span :class="['status-badge', req.status">{{ statusText(req.status) }}"></span>
+          <span :class="['status-badge', req.status]">{{ statusText(req.status) }}</span>
         </div>
         <p v-if="req.userEmail" class="email">申请人: {{ req.userEmail }}</p>
         <p v-if="req.description" class="description">{{ req.description }}</p>
@@ -50,7 +50,7 @@ onMounted(async () => {
 });
 
 async function loadRequests() {
-  const url = filterStatus.value ? `/admin/patch-requests?status=${filterStatus.value}` : '/admin/patch-requests';
+  const url = filterStatus.value ? '/admin/patch-requests?status=' + filterStatus.value : '/admin/patch-requests';
   requests.value = await request(url);
 }
 
@@ -65,7 +65,7 @@ function statusText(status) {
 }
 
 async function updateStatus(id, status) {
-  await request(`/admin/patch-requests/${id}`, {
+  await request('/admin/patch-requests/' + id, {
     method: 'PUT',
     body: JSON.stringify({ status })
   });

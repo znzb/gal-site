@@ -11,7 +11,7 @@
           <h3>{{ ann.title }}</h3>
           <div class="announcement-tags">
             <span v-if="ann.isPinned" class="tag pinned">置顶</span>
-            <span :class="['tag', ann.isVisible ? 'visible' : 'hidden'">
+            <span :class="['tag', ann.isVisible ? 'visible' : 'hidden']">
               {{ ann.isVisible ? '显示' : '隐藏' }}
             </span>
           </div>
@@ -29,7 +29,7 @@
 
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal" @click.stop>
-        <h2>{{ editingAnnouncement ? '编辑公告' : '添加公告'}</h2>
+        <h2>{{ editingAnnouncement ? '编辑公告' : '添加公告' }}</h2>
         <form @submit.prevent="saveAnnouncement">
           <div class="form-group">
             <label>标题</label>
@@ -89,7 +89,7 @@ function editAnnouncement(ann) {
 
 async function saveAnnouncement() {
   if (editingAnnouncement.value) {
-    await request(`/admin/announcements/${editingAnnouncement.value._id}`, {
+    await request('/admin/announcements/' + editingAnnouncement.value._id, {
       method: 'PUT',
       body: JSON.stringify(annForm.value)
     });
@@ -107,7 +107,7 @@ async function saveAnnouncement() {
 
 async function deleteAnnouncement(id) {
   if (confirm('确定要删除这个公告吗?')) {
-    await request(`/admin/announcements/${id}`, { method: 'DELETE' });
+    await request('/admin/announcements/' + id, { method: 'DELETE' });
     await loadAnnouncements();
   }
 }

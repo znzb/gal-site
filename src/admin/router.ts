@@ -18,10 +18,10 @@ const routes = [
   {
     path: '/admin',
     component: AdminLayout,
-    redirect: '/admin',
+    redirect: '/admin/dashboard',
     children: [
       {
-        path: '',
+        path: 'dashboard',
         name: 'Dashboard',
         component: Dashboard
       },
