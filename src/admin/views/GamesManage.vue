@@ -381,7 +381,7 @@ async function saveGame() {
   setComments(gameId, comments);
 
   if (editingGame.value) {
-    await request('/admin/games/' + editingGame.value._id, {
+    await request('/admin/games/' + editingGame.value.id, {
       method: 'PUT',
       body: JSON.stringify(gameData)
     });
