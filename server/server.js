@@ -34,8 +34,10 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
@@ -182,9 +184,16 @@ const initData = async () => {
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
+    const mongoUri = process.env.MONGODB_URI;
+    const uriWithEncoding = mongoUri.includes('?') 
+      ? mongoUri + '&charset=utf-8' 
+      : mongoUri + '?charset=utf-8';
+    
+    await mongoose.connect(uriWithEncoding, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
     console.log('Connected to MongoDB');
     await initData();
