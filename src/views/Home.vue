@@ -227,7 +227,7 @@ onUnmounted(() => {
       
       <FeatureGrid />
       
-      <div v-if="announcements.length > 0" class="px-4 mt-6">
+      <div id="announcements" v-if="announcements.length > 0" class="px-4 mt-6">
         <div class="bg-white rounded-xl shadow-md p-4">
           <div class="flex items-center gap-2 mb-3">
             <span class="text-xl">📢</span>
@@ -250,6 +250,18 @@ onUnmounted(() => {
                 <span class="text-xs text-gray-400 whitespace-nowrap">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="patch-records" class="px-4 mt-6">
+        <div class="bg-white rounded-xl shadow-md p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xl">📋</span>
+            <h3 class="font-bold text-gray-800">补档记录</h3>
+          </div>
+          <div class="text-sm text-gray-600">
+            <p>暂无补档记录</p>
           </div>
         </div>
       </div>

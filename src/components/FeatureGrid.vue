@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Megaphone, MessageCircle, Music, FileText } from 'lucide-vue-next'
 import { featureApi, type Feature } from '@/api/api'
 
-const emit = defineEmits<{
-  navigateTo: [path: string]
-}>()
+const router = useRouter()
 
 const features = ref<Feature[]>([])
 const isLoading = ref(true)
@@ -39,16 +38,16 @@ const loadFeatures = async () => {
 const handleFeatureClick = (featureId: string) => {
   switch (featureId) {
     case '1':
-      emit('navigateTo', '/#announcements')
+      document.getElementById('announcements')?.scrollIntoView({ behavior: 'smooth' })
       break
     case '2':
       showQrCode.value = true
       break
     case '3':
-      emit('navigateTo', '/category/柚子社')
+      router.push('/category/柚子社')
       break
     case '4':
-      emit('navigateTo', '/#patch-records')
+      document.getElementById('patch-records')?.scrollIntoView({ behavior: 'smooth' })
       break
   }
 }
