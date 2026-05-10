@@ -6,6 +6,7 @@
   "devCommand": "npm run dev",
   "routes": [
     { "src": "/admin(.*)", "dest": "/admin.html" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
