@@ -3,8 +3,13 @@ import { ref, onMounted } from 'vue'
 import { Megaphone, MessageCircle, Music, FileText } from 'lucide-vue-next'
 import { featureApi, type Feature } from '@/api/api'
 
+const emit = defineEmits<{
+  navigateTo: [path: string]
+}>()
+
 const features = ref<Feature[]>([])
 const isLoading = ref(true)
+const showQrCode = ref(false)
 
 const mockFeatures: Feature[] = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
@@ -31,6 +36,23 @@ const loadFeatures = async () => {
   }
 }
 
+const handleFeatureClick = (featureId: string) => {
+  switch (featureId) {
+    case '1':
+      emit('navigateTo', '/#announcements')
+      break
+    case '2':
+      showQrCode.value = true
+      break
+    case '3':
+      emit('navigateTo', '/category/柚子社')
+      break
+    case '4':
+      emit('navigateTo', '/#patch-records')
+      break
+  }
+}
+
 onMounted(() => {
   loadFeatures()
 })
@@ -45,7 +67,8 @@ onMounted(() => {
       <button 
         v-for="feature in features" 
         :key="feature.id"
-        class="flex flex-col items-center py-3 rounded-xl hover:bg-gradient-to-br hover:from-primary/5 hover:to-secondary/5 transition-all duration-300 transform hover:scale-105 active:scale-95"
+        @click="handleFeatureClick(feature.id)"
+        class="flex flex-col items-center py-3 rounded-xl hover:bg-gradient-to-br hover:from-primary/5 hover:to-secondary/5 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
       >
         <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-md transition-shadow hover:shadow-lg"
              :class="{
@@ -65,6 +88,18 @@ onMounted(() => {
         </div>
         <span class="text-xs text-gray-700 font-medium">{{ feature.name }}</span>
       </button>
+    </div>
+  </div>
+
+  <div v-if="showQrCode" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click="showQrCode = false">
+    <div class="bg-white rounded-2xl p-6 text-center max-w-sm mx-4" @click.stop>
+      <h3 class="text-xl font-bold mb-4">加入Q群</h3>
+      <div class="w-48 h-48 bg-gray-100 rounded-xl flex items-center justify-center mb-4 mx-auto">
+        <span class="text-6xl">🐧</span>
+      </div>
+      <p class="text-gray-600 mb-2">群号：123456789</p>
+      <p class="text-gray-400 text-sm mb-4">扫码或搜索群号加入</p>
+      <button @click="showQrCode = false" class="px-6 py-2 bg-primary text-white rounded-lg">关闭</button>
     </div>
   </div>
 </template>
