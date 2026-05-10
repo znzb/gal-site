@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar } from 'lucide-vue-next'
 import { gameApi, type Game } from '@/api/api'
@@ -7,7 +7,7 @@ import { gameApi, type Game } from '@/api/api'
 const route = useRoute()
 const router = useRouter()
 
-const gameId = route.params.id as string
+const gameId = ref(route.params.id as string)
 const game = ref<Game | null>(null)
 const isLoading = ref(true)
 
@@ -208,6 +208,17 @@ const loadData = async () => {
 onMounted(() => {
   loadData()
 })
+
+watch(
+  () => route.params.id,
+  (newId) => {
+    console.log('Route changed to id:', newId)
+    if (newId) {
+      gameId.value = newId as string
+      loadData()
+    }
+  }
+)
 </script>
 
 <template>
