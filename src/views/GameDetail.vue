@@ -337,12 +337,12 @@ const loadData = async () => {
     const storeComments = getComments(gameId.value)
     const mockGame = mockGames.find(g => g.id === gameId.value)
     
-    if (storeResources.length > 0) {
+    if (gameData.resources && gameData.resources.length > 0) {
+      resources.value = gameData.resources
+    } else if (storeResources.length > 0) {
       resources.value = storeResources
     } else if (mockGame && mockGame.resources && mockGame.resources.length > 0) {
       resources.value = mockGame.resources
-    } else if (gameData.resources && gameData.resources.length > 0) {
-      resources.value = gameData.resources
     } else {
       resources.value = [
         {
@@ -656,10 +656,10 @@ watch(
                     {{ resource.type === 'main' ? '游戏本体' : resource.type === 'patch' ? '汉化资源' : '更新资源' }}
                   </span>
                   <span class="px-4 py-1.5 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">
-                    简体中文
+                    {{ resource.language || '简体中文' }}
                   </span>
                   <span class="px-4 py-1.5 bg-green-100 text-green-600 rounded-full text-sm font-medium">
-                    {{ resource.type === 'main' ? 'Android' : 'Windows' }}
+                    {{ resource.platform || 'Android' }}
                   </span>
                   <button class="ml-auto p-2 text-gray-400 hover:text-gray-600 transition-colors">
                     <ChevronDown class="w-5 h-5" />
@@ -671,13 +671,13 @@ watch(
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
                     <img 
-                      src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square" 
+                      :src="resource.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square'" 
                       alt="用户头像"
                       class="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
-                      <p class="font-medium text-gray-800">愚者</p>
-                      <p class="text-sm text-gray-400">3天前 · 已发布资源 198 个</p>
+                      <p class="font-medium text-gray-800">{{ resource.authorName || '愚者' }}</p>
+                      <p class="text-sm text-gray-400">{{ resource.dateDisplay || '3天前' }} · 已发布资源 {{ resource.authorResources || 198 }} 个</p>
                     </div>
                   </div>
                   
@@ -710,15 +710,15 @@ watch(
                   <div class="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3">
                     <Link2 class="w-4 h-4 text-blue-500 flex-shrink-0" />
                     <a 
-                      href="https://c.acgll.com/@s/URQt2RXD" 
+                      :href="resource.url" 
                       target="_blank"
                       rel="noopener noreferrer"
                       class="flex-1 text-blue-500 text-sm font-medium truncate hover:text-blue-600 transition-colors"
                     >
-                      https://c.acgll.com/@s/URQt2RXD
+                      {{ resource.url }}
                     </a>
                     <button 
-                      @click="copyLink('https://c.acgll.com/@s/URQt2RXD')"
+                      @click="copyLink(resource.url)"
                       class="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all"
                     >
                       <Share2 class="w-4 h-4 text-gray-500" />
