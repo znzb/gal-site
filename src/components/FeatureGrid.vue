@@ -8,6 +8,9 @@ const router = useRouter()
 
 const features = ref<Feature[]>([])
 const isLoading = ref(true)
+const showAnnouncementModal = ref(false)
+const showJoinGroupModal = ref(false)
+const announcements = ref([])
 
 const mockFeatures: Feature[] = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
@@ -34,13 +37,25 @@ const loadFeatures = async () => {
   }
 }
 
+const loadAnnouncements = async () => {
+  try {
+    const response = await fetch('https://game-api-p1zc.onrender.com/api/announcements')
+    const data = await response.json()
+    announcements.value = data.announcements || data || []
+  } catch (error) {
+    console.error('Failed to load announcements:', error)
+    announcements.value = []
+  }
+}
+
 const handleFeatureClick = (featureId: string) => {
   switch (featureId) {
     case '1':
-      router.push('/announcements')
+      loadAnnouncements()
+      showAnnouncementModal.value = true
       break
     case '2':
-      router.push('/join-group')
+      showJoinGroupModal.value = true
       break
     case '3':
       router.push('/yuzusoft')
@@ -49,6 +64,25 @@ const handleFeatureClick = (featureId: string) => {
       router.push('/patch-records')
       break
   }
+}
+
+const copyGroupNumber = async () => {
+  try {
+    await navigator.clipboard.writeText('123456789')
+    alert('群号已复制到剪贴板')
+  } catch (error) {
+    console.error('复制失败:', error)
+    alert('复制失败，请手动复制群号：123456789')
+  }
+}
+
+const formatDate = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
 }
 
 onMounted(() => {
@@ -86,6 +120,67 @@ onMounted(() => {
         </div>
         <span class="text-xs text-gray-700 font-medium">{{ feature.name }}</span>
       </button>
+    </div>
+  </div>
+
+  <!-- 公告弹窗 -->
+  <div v-if="showAnnouncementModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @click="showAnnouncementModal = false">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden" @click.stop>
+      <div class="bg-gradient-to-r from-primary to-secondary p-6 text-white">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold">📢 网站公告</h2>
+          <button @click="showAnnouncementModal = false" class="text-3xl hover:opacity-80">×</button>
+        </div>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[calc(80vh-80px)]">
+        <div v-if="announcements.length === 0" class="text-center py-12">
+          <div class="text-6xl mb-4">📭</div>
+          <p class="text-gray-500">暂无公告</p>
+        </div>
+        <div v-else class="space-y-4">
+          <div v-for="ann in announcements" :key="ann.id || ann._id" class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span v-if="ann.isPinned" class="bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full">置顶</span>
+              <h3 class="font-bold text-gray-800">{{ ann.title }}</h3>
+            </div>
+            <p class="text-gray-600 text-sm">{{ ann.content }}</p>
+            <span class="text-xs text-gray-400 mt-2 block">{{ formatDate(ann.createdAt) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加群弹窗 -->
+  <div v-if="showJoinGroupModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @click="showJoinGroupModal = false">
+    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden" @click.stop>
+      <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-6 text-white text-center">
+        <h2 class="text-2xl font-bold">💬 加入Q群</h2>
+      </div>
+      
+      <div class="p-6 text-center">
+        <div class="w-40 h-40 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <span class="text-6xl">🐧</span>
+        </div>
+        
+        <div class="bg-gray-50 rounded-xl p-4 mb-4">
+          <p class="text-gray-600 text-sm mb-2">群号</p>
+          <p class="text-2xl font-bold text-gray-800 mb-3">123456789</p>
+          <button @click="copyGroupNumber" class="px-6 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:opacity-90">
+            复制群号
+          </button>
+        </div>
+        
+        <p class="text-sm text-gray-500 mb-4">
+          方法一：扫描上方二维码<br>
+          方法二：复制群号搜索添加
+        </p>
+        
+        <button @click="showJoinGroupModal = false" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+          关闭
+        </button>
+      </div>
     </div>
   </div>
 </template>
