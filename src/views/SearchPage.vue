@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ArrowLeft, Search, X } from 'lucide-vue-next'
+import { ArrowLeft, Search, X, Menu } from 'lucide-vue-next'
 import GameCard from '@/components/GameCard.vue'
 import { gameApi, type Game } from '@/api/api'
+import { appState } from '@/store/appStore'
 
 const router = useRouter()
 const route = useRoute()
@@ -141,24 +142,23 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 pb-20">
-    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-30">
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20">
+    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-lg shadow-sm z-30">
       <div class="flex items-center px-4 py-3">
         <button 
           @click="router.back()"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-3"
+          class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 mr-2 shadow-sm"
         >
-          <ArrowLeft class="w-6 h-6 text-gray-600" />
+          <ArrowLeft class="w-5 h-5 text-gray-700" />
         </button>
-        <div class="flex-1 relative">
+        <div class="flex-1 relative mx-2">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input 
             v-model="searchQuery"
             type="text"
             placeholder="搜索游戏名称、分类、标签..."
-            class="w-full pl-10 pr-10 py-2 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white transition-all"
+            class="w-full pl-10 pr-10 py-2 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all"
             @keyup.enter="handleSearch"
-            ref="searchInput"
           />
           <button 
             v-if="searchQuery"
@@ -170,16 +170,22 @@ onMounted(() => {
         </div>
         <button 
           @click="handleSearch"
-          class="ml-3 px-4 py-2 bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity"
+          class="px-4 py-2 bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md mr-2"
         >
           搜索
+        </button>
+        <button 
+          @click="appState.toggleSideMenu()"
+          class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 shadow-sm"
+        >
+          <Menu class="w-5 h-5 text-gray-700" />
         </button>
       </div>
     </header>
     
-    <div class="pt-14 px-4 mt-4">
+    <div class="pt-16 px-4 mt-4">
       <div v-if="isLoading" class="flex items-center justify-center h-40">
-        <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-4 border-gradient-to-r from-primary via-secondary to-accent border-t-transparent rounded-full animate-spin"></div>
       </div>
       
       <div v-else-if="!hasSearched" class="text-center py-20">
@@ -189,7 +195,7 @@ onMounted(() => {
           <span 
             v-for="tag in ['恋爱', '校园', '奇幻', '冒险', '治愈']" 
             :key="tag"
-            class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors"
+            class="px-3 py-1 bg-white text-gray-600 text-sm rounded-full cursor-pointer hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
             @click="searchQuery = tag; handleSearch()"
           >
             {{ tag }}
@@ -202,19 +208,51 @@ onMounted(() => {
         <p class="text-gray-400">未找到相关游戏</p>
         <button 
           @click="clearSearch"
-          class="mt-4 text-primary text-sm"
+          class="mt-4 px-6 py-2 bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md"
         >
           重新搜索
         </button>
       </div>
       
-      <div v-else class="grid grid-cols-2 gap-3">
-        <GameCard 
+      <div v-else class="grid grid-cols-2 gap-4">
+        <div 
           v-for="game in filteredGames" 
           :key="game.id" 
-          :game="game"
-          @click="handleGameClick"
-        />
+          class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+          @click="handleGameClick(game.id)"
+        >
+          <div class="relative">
+            <img 
+              :src="game.cover" 
+              :alt="game.name"
+              class="w-full aspect-[3/4] object-cover"
+            />
+            <div class="absolute top-2 right-2 px-3 py-1 bg-gradient-to-r from-primary to-pink-500 text-white text-xs font-medium rounded-full shadow-md">
+              {{ game.size }}
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+              <h3 class="text-white font-bold text-sm">{{ game.name }}</h3>
+            </div>
+          </div>
+          <div class="p-3">
+            <p class="text-gray-600 text-xs line-clamp-2 mb-2">{{ game.description }}</p>
+            <div class="flex flex-wrap gap-1 mb-2">
+              <span 
+                v-for="tag in game.tags.slice(0, 3)" 
+                :key="tag"
+                class="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full"
+              >
+                {{ tag }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400 text-xs">{{ game.downloads.toLocaleString() }} 下载</span>
+              <button class="px-4 py-1.5 bg-gradient-to-r from-primary to-pink-500 text-white text-xs font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md">
+                下载
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

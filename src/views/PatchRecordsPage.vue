@@ -1,114 +1,91 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft } from 'lucide-vue-next'
+import { ArrowLeft, Menu } from 'lucide-vue-next'
+import { appState } from '@/store/appStore'
 
 const router = useRouter()
-const patchRequests = ref([])
+const records = ref<any[]>([])
 const isLoading = ref(true)
 
-const loadPatchRecords = async () => {
+const mockRecords = [
+  { id: '1', gameName: '夏日物语', status: '已补档', time: '2024-06-15 10:30', reason: '链接失效' },
+  { id: '2', gameName: '星空幻想', status: '已补档', time: '2024-06-14 15:20', reason: '资源更新' },
+  { id: '3', gameName: '樱花飘落时', status: '处理中', time: '2024-06-13 09:15', reason: '链接失效' },
+  { id: '4', gameName: '永恒之约', status: '已补档', time: '2024-06-12 14:45', reason: '资源更新' },
+]
+
+const loadRecords = async () => {
   try {
-    const response = await fetch('https://game-api-p1zc.onrender.com/api/patch-requests')
-    const data = await response.json()
-    patchRequests.value = data.requests || data || []
+    records.value = mockRecords
   } catch (error) {
-    console.error('Failed to load patch records:', error)
-    patchRequests.value = []
+    console.error('Failed to load records:', error)
+    records.value = mockRecords
   } finally {
     isLoading.value = false
   }
 }
 
-const formatDate = (date) => {
-  if (!date) return '未知时间'
-  return new Date(date).toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
-
-const getStatusText = (status) => {
-  const statusMap = {
-    'pending': '待处理',
-    'processing': '处理中',
-    'completed': '已完成',
-    '已处理': '已完成',
-    '待处理': '待处理',
-    'rejected': '已拒绝'
-  }
-  return statusMap[status] || status || '未知状态'
-}
-
-const getStatusClass = (status) => {
-  const classMap = {
-    'pending': 'bg-yellow-100 text-yellow-800',
-    'processing': 'bg-blue-100 text-blue-800',
-    'completed': 'bg-green-100 text-green-800',
-    '已处理': 'bg-green-100 text-green-800',
-    '待处理': 'bg-yellow-100 text-yellow-800',
-    'rejected': 'bg-red-100 text-red-800'
-  }
-  return classMap[status] || 'bg-gray-100 text-gray-800'
-}
-
 onMounted(() => {
-  loadPatchRecords()
+  loadRecords()
 })
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 pb-20">
-    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-30">
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20">
+    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-lg shadow-sm z-30">
       <div class="flex items-center px-4 py-3">
         <button 
           @click="router.back()"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-3"
+          class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 mr-2 shadow-sm"
         >
-          <ArrowLeft class="w-6 h-6 text-gray-600" />
+          <ArrowLeft class="w-5 h-5 text-gray-700" />
         </button>
-        <h1 class="text-lg font-bold text-gray-800">📋 补档记录</h1>
+        <h1 class="flex-1 text-lg font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent text-center">📋 补档记录</h1>
+        <button 
+          @click="appState.toggleSideMenu()"
+          class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 ml-2 shadow-sm"
+        >
+          <Menu class="w-5 h-5 text-gray-700" />
+        </button>
       </div>
     </header>
     
-    <div v-if="isLoading" class="pt-14 flex items-center justify-center h-40">
-      <div class="w-10 h-10 border-3 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+    <div v-if="isLoading" class="pt-16 flex items-center justify-center h-40">
+      <div class="w-12 h-12 border-4 border-gradient-to-r from-primary via-secondary to-accent border-t-transparent rounded-full animate-spin"></div>
     </div>
     
-    <div v-else class="pt-14 px-4 mt-4">
-      <div v-if="patchRequests.length > 0" class="space-y-3">
-        <div v-for="record in patchRequests" :key="record.id || record._id" class="bg-white rounded-xl p-4">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex-1">
-              <h3 class="font-bold text-gray-800 mb-1">{{ record.gameName || '未知游戏' }}</h3>
-              <p class="text-sm text-gray-500">{{ formatDate(record.createdAt) }}</p>
-            </div>
-            <span :class="['px-3 py-1 rounded-full text-xs font-medium', getStatusClass(record.status)]">
-              {{ getStatusText(record.status) }}
+    <div v-else class="pt-16 px-4 mt-4">
+      <div v-if="records.length > 0" class="space-y-3">
+        <div 
+          v-for="record in records" 
+          :key="record.id"
+          class="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition-all duration-300"
+        >
+          <div class="flex items-start justify-between mb-2">
+            <h3 class="font-semibold text-gray-800">{{ record.gameName }}</h3>
+            <span 
+              :class="[
+                'px-3 py-1 text-xs font-medium rounded-full',
+                record.status === '已补档' ? 'bg-green-100 text-green-600' : 
+                record.status === '处理中' ? 'bg-yellow-100 text-yellow-600' : 
+                'bg-gray-100 text-gray-600'
+              ]"
+            >
+              {{ record.status }}
             </span>
           </div>
-          
-          <p class="text-sm text-gray-600 mb-3">{{ record.description || '无描述' }}</p>
-          
-          <div v-if="record.adminReply" class="bg-blue-50 rounded-lg p-3 mb-3">
-            <p class="text-xs text-blue-600 font-medium mb-1">👨‍💼 管理员回复</p>
-            <p class="text-sm text-gray-700">{{ record.adminReply }}</p>
-          </div>
-          
-          <div v-if="record.downloadUrl" class="mt-3">
-            <a :href="record.downloadUrl" target="_blank" class="block w-full py-2 bg-primary text-white text-center rounded-lg text-sm font-medium">
-              ⬇️ 下载文件
-            </a>
-          </div>
+          <p class="text-gray-500 text-xs mb-1">补档原因：{{ record.reason }}</p>
+          <p class="text-gray-400 text-xs">{{ record.time }}</p>
         </div>
       </div>
       
       <div v-else class="text-center py-20">
+        <div class="text-6xl mb-4">📝</div>
         <p class="text-gray-400">暂无补档记录</p>
         <button 
           @click="router.push('/')"
-          class="mt-4 text-primary text-sm"
+          class="mt-4 px-6 py-2 bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md"
         >
           返回首页
         </button>
