@@ -388,7 +388,17 @@ watch(
         <div class="absolute bottom-0 left-0 right-0 p-4">
           <div class="flex items-end gap-4">
             <div class="flex-1">
+              <h2 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">{{ game.name }}</h2>
               <div class="flex flex-wrap gap-2 mb-2">
+                <span 
+                  v-for="tag in game.tags" 
+                  :key="tag"
+                  class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
+                >
+                  {{ tag }}
+                </span>
+              </div>
+              <div class="flex flex-wrap gap-2">
                 <span 
                   class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
                 >
@@ -398,16 +408,6 @@ watch(
                   class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
                 >
                   {{ game.subCategory === 'raw' ? '生肉' : '熟肉' }}
-                </span>
-              </div>
-              <h2 class="text-2xl font-bold text-white mb-2 drop-shadow-lg">{{ game.name }}</h2>
-              <div class="flex flex-wrap gap-2">
-                <span 
-                  v-for="tag in game.tags" 
-                  :key="tag"
-                  class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
-                >
-                  {{ tag }}
                 </span>
               </div>
             </div>
