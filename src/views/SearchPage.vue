@@ -146,10 +146,10 @@ onMounted(() => {
     <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-lg shadow-sm z-30">
       <div class="flex items-center px-4 py-3">
         <button 
-          @click="router.back()"
+          @click="appState.toggleSideMenu()"
           class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 mr-2 shadow-sm"
         >
-          <ArrowLeft class="w-5 h-5 text-gray-700" />
+          <Menu class="w-5 h-5 text-gray-700" />
         </button>
         <div class="flex-1 relative mx-2">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -169,16 +169,10 @@ onMounted(() => {
           </button>
         </div>
         <button 
-          @click="handleSearch"
-          class="px-4 py-2 bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md mr-2"
-        >
-          搜索
-        </button>
-        <button 
-          @click="appState.toggleSideMenu()"
+          @click="router.back()"
           class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 shadow-sm"
         >
-          <Menu class="w-5 h-5 text-gray-700" />
+          <ArrowLeft class="w-5 h-5 text-gray-700" />
         </button>
       </div>
     </header>

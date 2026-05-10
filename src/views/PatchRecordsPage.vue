@@ -36,17 +36,17 @@ onMounted(() => {
     <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-lg shadow-sm z-30">
       <div class="flex items-center px-4 py-3">
         <button 
-          @click="router.back()"
+          @click="appState.toggleSideMenu()"
           class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 mr-2 shadow-sm"
         >
-          <ArrowLeft class="w-5 h-5 text-gray-700" />
+          <Menu class="w-5 h-5 text-gray-700" />
         </button>
         <h1 class="flex-1 text-lg font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent text-center">📋 补档记录</h1>
         <button 
-          @click="appState.toggleSideMenu()"
+          @click="router.back()"
           class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 ml-2 shadow-sm"
         >
-          <Menu class="w-5 h-5 text-gray-700" />
+          <ArrowLeft class="w-5 h-5 text-gray-700" />
         </button>
       </div>
     </header>
