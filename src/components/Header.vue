@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { Search, User, Menu } from 'lucide-vue-next'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { appState } from '@/store/appStore'
 
 const router = useRouter()
+const searchQuery = ref('')
 
 const goToSearch = () => {
-  router.push('/search')
+  if (searchQuery.value.trim()) {
+    router.push(`/search?q=${encodeURIComponent(searchQuery.value.trim())}`)
+    searchQuery.value = ''
+  }
 }
 </script>
 
@@ -24,12 +29,18 @@ const goToSearch = () => {
         <div class="relative group">
           <Search class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-primary transition-colors" />
           <input 
+            v-model="searchQuery"
             type="text" 
             placeholder="搜索游戏..." 
-            readonly
-            class="w-full pl-11 pr-4 py-2.5 bg-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all duration-300 cursor-pointer"
-            @click="goToSearch"
+            class="w-full pl-11 pr-12 py-2.5 bg-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all duration-300"
+            @keyup.enter="goToSearch"
           />
+          <button 
+            @click="goToSearch"
+            class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-primary/10 transition-colors"
+          >
+            <Search class="w-4 h-4 text-gray-400 hover:text-primary transition-colors" />
+          </button>
         </div>
       </div>
       

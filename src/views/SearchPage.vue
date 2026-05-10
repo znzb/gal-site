@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, Search, X } from 'lucide-vue-next'
 import GameCard from '@/components/GameCard.vue'
 import { gameApi, type Game } from '@/api/api'
 
 const router = useRouter()
+const route = useRoute()
 const searchQuery = ref('')
 const games = ref<Game[]>([])
 const isLoading = ref(false)
@@ -95,7 +96,7 @@ const filteredGames = computed(() => {
   })
 })
 
-const handleSearch = async () => {
+const performSearch = async () => {
   if (!searchQuery.value.trim()) return
   
   hasSearched.value = true
@@ -112,6 +113,12 @@ const handleSearch = async () => {
   }
 }
 
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    performSearch()
+  }
+}
+
 const handleGameClick = (id: string) => {
   router.push(`/game/${id}`)
 }
@@ -124,6 +131,12 @@ const clearSearch = () => {
 
 onMounted(() => {
   games.value = mockGames
+  
+  const queryParam = route.query.q
+  if (queryParam && typeof queryParam === 'string') {
+    searchQuery.value = decodeURIComponent(queryParam)
+    performSearch()
+  }
 })
 </script>
 
@@ -145,6 +158,7 @@ onMounted(() => {
             placeholder="搜索游戏名称、分类、标签..."
             class="w-full pl-10 pr-10 py-2 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white transition-all"
             @keyup.enter="handleSearch"
+            ref="searchInput"
           />
           <button 
             v-if="searchQuery"
