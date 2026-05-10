@@ -16,7 +16,6 @@
         </button>
         <p v-if="error" class="error">{{ error }}</p>
       </form>
-      <p class="hint">默认账号: admin / admin123</p>
     </div>
   </div>
 </template>
@@ -35,7 +34,7 @@ const error = ref('');
 async function login() {
   loading.value = true;
   error.value = '';
-  
+
   try {
     const data = await request('/admin/auth/login', {
       method: 'POST',
@@ -114,12 +113,5 @@ button:disabled {
   color: #e74c3c;
   text-align: center;
   margin-top: 15px;
-}
-
-.hint {
-  text-align: center;
-  margin-top: 20px;
-  color: #888;
-  font-size: 14px;
 }
 </style>
