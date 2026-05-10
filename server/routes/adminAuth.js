@@ -42,6 +42,29 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { username, newPassword } = req.body;
+    
+    if (!username || !newPassword) {
+      return res.status(400).json({ error: '用户名和密码不能为空' });
+    }
+
+    const admin = await Admin.findOne({ username });
+    if (!admin) {
+      return res.status(404).json({ error: '管理员不存在' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedPassword;
+    await admin.save();
+
+    res.json({ message: '密码重置成功' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 const authMiddleware = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
