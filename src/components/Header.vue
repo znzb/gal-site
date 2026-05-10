@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { Search, User, Menu } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
 import { appState } from '@/store/appStore'
+
+const router = useRouter()
+
+const goToSearch = () => {
+  router.push('/search')
+}
 </script>
 
 <template>
@@ -19,7 +26,9 @@ import { appState } from '@/store/appStore'
           <input 
             type="text" 
             placeholder="搜索游戏..." 
-            class="w-full pl-11 pr-4 py-2.5 bg-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all duration-300"
+            readonly
+            class="w-full pl-11 pr-4 py-2.5 bg-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all duration-300 cursor-pointer"
+            @click="goToSearch"
           />
         </div>
       </div>
