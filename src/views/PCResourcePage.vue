@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { ArrowLeft, Download, Monitor, HardDrive, Calendar } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import type { Game } from '@/api/api'
 
 const router = useRouter()
+const activeCategory = ref<'raw' | 'cooked'>('raw')
 
 const pcGames = ref<Game[]>([
   {
@@ -16,7 +17,8 @@ const pcGames = ref<Game[]>([
     size: '8.5GB',
     releaseDate: '2024-06-15',
     downloads: 12500,
-    tags: ['恋爱', '校园', '治愈']
+    tags: ['恋爱', '校园', '治愈'],
+    subCategory: 'cooked'
   },
   {
     id: 'pc2',
@@ -27,7 +29,8 @@ const pcGames = ref<Game[]>([
     size: '12.3GB',
     releaseDate: '2024-03-20',
     downloads: 8900,
-    tags: ['奇幻', '冒险', '战斗']
+    tags: ['奇幻', '冒险', '战斗'],
+    subCategory: 'raw'
   },
   {
     id: 'pc3',
@@ -38,7 +41,8 @@ const pcGames = ref<Game[]>([
     size: '6.8GB',
     releaseDate: '2024-04-10',
     downloads: 15600,
-    tags: ['恋爱', '校园', '青春']
+    tags: ['恋爱', '校园', '青春'],
+    subCategory: 'cooked'
   },
   {
     id: 'pc4',
@@ -49,12 +53,45 @@ const pcGames = ref<Game[]>([
     size: '15.2GB',
     releaseDate: '2024-01-15',
     downloads: 9800,
-    tags: ['科幻', '冒险', '探索']
+    tags: ['科幻', '冒险', '探索'],
+    subCategory: 'raw'
+  },
+  {
+    id: 'pc5',
+    name: '机械之心',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20robot%20mecha%20game%20cover%20sci-fi&image_size=portrait_4_3',
+    description: '在机械与人类共存的世界，探索人工智能的情感与意识。',
+    category: 'PC资源',
+    size: '10.1GB',
+    releaseDate: '2024-05-20',
+    downloads: 7200,
+    tags: ['科幻', '剧情', '机器人'],
+    subCategory: 'cooked'
+  },
+  {
+    id: 'pc6',
+    name: '魔法学园',
+    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20magic%20academy%20game%20cover%20wizard&image_size=portrait_4_3',
+    description: '进入魔法学院，学习各种神奇的魔法，与伙伴们一起冒险。',
+    category: 'PC资源',
+    size: '9.8GB',
+    releaseDate: '2024-02-15',
+    downloads: 11000,
+    tags: ['魔法', '学园', '冒险'],
+    subCategory: 'raw'
   }
 ])
 
+const filteredGames = computed(() => {
+  return pcGames.value.filter(game => game.subCategory === activeCategory.value)
+})
+
 const goToGame = (gameId: string) => {
   router.push(`/game/${gameId}`)
+}
+
+const setCategory = (category: 'raw' | 'cooked') => {
+  activeCategory.value = category
 }
 </script>
 
@@ -84,9 +121,39 @@ const goToGame = (gameId: string) => {
         </div>
       </div>
       
-      <div class="grid grid-cols-2 gap-4 mt-6">
+      <div class="flex gap-2 mt-6">
+        <button 
+          @click="setCategory('raw')"
+          class="flex-1 py-3 rounded-xl font-medium transition-all"
+          :class="activeCategory === 'raw' 
+            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
+            : 'bg-white text-gray-600 hover:bg-gray-50'"
+        >
+          <span class="block">🍖 生肉</span>
+          <span class="text-xs opacity-75">未汉化</span>
+        </button>
+        <button 
+          @click="setCategory('cooked')"
+          class="flex-1 py-3 rounded-xl font-medium transition-all"
+          :class="activeCategory === 'cooked' 
+            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
+            : 'bg-white text-gray-600 hover:bg-gray-50'"
+        >
+          <span class="block">🍳 熟肉</span>
+          <span class="text-xs opacity-75">已汉化</span>
+        </button>
+      </div>
+      
+      <div class="flex items-center justify-between mt-4">
+        <h3 class="text-lg font-bold text-gray-800">
+          {{ activeCategory === 'raw' ? '生肉资源' : '熟肉资源' }}
+        </h3>
+        <span class="text-sm text-gray-500">{{ filteredGames.length }} 个游戏</span>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4 mt-4">
         <div 
-          v-for="game in pcGames" 
+          v-for="game in filteredGames" 
           :key="game.id"
           @click="goToGame(game.id)"
           class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer"
