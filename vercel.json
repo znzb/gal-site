@@ -7,6 +7,7 @@
   "routes": [
     { "src": "/admin(.*)", "dest": "/admin.html" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/banners/(.*)", "dest": "/banners/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
