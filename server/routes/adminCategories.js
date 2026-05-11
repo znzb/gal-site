@@ -57,4 +57,33 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+router.post('/merge-to-gal', authMiddleware, async (req, res) => {
+  try {
+    const galCategory = await Category.findOne({ name: 'Gal游戏' });
+    if (!galCategory) {
+      return res.status(404).json({ error: 'Gal游戏分类不存在，请先创建' });
+    }
+
+    const migratedGames = [];
+    const sourceCategories = ['安卓直装', 'kr资源'];
+
+    for (const categoryName of sourceCategories) {
+      const updated = await Game.updateMany(
+        { category: categoryName },
+        { category: 'Gal游戏' }
+      );
+      if (updated.modifiedCount > 0) {
+        migratedGames.push({ from: categoryName, count: updated.modifiedCount });
+      }
+    }
+
+    res.json({
+      message: '游戏分类迁移完成',
+      migrated: migratedGames
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
