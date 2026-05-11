@@ -1,9 +1,11 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Category from '../models/Category.js';
 import Game from '../models/Game.js';
 import { authMiddleware } from './adminAuth.js';
 
 const router = express.Router();
+const ObjectId = mongoose.Types.ObjectId;
 
 router.get('/', async (req, res) => {
   try {
@@ -32,7 +34,6 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const ObjectId = require('mongoose').Types.ObjectId;
     const updateData = { ...req.body };
     delete updateData._id;
     delete updateData.id;
@@ -60,7 +61,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const ObjectId = require('mongoose').Types.ObjectId;
     const isObjectId = ObjectId.isValid(req.params.id);
     
     let category;
