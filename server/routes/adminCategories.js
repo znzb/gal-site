@@ -36,18 +36,18 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const isObjectId = ObjectId.isValid(req.params.id);
     
     let category;
+    
     if (isObjectId) {
       category = await Category.findOneAndUpdate(
-        { $or: [{ id: req.params.id }, { _id: req.params.id }] },
+        { $or: [{ id: req.params.id }, { _id: new ObjectId(req.params.id) }] },
         req.body,
         { new: true }
       );
     } else {
-      category = await Category.findOneAndUpdate(
-        { id: req.params.id },
-        req.body,
-        { new: true }
-      );
+      category = await Category.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
+      if (!category) {
+        category = await Category.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+      }
     }
     
     if (!category) {
@@ -65,10 +65,16 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     const isObjectId = ObjectId.isValid(req.params.id);
     
     let category;
+    
     if (isObjectId) {
-      category = await Category.findOneAndDelete({ $or: [{ id: req.params.id }, { _id: req.params.id }] });
+      category = await Category.findOneAndDelete(
+        { $or: [{ id: req.params.id }, { _id: new ObjectId(req.params.id) }] }
+      );
     } else {
       category = await Category.findOneAndDelete({ id: req.params.id });
+      if (!category) {
+        category = await Category.findOneAndDelete({ _id: req.params.id });
+      }
     }
     
     if (!category) {
