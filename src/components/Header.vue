@@ -55,10 +55,6 @@ const goToSearch = () => {
         class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"
       >工具下载</button>
       <button 
-        @click="router.push('/pc-resources')"
-        class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"
-      >PC资源</button>
-      <button 
         @click="router.push('/help')"
         class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"
       >帮助中心</button>
