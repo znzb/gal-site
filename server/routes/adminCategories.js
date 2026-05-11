@@ -1,5 +1,6 @@
 import express from 'express';
 import Category from '../models/Category.js';
+import Game from '../models/Game.js';
 import { authMiddleware } from './adminAuth.js';
 
 const router = express.Router();
