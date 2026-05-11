@@ -33,16 +33,20 @@ router.post('/', authMiddleware, async (req, res) => {
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const ObjectId = require('mongoose').Types.ObjectId;
+    const updateData = { ...req.body };
+    delete updateData._id;
+    delete updateData.id;
+    
     let category;
     
     try {
       const objectId = new ObjectId(req.params.id);
-      category = await Category.findOneAndUpdate({ _id: objectId }, req.body, { new: true });
+      category = await Category.findOneAndUpdate({ _id: objectId }, updateData, { new: true, runValidators: false });
     } catch (e) {
     }
     
     if (!category) {
-      category = await Category.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
+      category = await Category.findOneAndUpdate({ id: req.params.id }, updateData, { new: true, runValidators: false });
     }
     
     if (!category) {
