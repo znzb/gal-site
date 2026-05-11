@@ -55,8 +55,6 @@
         <h3>{{ cat.name }}</h3>
         <p class="game-count">{{ getGameCount(cat.name) }} 个游戏</p>
         <div class="category-actions">
-          <button @click.stop="moveCategoryUp(index)" class="move-btn" :disabled="index === 0">↑</button>
-          <button @click.stop="moveCategoryDown(index)" class="move-btn" :disabled="index === categories.length - 1">↓</button>
           <button @click.stop="editCategory(cat)" class="edit-btn">编辑</button>
           <button @click.stop="deleteCategory(cat)" class="delete-btn">删除</button>
         </div>
@@ -74,10 +72,6 @@
           <div class="form-group">
             <label>图标 (emoji)</label>
             <input v-model="categoryForm.icon" placeholder="例如: 🎮" />
-          </div>
-          <div class="form-group">
-            <label>排序</label>
-            <input v-model.number="categoryForm.order" type="number" />
           </div>
           <div class="modal-actions">
             <button type="button" @click="showAddModal = false">取消</button>
@@ -338,7 +332,7 @@ function viewCategory(cat) {
 
 function editCategory(cat) {
   editingCategory.value = cat;
-  categoryForm.value = { name: cat.name, icon: cat.icon, order: cat.order || 0 };
+  categoryForm.value = { name: cat.name, icon: cat.icon };
   showAddModal.value = true;
 }
 
@@ -391,20 +385,6 @@ async function onDrop(event, targetIndex) {
   
   await updateOrder(categoriesList);
   draggedIndex = -1;
-}
-
-async function moveCategoryUp(index) {
-  if (index === 0) return;
-  const categoriesList = [...categories.value];
-  [categoriesList[index], categoriesList[index - 1]] = [categoriesList[index - 1], categoriesList[index]];
-  await updateOrder(categoriesList);
-}
-
-async function moveCategoryDown(index) {
-  if (index === categories.value.length - 1) return;
-  const categoriesList = [...categories.value];
-  [categoriesList[index], categoriesList[index + 1]] = [categoriesList[index + 1], categoriesList[index]];
-  await updateOrder(categoriesList);
 }
 
 async function updateOrder(categoriesList) {
@@ -687,22 +667,6 @@ function resetGameForm() {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.move-btn {
-  padding: 6px 10px;
-  background: #95a5a6;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.move-btn:disabled {
-  background: #bdc3c7;
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .drag-handle {
