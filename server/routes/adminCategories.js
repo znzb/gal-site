@@ -32,11 +32,24 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const category = await Category.findOneAndUpdate(
-      { id: req.params.id },
-      req.body,
-      { new: true }
-    );
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const isObjectId = ObjectId.isValid(req.params.id);
+    
+    let category;
+    if (isObjectId) {
+      category = await Category.findOneAndUpdate(
+        { $or: [{ id: req.params.id }, { _id: req.params.id }] },
+        req.body,
+        { new: true }
+      );
+    } else {
+      category = await Category.findOneAndUpdate(
+        { id: req.params.id },
+        req.body,
+        { new: true }
+      );
+    }
+    
     if (!category) {
       return res.status(404).json({ error: '分类不存在' });
     }
@@ -48,7 +61,16 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const category = await Category.findOneAndDelete({ id: req.params.id });
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const isObjectId = ObjectId.isValid(req.params.id);
+    
+    let category;
+    if (isObjectId) {
+      category = await Category.findOneAndDelete({ $or: [{ id: req.params.id }, { _id: req.params.id }] });
+    } else {
+      category = await Category.findOneAndDelete({ id: req.params.id });
+    }
+    
     if (!category) {
       return res.status(404).json({ error: '分类不存在' });
     }
