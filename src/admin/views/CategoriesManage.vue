@@ -332,7 +332,7 @@ function viewCategory(cat) {
 
 function editCategory(cat) {
   editingCategory.value = cat;
-  categoryForm.value = { name: cat.name, icon: cat.icon };
+  categoryForm.value = { name: cat.name, icon: cat.icon, order: cat.order || 0 };
   showAddModal.value = true;
 }
 
