@@ -139,7 +139,7 @@ export const gameApi = {
     try {
       const response = await fetch(`${BASE_URL}/games/${id}/download`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
         signal: AbortSignal.timeout(5000)
       });
       return response.json();

@@ -31,7 +31,7 @@
               <td>{{ game.downloads }}</td>
               <td class="actions">
                 <button @click="editGame(game)" class="edit-btn">编辑</button>
-                <button @click="deleteGame(game._id)" class="delete-btn">删除</button>
+                <button @click="deleteGame(game)" class="delete-btn">删除</button>
               </td>
             </tr>
           </tbody>
@@ -46,7 +46,7 @@
         <p class="game-count">{{ getGameCount(cat.name) }} 个游戏</p>
         <div class="category-actions">
           <button @click.stop="editCategory(cat)" class="edit-btn">编辑</button>
-          <button @click.stop="deleteCategory(cat._id)" class="delete-btn">删除</button>
+          <button @click.stop="deleteCategory(cat)" class="delete-btn">删除</button>
         </div>
       </div>
     </div>
@@ -332,7 +332,7 @@ function editCategory(cat) {
 
 async function saveCategory() {
   if (editingCategory.value) {
-    await request('/admin/categories/' + editingCategory.value._id, {
+    await request('/admin/categories/' + editingCategory.value.id, {
       method: 'PUT',
       body: JSON.stringify(categoryForm.value)
     });
@@ -348,9 +348,9 @@ async function saveCategory() {
   await loadCategories();
 }
 
-async function deleteCategory(id) {
+async function deleteCategory(category) {
   if (confirm('确定要删除这个分类吗?')) {
-    await request('/admin/categories/' + id, { method: 'DELETE' });
+    await request('/admin/categories/' + (category.id || category._id), { method: 'DELETE' });
     await loadCategories();
   }
 }
@@ -420,11 +420,13 @@ async function saveGame() {
     ...gameForm.value,
     category: selectedCategory.value.name,
     tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
-    downloads: editingGameItem.value ? editingGameItem.value.downloads : 0
+    downloads: editingGameItem.value ? editingGameItem.value.downloads : 0,
+    resources: gameForm.value.resources.filter(r => r.name && r.url),
+    comments: gameForm.value.comments.filter(c => c.user && c.content)
   };
 
   if (editingGameItem.value) {
-    await request('/admin/games/' + editingGameItem.value._id, {
+    await request('/admin/games/' + editingGameItem.value.id, {
       method: 'PUT',
       body: JSON.stringify(gameData)
     });
@@ -441,9 +443,9 @@ async function saveGame() {
   await loadGames();
 }
 
-async function deleteGame(id) {
+async function deleteGame(game) {
   if (confirm('确定要删除这个游戏吗?')) {
-    await request('/admin/games/' + id, { method: 'DELETE' });
+    await request('/admin/games/' + (game.id || game._id), { method: 'DELETE' });
     await loadGames();
   }
 }

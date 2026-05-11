@@ -15,7 +15,13 @@ router.get('/', async (req, res) => {
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const category = new Category(req.body);
+    const maxCategory = await Category.findOne().sort({ id: -1 });
+    const newId = maxCategory ? String(parseInt(maxCategory.id) + 1) : '1';
+    
+    const category = new Category({
+      ...req.body,
+      id: newId
+    });
     await category.save();
     res.status(201).json(category);
   } catch (error) {
@@ -25,11 +31,14 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const category = await Category.findByIdAndUpdate(
-      req.params.id,
+    const category = await Category.findOneAndUpdate(
+      { id: req.params.id },
       req.body,
       { new: true }
     );
+    if (!category) {
+      return res.status(404).json({ error: '分类不存在' });
+    }
     res.json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -38,7 +47,10 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    await Category.findByIdAndDelete(req.params.id);
+    const category = await Category.findOneAndDelete({ id: req.params.id });
+    if (!category) {
+      return res.status(404).json({ error: '分类不存在' });
+    }
     res.json({ message: '删除成功' });
   } catch (error) {
     res.status(500).json({ error: error.message });

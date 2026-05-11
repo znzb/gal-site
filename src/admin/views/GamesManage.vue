@@ -47,7 +47,7 @@
             <td>{{ game.downloads }}</td>
             <td class="actions">
               <button @click="editGame(game)" class="edit-btn">编辑</button>
-              <button @click="deleteGame(game._id)" class="delete-btn">删除</button>
+              <button @click="deleteGame(game)" class="delete-btn">删除</button>
             </td>
           </tr>
         </tbody>
@@ -398,9 +398,9 @@ async function saveGame() {
   await loadGames();
 }
 
-async function deleteGame(id) {
+async function deleteGame(game) {
   if (confirm('确定要删除这个游戏吗?')) {
-    await request('/admin/games/' + id, { method: 'DELETE' });
+    await request('/admin/games/' + (game.id || game._id), { method: 'DELETE' });
     await loadGames();
   }
 }
