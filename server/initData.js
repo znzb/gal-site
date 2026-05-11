@@ -22,7 +22,8 @@ const initData = async () => {
       { id: '2', name: 'kr资源', icon: 'image' },
       { id: '3', name: '游戏CG', icon: 'image' },
       { id: '4', name: '图集资源', icon: 'images' },
-      { id: '5', name: '新人必读', icon: 'book-open' }
+      { id: '5', name: '新人必读', icon: 'book-open' },
+      { id: '6', name: 'PC资源', icon: 'monitor' }
     ];
     await Category.insertMany(categories);
     console.log('Categories inserted');
