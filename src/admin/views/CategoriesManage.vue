@@ -409,7 +409,8 @@ async function moveCategoryDown(index) {
 async function updateOrder(categoriesList) {
   for (let i = 0; i < categoriesList.length; i++) {
     if (categoriesList[i].order !== i) {
-      await request('/admin/categories/' + categoriesList[i].id, {
+      const categoryId = categoriesList[i].id || categoriesList[i]._id;
+      await request('/admin/categories/' + categoryId, {
         method: 'PUT',
         body: JSON.stringify({ ...categoriesList[i], order: i })
       });
