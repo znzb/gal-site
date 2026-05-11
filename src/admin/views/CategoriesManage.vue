@@ -40,11 +40,23 @@
     </div>
 
     <div v-else class="categories-grid">
-      <div v-for="cat in categories" :key="cat._id" class="category-card" @click="viewCategory(cat)">
+      <div 
+        v-for="(cat, index) in categories" 
+        :key="cat._id" 
+        class="category-card" 
+        @click="viewCategory(cat)"
+        draggable="true"
+        @dragstart="onDragStart($event, index)"
+        @dragover.prevent="onDragOver($event)"
+        @drop="onDrop($event, index)"
+      >
+        <div class="drag-handle">⇅</div>
         <div class="category-icon">{{ cat.icon || '📁' }}</div>
         <h3>{{ cat.name }}</h3>
         <p class="game-count">{{ getGameCount(cat.name) }} 个游戏</p>
         <div class="category-actions">
+          <button @click.stop="moveCategoryUp(index)" class="move-btn" :disabled="index === 0">↑</button>
+          <button @click.stop="moveCategoryDown(index)" class="move-btn" :disabled="index === categories.length - 1">↓</button>
           <button @click.stop="editCategory(cat)" class="edit-btn">编辑</button>
           <button @click.stop="deleteCategory(cat)" class="delete-btn">删除</button>
         </div>
@@ -355,6 +367,57 @@ async function deleteCategory(category) {
   }
 }
 
+let draggedIndex = -1;
+
+function onDragStart(event, index) {
+  draggedIndex = index;
+  event.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragOver(event) {
+  event.dataTransfer.dropEffect = 'move';
+}
+
+async function onDrop(event, targetIndex) {
+  if (draggedIndex === -1 || draggedIndex === targetIndex) {
+    draggedIndex = -1;
+    return;
+  }
+  
+  const categoriesList = [...categories.value];
+  const [draggedItem] = categoriesList.splice(draggedIndex, 1);
+  categoriesList.splice(targetIndex, 0, draggedItem);
+  
+  await updateOrder(categoriesList);
+  draggedIndex = -1;
+}
+
+async function moveCategoryUp(index) {
+  if (index === 0) return;
+  const categoriesList = [...categories.value];
+  [categoriesList[index], categoriesList[index - 1]] = [categoriesList[index - 1], categoriesList[index]];
+  await updateOrder(categoriesList);
+}
+
+async function moveCategoryDown(index) {
+  if (index === categories.value.length - 1) return;
+  const categoriesList = [...categories.value];
+  [categoriesList[index], categoriesList[index + 1]] = [categoriesList[index + 1], categoriesList[index]];
+  await updateOrder(categoriesList);
+}
+
+async function updateOrder(categoriesList) {
+  for (let i = 0; i < categoriesList.length; i++) {
+    if (categoriesList[i].order !== i) {
+      await request('/admin/categories/' + categoriesList[i].id, {
+        method: 'PUT',
+        body: JSON.stringify({ ...categoriesList[i], order: i })
+      });
+    }
+  }
+  await loadCategories();
+}
+
 function resetCategoryForm() {
   categoryForm.value = { name: '', icon: '', order: 0 };
 }
@@ -578,6 +641,7 @@ function resetGameForm() {
   text-align: center;
   cursor: pointer;
   transition: box-shadow 0.2s;
+  position: relative;
 }
 
 .category-card:hover {
@@ -621,6 +685,40 @@ function resetGameForm() {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.move-btn {
+  padding: 6px 10px;
+  background: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.move-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.drag-handle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 16px;
+  color: #999;
+  cursor: grab;
+}
+
+.category-card.dragging {
+  opacity: 0.5;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.category-card.drag-over {
+  border: 2px dashed #667eea;
 }
 
 .games-table {
