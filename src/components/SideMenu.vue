@@ -34,9 +34,9 @@ const handleMenuClick = (item: { id: string; name: string }) => {
   
   if (item.id === 'home') {
     router.push('/')
-  } else if (item.id === 'pc') {
+  } else if (item.name === 'PC资源' || item.name === 'pc资源') {
     router.push('/pc-resources')
-  } else if (item.id === 'guide') {
+  } else if (item.name === '新人必读') {
     router.push('/help')
   } else {
     router.push(`/category/${encodeURIComponent(item.name)}`)
@@ -83,16 +83,6 @@ onMounted(() => {
           <div class="flex items-center">
             <Home class="w-5 h-5 mr-3 text-gray-600" />
             <span class="text-gray-700">主页</span>
-          </div>
-        </button>
-        
-        <button 
-          @click="handleMenuClick({ id: 'pc', name: 'PC资源' })"
-          class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-200 transition-colors"
-        >
-          <div class="flex items-center">
-            <Monitor class="w-5 h-5 mr-3 text-gray-600" />
-            <span class="text-gray-700">PC资源</span>
           </div>
         </button>
         
