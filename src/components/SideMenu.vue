@@ -87,7 +87,7 @@ onUnmounted(() => {
       <div class="py-2">
         <button 
           @click="handleMenuClick({ id: 'home', name: '主页' })"
-          class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-200 transition-colors bg-white"
+          class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-200 transition-colors"
         >
           <div class="flex items-center">
             <Home class="w-5 h-5 mr-3 text-gray-600" />
@@ -100,11 +100,10 @@ onUnmounted(() => {
           :key="category.id"
           @click="handleMenuClick({ id: category.id, name: category.name })"
           class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-200 transition-colors"
-          :class="{ 'bg-white': category.name === '新人必读' }"
         >
           <div class="flex items-center">
-            <component :is="getIcon(category.icon)" class="w-5 h-5 mr-3" :class="category.name === '新人必读' ? 'text-primary' : 'text-gray-600'" />
-            <span :class="category.name === '新人必读' ? 'text-primary font-bold' : 'text-gray-700'">{{ category.name }}</span>
+            <component :is="getIcon(category.icon)" class="w-5 h-5 mr-3 text-gray-600" />
+            <span class="text-gray-700">{{ category.name }}</span>
           </div>
         </button>
       </div>
