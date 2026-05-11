@@ -344,7 +344,8 @@ function editCategory(cat) {
 
 async function saveCategory() {
   if (editingCategory.value) {
-    await request('/admin/categories/' + editingCategory.value.id, {
+    const categoryId = editingCategory.value.id || editingCategory.value._id;
+    await request('/admin/categories/' + categoryId, {
       method: 'PUT',
       body: JSON.stringify(categoryForm.value)
     });
