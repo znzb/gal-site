@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.find();
+    const categories = await Category.find().sort({ order: 1 });
     res.json(categories);
   } catch (error) {
     res.status(500).json({ message: error.message });

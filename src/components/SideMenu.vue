@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { X, Home, Monitor, BookOpen, ChevronDown } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
-import { categoryApi, type Category } from '@/api/api'
+import { categoryApi, type CategoryItem } from '@/api/api'
 
 const props = defineProps<{
   show: boolean
@@ -14,7 +14,9 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const categories = ref<Category[]>([])
+const categories = ref<CategoryItem[]>([])
+
+let refreshInterval: number | null = null
 
 const iconMap: Record<string, any> = {
   'gamepad-2': Monitor,
@@ -47,7 +49,7 @@ const loadCategories = async () => {
   try {
     const data = await categoryApi.getAllCategories()
     if (data && data.length > 0) {
-      categories.value = data
+      categories.value = data.sort((a, b) => (a.order || 0) - (b.order || 0))
     }
   } catch (error) {
     console.error('Failed to load categories:', error)
@@ -56,6 +58,13 @@ const loadCategories = async () => {
 
 onMounted(() => {
   loadCategories()
+  refreshInterval = window.setInterval(loadCategories, 5000)
+})
+
+onUnmounted(() => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval)
+  }
 })
 </script>
 
