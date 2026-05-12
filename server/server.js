@@ -33,8 +33,23 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ['https://galzb.cc.cd', 'https://www.galzb.cc.cd', 'http://localhost:5173', 'http://localhost:5174'],
-  credentials: true
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    const allowedOrigins = [
+      'https://galzb.cc.cd',
+      'https://www.galzb.cc.cd',
+      'http://localhost:5173',
+      'http://localhost:5174'
+    ];
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '10kb' }));
@@ -136,8 +151,10 @@ const initData = async () => {
 
     const existingGames = await Game.countDocuments();
     const existingTools = await Tool.countDocuments();
-    if (existingGames > 0 && existingTools > 0) {
-      console.log(`数据已存在，共有 ${existingGames} 个游戏，${existingTools} 个工具`);
+    const existingCategories = await Category.countDocuments();
+    
+    if (existingGames > 0 && existingTools > 0 && existingCategories > 0) {
+      console.log(`数据已存在，共有 ${existingGames} 个游戏，${existingTools} 个工具，${existingCategories} 个分类`);
       return;
     }
 
