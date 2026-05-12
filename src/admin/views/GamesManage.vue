@@ -390,22 +390,34 @@ async function saveGame() {
   const comments = gameForm.value.comments.filter(c => c.user && c.content);
   
   const platforms = gameForm.value.platforms;
-  let category = 'Gal游戏';
-  let categories = ['Gal游戏'];
+  let category = gameForm.value.category;
+  let categories = category ? [category] : ['Gal游戏'];
   
-  if (platforms.includes('PC')) {
-    if (platforms.length > 1) {
-      categories = ['PC资源', 'Gal游戏'];
-    } else {
-      categories = ['PC资源'];
+  // 如果用户没有选择分类，才根据平台自动设置
+  if (!category) {
+    if (platforms.includes('PC')) {
+      if (platforms.length > 1) {
+        categories = ['PC资源', 'Gal游戏'];
+      } else {
+        categories = ['PC资源'];
+      }
+      category = 'PC资源';
     }
-    category = 'PC资源';
+  } else {
+    // 如果用户选择了分类，检查是否需要根据平台添加额外分类
+    if (platforms.includes('PC') && category !== 'PC资源') {
+      categories = [category, 'PC资源'];
+    }
+    if (platforms.includes('PC') && platforms.length > 1 && !categories.includes('Gal游戏')) {
+      categories.push('Gal游戏');
+    }
   }
   
   const gameData = {
     ...gameForm.value,
     category,
     categories,
+    platforms,
     tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
     downloads: editingGame.value ? editingGame.value.downloads : 0,
     resources: resources.map(r => ({
@@ -744,6 +756,26 @@ th, td {
   padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
+}
+
+.platform-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.platform-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.platform-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 
 .modal-actions {
