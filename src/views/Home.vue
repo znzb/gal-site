@@ -99,7 +99,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pb-20 md:pb-8">
+  <div class="min-h-screen bg-gray-50 pb-20 md:pb-8">
     <Header />
     
     <!-- Loading状态 -->
@@ -111,9 +111,9 @@ onUnmounted(() => {
       <!-- 移动端布局 -->
       <div class="md:hidden">
         <div class="mx-4 mt-4">
-          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-slate-800/50 border border-slate-700/50">
+          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-gray-200">
             <div class="relative h-40">
-              <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900">
+              <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100">
                 <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
                   <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
@@ -168,7 +168,7 @@ onUnmounted(() => {
                   :key="banner.id"
                   @click="goToBanner(index)"
                   class="w-2 h-2 rounded-full transition-all duration-300 transform hover:scale-125"
-                  :class="currentBanner === index ? 'bg-indigo-400 w-4' : 'bg-white/30 hover:bg-white/50'"
+                  :class="currentBanner === index ? 'bg-indigo-500 w-4' : 'bg-gray-300 hover:bg-gray-400'"
                 ></button>
               </div>
             </div>
@@ -178,24 +178,24 @@ onUnmounted(() => {
         <FeatureGrid />
         
         <div id="announcements" v-if="announcements.length > 0" class="px-4 mt-6">
-          <div class="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4">
+          <div class="bg-white rounded-xl border border-gray-200 p-4">
             <div class="flex items-center gap-2 mb-3">
               <span class="text-xl">📢</span>
-              <h3 class="font-bold text-white">公告</h3>
+              <h3 class="font-bold text-gray-800">公告</h3>
             </div>
             <div class="space-y-3">
               <div 
                 v-for="announcement in announcements" 
                 :key="announcement.id"
-                class="p-3 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-lg border-l-4 border-indigo-500"
+                class="p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-l-4 border-indigo-500"
               >
                 <div class="flex items-start justify-between gap-2">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-white flex items-center gap-2">
-                      <span v-if="announcement.isPinned" class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">置顶</span>
+                    <h4 class="font-semibold text-gray-800 flex items-center gap-2">
+                      <span v-if="announcement.isPinned" class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">置顶</span>
                       {{ announcement.title }}
                     </h4>
-                    <p class="text-sm text-gray-400 mt-1">{{ announcement.content }}</p>
+                    <p class="text-sm text-gray-600 mt-1">{{ announcement.content }}</p>
                   </div>
                   <span class="text-xs text-gray-500 whitespace-nowrap">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
                 </div>
@@ -206,8 +206,8 @@ onUnmounted(() => {
         
         <div class="px-4 mt-6">
           <div class="flex items-center justify-between mb-3">
-            <h2 class="text-lg font-bold text-white">热门游戏</h2>
-            <span class="text-xs text-indigo-400">查看更多 →</span>
+            <h2 class="text-lg font-bold text-gray-800">热门游戏</h2>
+            <span class="text-xs text-indigo-600">查看更多 →</span>
           </div>
           
           <div class="grid grid-cols-2 gap-3">
@@ -226,43 +226,43 @@ onUnmounted(() => {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           
           <!-- 大幅横幅区域 -->
-          <div class="relative rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/30 mb-8">
+          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-gradient-to-br from-white to-gray-50 border border-gray-200 mb-8">
             <div class="relative h-72 lg:h-96">
-              <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-blue-900/20">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(99,102,241,0.15)_0%,transparent_50%)]"></div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(168,85,247,0.15)_0%,transparent_50%)]"></div>
+              <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-purple-50/50 to-blue-50/50">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(99,102,241,0.1)_0%,transparent_50%)]"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(168,85,247,0.1)_0%,transparent_50%)]"></div>
                 
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                  <div class="text-6xl lg:text-7xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+                  <div class="text-6xl lg:text-7xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
                     三菜鱼小站
                   </div>
-                  <p class="text-xl lg:text-2xl text-gray-300 font-medium mb-8">
+                  <p class="text-xl lg:text-2xl text-gray-700 font-medium mb-8">
                     分享、传递 Galgame
                   </p>
                   <div class="flex gap-10">
                     <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-indigo-500/30 border border-indigo-500/30 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-indigo-500/30">
-                        <Zap class="w-8 h-8 text-indigo-400" />
+                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-100 to-indigo-50 border border-indigo-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-indigo-200">
+                        <Zap class="w-8 h-8 text-indigo-600" />
                       </div>
-                      <span class="text-sm text-gray-400">极速下载</span>
+                      <span class="text-sm text-gray-600">极速下载</span>
                     </div>
                     <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-500/30 border border-purple-500/30 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-purple-500/30">
-                        <Cpu class="w-8 h-8 text-purple-400" />
+                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-purple-200">
+                        <Cpu class="w-8 h-8 text-purple-600" />
                       </div>
-                      <span class="text-sm text-gray-400">海量资源</span>
+                      <span class="text-sm text-gray-600">海量资源</span>
                     </div>
                     <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-500/30 border border-blue-500/30 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-500/30">
-                        <HardDrive class="w-8 h-8 text-blue-400" />
+                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-200">
+                        <HardDrive class="w-8 h-8 text-blue-600" />
                       </div>
-                      <span class="text-sm text-gray-400">安全可靠</span>
+                      <span class="text-sm text-gray-600">安全可靠</span>
                     </div>
                     <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-600/20 to-pink-500/30 border border-pink-500/30 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-pink-500/30">
-                        <Globe class="w-8 h-8 text-pink-400" />
+                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-100 to-pink-50 border border-pink-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-pink-200">
+                        <Globe class="w-8 h-8 text-pink-600" />
                       </div>
-                      <span class="text-sm text-gray-400">持续更新</span>
+                      <span class="text-sm text-gray-600">持续更新</span>
                     </div>
                   </div>
                 </div>
@@ -271,68 +271,68 @@ onUnmounted(() => {
           </div>
 
           <!-- 快捷导航区域 -->
-          <div class="bg-slate-800/30 rounded-xl border border-slate-700/30 p-6 mb-8">
-            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <span class="text-indigo-400 text-2xl">⚡</span>
+          <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span class="text-indigo-600 text-2xl">⚡</span>
               快速导航
             </h3>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               <button 
                 @click="router.push('/pc-resources')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-indigo-900/30 to-indigo-800/20 border border-indigo-700/30 hover:from-indigo-700/40 hover:to-indigo-600/30 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 hover:from-indigo-100 hover:to-indigo-50 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Monitor class="w-10 h-10 text-indigo-400 mb-2" />
-                <span class="text-sm font-medium text-gray-300">PC资源</span>
+                <Monitor class="w-10 h-10 text-indigo-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">PC资源</span>
               </button>
               <button 
                 @click="router.push('/category/PC资源')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-700/30 hover:from-purple-700/40 hover:to-purple-600/30 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-purple-50 to-white border border-purple-100 hover:from-purple-100 hover:to-purple-50 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Gamepad2 class="w-10 h-10 text-purple-400 mb-2" />
-                <span class="text-sm font-medium text-gray-300">Gal游戏</span>
+                <Gamepad2 class="w-10 h-10 text-purple-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">Gal游戏</span>
               </button>
               <button 
                 @click="router.push('/yuzusoft')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-700/30 hover:from-blue-700/40 hover:to-blue-600/30 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 hover:from-blue-100 hover:to-blue-50 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Music class="w-10 h-10 text-blue-400 mb-2" />
-                <span class="text-sm font-medium text-gray-300">柚子社</span>
+                <Music class="w-10 h-10 text-blue-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">柚子社</span>
               </button>
               <button 
                 @click="router.push('/tools')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-900/30 to-pink-800/20 border border-pink-700/30 hover:from-pink-700/40 hover:to-pink-600/30 hover:border-pink-500/50 hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Download class="w-10 h-10 text-pink-400 mb-2" />
-                <span class="text-sm font-medium text-gray-300">工具下载</span>
+                <Download class="w-10 h-10 text-pink-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">工具下载</span>
               </button>
               <button 
                 @click="router.push('/category/游戏CG')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-cyan-900/30 to-cyan-800/20 border border-cyan-700/30 hover:from-cyan-700/40 hover:to-cyan-600/30 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-cyan-50 to-white border border-cyan-100 hover:from-cyan-100 hover:to-cyan-50 hover:border-cyan-300 hover:shadow-lg hover:shadow-cyan-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Image class="w-10 h-10 text-cyan-400 mb-2" />
-                <span class="text-sm font-medium text-gray-300">游戏CG</span>
+                <Image class="w-10 h-10 text-cyan-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">游戏CG</span>
               </button>
               <button 
                 @click="router.push('/help')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-700/30 hover:from-green-700/40 hover:to-green-600/30 hover:border-green-500/50 hover:shadow-lg hover:shadow-green-500/20 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 hover:from-green-100 hover:to-green-50 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300 transform hover:scale-105"
               >
-                <BookOpen class="w-10 h-10 text-green-400 mb-2" />
-                <span class="text-sm font-medium text-gray-300">帮助中心</span>
+                <BookOpen class="w-10 h-10 text-green-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">帮助中心</span>
               </button>
             </div>
           </div>
 
           <!-- 公告区域 -->
-          <div v-if="announcements.length > 0" class="bg-slate-800/30 rounded-xl border border-slate-700/30 p-6 mb-8">
+          <div v-if="announcements.length > 0" class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-3">
                 <span class="text-2xl">📢</span>
-                <h3 class="font-bold text-white text-lg">最新公告</h3>
+                <h3 class="font-bold text-gray-800 text-lg">最新公告</h3>
               </div>
               <button 
                 v-if="announcements.length > 3"
                 @click="router.push('/announcements')"
-                class="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                class="text-sm text-indigo-600 hover:text-indigo-500 transition-colors"
               >
                 查看全部 →
               </button>
@@ -341,15 +341,15 @@ onUnmounted(() => {
               <div 
                 v-for="announcement in announcements.slice(0, 3)" 
                 :key="announcement.id"
-                class="p-4 bg-gradient-to-br from-slate-700/30 to-slate-800/30 rounded-xl border-l-4 border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300"
+                class="p-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border-l-4 border-indigo-500 hover:shadow-lg hover:shadow-indigo-100 transition-all duration-300"
               >
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-white flex items-center gap-2">
-                      <span v-if="announcement.isPinned" class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">置顶</span>
+                    <h4 class="font-semibold text-gray-800 flex items-center gap-2">
+                      <span v-if="announcement.isPinned" class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">置顶</span>
                       {{ announcement.title }}
                     </h4>
-                    <p class="text-sm text-gray-400 mt-2 line-clamp-2">{{ announcement.content }}</p>
+                    <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ announcement.content }}</p>
                   </div>
                   <span class="text-xs text-gray-500 whitespace-nowrap">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
                 </div>
@@ -360,11 +360,11 @@ onUnmounted(() => {
           <!-- 游戏列表 -->
           <div>
             <div class="flex items-center justify-between mb-4">
-              <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                <span class="text-indigo-400">🎮</span>
+              <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="text-indigo-600">🎮</span>
                 热门游戏
               </h2>
-              <span class="text-sm text-indigo-400 cursor-pointer hover:text-indigo-300 transition-colors">查看更多 →</span>
+              <span class="text-sm text-indigo-600 cursor-pointer hover:text-indigo-500 transition-colors">查看更多 →</span>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
