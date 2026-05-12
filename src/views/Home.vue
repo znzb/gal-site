@@ -110,116 +110,82 @@ onUnmounted(() => {
     <div v-else>
       <!-- 移动端布局 -->
       <div class="md:hidden">
-        <div class="px-4 py-4">
-          <!-- 大幅横幅区域 -->
-          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-gradient-to-br from-white to-gray-50 border border-gray-200 mb-6">
-            <div class="relative h-52">
-              <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-purple-50/50 to-blue-50/50">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(99,102,241,0.1)_0%,transparent_50%)]"></div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(168,85,247,0.1)_0%,transparent_50%)]"></div>
-                
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                  <div class="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
-                    三菜鱼小站
-                  </div>
-                  <p class="text-base text-gray-700 font-medium mb-6">
-                    分享、传递 Galgame
-                  </p>
-                  <div class="flex gap-6">
-                    <div class="flex flex-col items-center">
-                      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-50 border border-indigo-200 flex items-center justify-center mb-1">
-                        <Zap class="w-6 h-6 text-indigo-600" />
-                      </div>
-                      <span class="text-xs text-gray-600">极速下载</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-200 flex items-center justify-center mb-1">
-                        <Cpu class="w-6 h-6 text-purple-600" />
-                      </div>
-                      <span class="text-xs text-gray-600">海量资源</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200 flex items-center justify-center mb-1">
-                        <HardDrive class="w-6 h-6 text-blue-600" />
-                      </div>
-                      <span class="text-xs text-gray-600">安全可靠</span>
-                    </div>
-                  </div>
+        <div class="mx-4 mt-4">
+          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-gray-200">
+            <div class="relative h-40">
+              <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100">
+                <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <!-- 快捷导航区域 -->
-          <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-            <h3 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <span class="text-indigo-600 text-xl">⚡</span>
-              快速导航
-            </h3>
-            <div class="grid grid-cols-3 gap-3">
+              
+              <transition-group name="fade">
+                <div 
+                  v-for="(banner, index) in banners" 
+                  :key="banner.id"
+                  v-show="currentBanner === index"
+                  class="absolute inset-0"
+                >
+                  <img 
+                    :src="banner.image" 
+                    :alt="banner.title"
+                    loading="lazy"
+                    class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
+                    :class="bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
+                    @load="handleBannerLoad(index)"
+                    @error="handleBannerError(index)"
+                  />
+                  <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                    <h3 class="text-white text-lg font-bold drop-shadow-lg">{{ banner.title }}</h3>
+                    <p class="text-white/90 text-xs mt-0.5 drop-shadow-md">{{ banner.subtitle }}</p>
+                  </div>
+                </div>
+              </transition-group>
+              
               <button 
-                @click="router.push('/pc-resources')"
-                class="flex flex-col items-center p-3 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100"
+                v-if="banners.length > 1"
+                @click="prevBanner" 
+                class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/20 active:bg-white/30 transition-all duration-300 transform hover:scale-110 active:scale-95 z-10"
               >
-                <Monitor class="w-8 h-8 text-indigo-600 mb-1" />
-                <span class="text-xs font-medium text-gray-700">PC资源</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
               </button>
+              
               <button 
-                @click="router.push('/category/PC资源')"
-                class="flex flex-col items-center p-3 rounded-xl bg-gradient-to-br from-purple-50 to-white border border-purple-100"
+                v-if="banners.length > 1"
+                @click="nextBanner" 
+                class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/20 active:bg-white/30 transition-all duration-300 transform hover:scale-110 active:scale-95 z-10"
               >
-                <Gamepad2 class="w-8 h-8 text-purple-600 mb-1" />
-                <span class="text-xs font-medium text-gray-700">Gal游戏</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
               </button>
-              <button 
-                @click="router.push('/yuzusoft')"
-                class="flex flex-col items-center p-3 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100"
-              >
-                <Music class="w-8 h-8 text-blue-600 mb-1" />
-                <span class="text-xs font-medium text-gray-700">柚子社</span>
-              </button>
-              <button 
-                @click="router.push('/tools')"
-                class="flex flex-col items-center p-3 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100"
-              >
-                <Download class="w-8 h-8 text-pink-600 mb-1" />
-                <span class="text-xs font-medium text-gray-700">工具下载</span>
-              </button>
-              <button 
-                @click="router.push('/category/游戏CG')"
-                class="flex flex-col items-center p-3 rounded-xl bg-gradient-to-br from-cyan-50 to-white border border-cyan-100"
-              >
-                <Image class="w-8 h-8 text-cyan-600 mb-1" />
-                <span class="text-xs font-medium text-gray-700">游戏CG</span>
-              </button>
-              <button 
-                @click="router.push('/help')"
-                class="flex flex-col items-center p-3 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100"
-              >
-                <BookOpen class="w-8 h-8 text-green-600 mb-1" />
-                <span class="text-xs font-medium text-gray-700">帮助中心</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 公告区域 -->
-          <div v-if="announcements.length > 0" class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <span class="text-xl">📢</span>
-                <h3 class="font-bold text-gray-800 text-base">最新公告</h3>
+              
+              <div v-if="banners.length > 1" class="absolute bottom-3 left-0 right-0 z-10 flex items-center justify-center gap-1.5">
+                <button 
+                  v-for="(banner, index) in banners" 
+                  :key="banner.id"
+                  @click="goToBanner(index)"
+                  class="w-2 h-2 rounded-full transition-all duration-300 transform hover:scale-125"
+                  :class="currentBanner === index ? 'bg-indigo-500 w-4' : 'bg-gray-300 hover:bg-gray-400'"
+                ></button>
               </div>
-              <button 
-                v-if="announcements.length > 2"
-                @click="router.push('/announcements')"
-                class="text-xs text-indigo-600 hover:text-indigo-500 transition-colors"
-              >
-                查看全部 →
-              </button>
+            </div>
+          </div>
+        </div>
+        
+        <FeatureGrid />
+        
+        <div id="announcements" v-if="announcements.length > 0" class="px-4 mt-6">
+          <div class="bg-white rounded-xl border border-gray-200 p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xl">📢</span>
+              <h3 class="font-bold text-gray-800">公告</h3>
             </div>
             <div class="space-y-3">
               <div 
-                v-for="announcement in announcements.slice(0, 2)" 
+                v-for="announcement in announcements" 
                 :key="announcement.id"
                 class="p-3 bg-gradient-to-br from-gray-50 to-white rounded-lg border-l-4 border-indigo-500"
               >
@@ -229,32 +195,28 @@ onUnmounted(() => {
                       <span v-if="announcement.isPinned" class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">置顶</span>
                       {{ announcement.title }}
                     </h4>
-                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{{ announcement.content }}</p>
+                    <p class="text-xs text-gray-600 mt-1">{{ announcement.content }}</p>
                   </div>
                   <span class="text-[10px] text-gray-500 whitespace-nowrap">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- 游戏列表 -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                <span class="text-indigo-600">🎮</span>
-                热门游戏
-              </h2>
-              <span class="text-xs text-indigo-600 cursor-pointer hover:text-indigo-500 transition-colors">查看更多 →</span>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-3">
-              <GameCard 
-                v-for="game in games" 
-                :key="game.id" 
-                :game="game"
-                @click="handleGameClick"
-              />
-            </div>
+        </div>
+        
+        <div class="px-4 mt-6">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-bold text-gray-800">热门游戏</h2>
+            <span class="text-xs text-indigo-600">查看更多 →</span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <GameCard 
+              v-for="game in games" 
+              :key="game.id" 
+              :game="game"
+              @click="handleGameClick"
+            />
           </div>
         </div>
       </div>
@@ -263,47 +225,66 @@ onUnmounted(() => {
       <div class="hidden md:block">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           
-          <!-- 大幅横幅区域 -->
-          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-gradient-to-br from-white to-gray-50 border border-gray-200 mb-8">
+          <!-- 轮播图区域 -->
+          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-gray-200 mb-8">
             <div class="relative h-72 lg:h-96">
-              <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-purple-50/50 to-blue-50/50">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(99,102,241,0.1)_0%,transparent_50%)]"></div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(168,85,247,0.1)_0%,transparent_50%)]"></div>
-                
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                  <div class="text-6xl lg:text-7xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                    三菜鱼小站
-                  </div>
-                  <p class="text-xl lg:text-2xl text-gray-700 font-medium mb-8">
-                    分享、传递 Galgame
-                  </p>
-                  <div class="flex gap-10">
-                    <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-100 to-indigo-50 border border-indigo-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-indigo-200">
-                        <Zap class="w-8 h-8 text-indigo-600" />
-                      </div>
-                      <span class="text-sm text-gray-600">极速下载</span>
-                    </div>
-                    <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-purple-200">
-                        <Cpu class="w-8 h-8 text-purple-600" />
-                      </div>
-                      <span class="text-sm text-gray-600">海量资源</span>
-                    </div>
-                    <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-200">
-                        <HardDrive class="w-8 h-8 text-blue-600" />
-                      </div>
-                      <span class="text-sm text-gray-600">安全可靠</span>
-                    </div>
-                    <div class="flex flex-col items-center group">
-                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-100 to-pink-50 border border-pink-200 flex items-center justify-center mb-2 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-pink-200">
-                        <Globe class="w-8 h-8 text-pink-600" />
-                      </div>
-                      <span class="text-sm text-gray-600">持续更新</span>
-                    </div>
+              <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100">
+                <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              </div>
+              
+              <transition-group name="fade">
+                <div 
+                  v-for="(banner, index) in banners" 
+                  :key="banner.id"
+                  v-show="currentBanner === index"
+                  class="absolute inset-0"
+                >
+                  <img 
+                    :src="banner.image" 
+                    :alt="banner.title"
+                    loading="lazy"
+                    class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
+                    :class="bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
+                    @load="handleBannerLoad(index)"
+                    @error="handleBannerError(index)"
+                  />
+                  <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+                    <h3 class="text-white text-2xl lg:text-3xl font-bold drop-shadow-lg">{{ banner.title }}</h3>
+                    <p class="text-white/90 text-sm lg:text-base mt-1 drop-shadow-md">{{ banner.subtitle }}</p>
                   </div>
                 </div>
+              </transition-group>
+              
+              <button 
+                v-if="banners.length > 1"
+                @click="prevBanner" 
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 active:bg-white/40 transition-all duration-300 transform hover:scale-110 active:scale-95 z-10"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+              
+              <button 
+                v-if="banners.length > 1"
+                @click="nextBanner" 
+                class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 active:bg-white/40 transition-all duration-300 transform hover:scale-110 active:scale-95 z-10"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+              
+              <div v-if="banners.length > 1" class="absolute bottom-6 left-0 right-0 z-10 flex items-center justify-center gap-2">
+                <button 
+                  v-for="(banner, index) in banners" 
+                  :key="banner.id"
+                  @click="goToBanner(index)"
+                  class="w-3 h-3 rounded-full transition-all duration-300 transform hover:scale-125"
+                  :class="currentBanner === index ? 'bg-indigo-500 w-8' : 'bg-gray-300 hover:bg-gray-400'"
+                ></button>
               </div>
             </div>
           </div>
