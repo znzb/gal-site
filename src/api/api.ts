@@ -250,6 +250,17 @@ export const faqApi = {
   }
 };
 
+export interface ToolGuideItem {
+  order: number;
+  content: string;
+}
+
+export interface ToolGuide {
+  id?: string;
+  title: string;
+  items: ToolGuideItem[];
+}
+
 export const toolApi = {
   getAllTools: async (): Promise<Tool[]> => {
     return fetchApi(`${BASE_URL}/tools`);
@@ -275,5 +286,18 @@ export const toolApi = {
 
   downloadTool: async (id: string): Promise<{ downloads: number }> => {
     return fetchApi(`${BASE_URL}/tools/${id}/download`, { method: 'POST' });
+  }
+};
+
+export const toolGuideApi = {
+  getGuide: async (): Promise<ToolGuide> => {
+    return fetchApi(`${BASE_URL}/tool-guide`);
+  },
+
+  updateGuide: async (guide: Partial<ToolGuide>): Promise<ToolGuide> => {
+    return fetchApi(`${BASE_URL}/tool-guide`, {
+      method: 'PUT',
+      body: JSON.stringify(guide)
+    });
   }
 };

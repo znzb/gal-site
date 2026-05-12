@@ -2,7 +2,10 @@
   <div class="tools-manage">
     <div class="header">
       <h1>🛠️ 工具下载管理</h1>
-      <button @click="showAddModal = true" class="add-btn">+ 添加工具</button>
+      <div class="header-actions">
+        <button @click="openGuideModal" class="guide-btn">📝 编辑使用说明</button>
+        <button @click="showAddModal = true" class="add-btn">+ 添加工具</button>
+      </div>
     </div>
 
     <div class="tools-table">
@@ -41,6 +44,26 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div v-if="showGuideModal" class="modal-overlay" @click.self="showGuideModal = false">
+      <div class="modal" @click.stop>
+        <h2>编辑使用说明</h2>
+        <form @submit.prevent="saveGuide">
+          <div class="form-group">
+            <label>标题</label>
+            <input v-model="guideForm.title" placeholder="例如: 使用说明" />
+          </div>
+          <div class="form-group">
+            <label>说明内容 (每行一条)</label>
+            <textarea v-model="guideForm.itemsInput" rows="6" placeholder="每行输入一条说明&#10;例如:&#10;下载并安装所需的工具&#10;根据游戏格式选择对应的模拟器"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" @click="closeGuideModal">取消</button>
+            <button type="submit">保存</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
@@ -93,12 +116,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { toolApi } from '@/api/api';
-import type { Tool } from '@/api/api';
+import { toolApi, toolGuideApi } from '@/api/api';
+import type { Tool, ToolGuide } from '@/api/api';
 
 const tools = ref<Tool[]>([]);
 const showAddModal = ref(false);
+const showGuideModal = ref(false);
 const editingTool = ref<Tool | null>(null);
+const guide = ref<ToolGuide | null>(null);
 
 const toolForm = ref({
   name: '',
@@ -108,6 +133,11 @@ const toolForm = ref({
   icon: 'FileText',
   tagsInput: '',
   order: 0
+});
+
+const guideForm = ref({
+  title: '',
+  itemsInput: ''
 });
 
 const iconEmojis: Record<string, string> = {
@@ -123,7 +153,7 @@ function getIconEmoji(iconName: string): string {
 }
 
 onMounted(async () => {
-  await loadTools();
+  await Promise.all([loadTools(), loadGuide()]);
 });
 
 async function loadTools() {
@@ -131,6 +161,14 @@ async function loadTools() {
     tools.value = await toolApi.getAllTools();
   } catch (error) {
     console.error('加载工具失败:', error);
+  }
+}
+
+async function loadGuide() {
+  try {
+    guide.value = await toolGuideApi.getGuide();
+  } catch (error) {
+    console.error('加载使用说明失败:', error);
   }
 }
 
@@ -196,6 +234,44 @@ async function deleteTool(tool: Tool) {
     console.error('删除工具失败:', error);
     alert('删除失败');
   }
+}
+
+function openGuideModal() {
+  if (guide.value) {
+    guideForm.value = {
+      title: guide.value.title,
+      itemsInput: guide.value.items.map(item => item.content).join('\n')
+    };
+  }
+  showGuideModal.value = true;
+}
+
+async function saveGuide() {
+  try {
+    const items = guideForm.value.itemsInput
+      .split('\n')
+      .map((content, index) => ({ order: index, content: content.trim() }))
+      .filter(item => item.content);
+
+    await toolGuideApi.updateGuide({
+      title: guideForm.value.title,
+      items
+    });
+    closeGuideModal();
+    await loadGuide();
+    alert('保存成功');
+  } catch (error) {
+    console.error('保存使用说明失败:', error);
+    alert('保存失败');
+  }
+}
+
+function closeGuideModal() {
+  showGuideModal.value = false;
+  guideForm.value = {
+    title: '',
+    itemsInput: ''
+  };
 }
 </script>
 

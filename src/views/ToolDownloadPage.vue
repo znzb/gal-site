@@ -2,10 +2,11 @@
 import { ref, onMounted } from 'vue'
 import { ArrowLeft, Download, FileText, Shield, Zap, Settings } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
-import { toolApi, type Tool } from '@/api/api'
+import { toolApi, toolGuideApi, type Tool, type ToolGuide } from '@/api/api'
 
 const router = useRouter()
 const tools = ref<Tool[]>([])
+const guide = ref<ToolGuide | null>(null)
 const isLoading = ref(true)
 
 const iconMap: Record<string, any> = {
@@ -33,10 +34,16 @@ const handleDownload = async (tool: Tool) => {
 
 onMounted(async () => {
   try {
-    tools.value = await toolApi.getAllTools()
+    const [toolsData, guideData] = await Promise.all([
+      toolApi.getAllTools(),
+      toolGuideApi.getGuide()
+    ])
+    tools.value = toolsData
+    guide.value = guideData
   } catch (error) {
-    console.error('加载工具失败:', error)
+    console.error('加载失败:', error)
     tools.value = []
+    guide.value = null
   } finally {
     isLoading.value = false
   }
@@ -108,20 +115,16 @@ onMounted(async () => {
         <p class="text-gray-400">暂无工具</p>
       </div>
       
-      <div class="bg-white rounded-xl shadow-sm p-4 mt-6">
-        <h3 class="font-bold text-gray-800 mb-3">使用说明</h3>
+      <div v-if="guide" class="bg-white rounded-xl shadow-sm p-4 mt-6">
+        <h3 class="font-bold text-gray-800 mb-3">{{ guide.title }}</h3>
         <ul class="text-sm text-gray-600 space-y-2">
-          <li class="flex items-start gap-2">
-            <span class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">1</span>
-            <span>下载并安装所需的工具</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">2</span>
-            <span>根据游戏格式选择对应的模拟器</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">3</span>
-            <span>将游戏文件导入模拟器即可开始游玩</span>
+          <li 
+            v-for="(item, index) in guide.items" 
+            :key="item.order"
+            class="flex items-start gap-2"
+          >
+            <span class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">{{ index + 1 }}</span>
+            <span>{{ item.content }}</span>
           </li>
         </ul>
       </div>
