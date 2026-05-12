@@ -54,26 +54,26 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 pb-24">
-    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm">
+  <div class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white pb-24">
+    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
           @click="router.back()"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="p-2 rounded-lg hover:bg-pink-50 transition-colors"
         >
-          <ArrowLeft class="w-6 h-6 text-gray-600" />
+          <ArrowLeft class="w-6 h-6 text-pink-600" />
         </button>
-        <h1 class="text-lg font-bold text-gray-800">PC资源</h1>
+        <h1 class="text-lg font-bold bg-gradient-to-r from-pink-600 to-pink-500 bg-clip-text text-transparent">PC资源</h1>
         <div class="w-10"></div>
       </div>
     </header>
     
     <div v-if="isLoading" class="pt-16 flex items-center justify-center h-40">
-      <div class="w-12 h-12 border-4 border-gradient-to-r from-primary via-secondary to-accent border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
     </div>
     
     <div v-else class="pt-14 px-4">
-      <div class="bg-gradient-to-r from-primary via-secondary to-accent rounded-2xl p-4 mt-4 text-white">
+      <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl p-4 mt-4 text-white shadow-lg shadow-pink-200">
         <div class="flex items-center gap-3">
           <Monitor class="w-8 h-8" />
           <div>
@@ -86,30 +86,30 @@ onUnmounted(() => {
       <div class="flex gap-2 mt-6">
         <button 
           @click="setCategory('all')"
-          class="flex-1 py-3 rounded-xl font-medium transition-all"
+          class="flex-1 py-3 rounded-xl font-medium transition-all border border-pink-100"
           :class="activeCategory === 'all' 
-            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
-            : 'bg-white text-gray-600 hover:bg-gray-50'"
+            ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-200' 
+            : 'bg-white text-gray-600 hover:bg-pink-50'"
         >
           <span class="block">📦 全部</span>
           <span class="text-xs opacity-75">所有资源</span>
         </button>
         <button 
           @click="setCategory('raw')"
-          class="flex-1 py-3 rounded-xl font-medium transition-all"
+          class="flex-1 py-3 rounded-xl font-medium transition-all border border-pink-100"
           :class="activeCategory === 'raw' 
-            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
-            : 'bg-white text-gray-600 hover:bg-gray-50'"
+            ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-200' 
+            : 'bg-white text-gray-600 hover:bg-pink-50'"
         >
           <span class="block">🍖 生肉</span>
           <span class="text-xs opacity-75">未汉化</span>
         </button>
         <button 
           @click="setCategory('cooked')"
-          class="flex-1 py-3 rounded-xl font-medium transition-all"
+          class="flex-1 py-3 rounded-xl font-medium transition-all border border-pink-100"
           :class="activeCategory === 'cooked' 
-            ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg' 
-            : 'bg-white text-gray-600 hover:bg-gray-50'"
+            ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-200' 
+            : 'bg-white text-gray-600 hover:bg-pink-50'"
         >
           <span class="block">🍳 熟肉</span>
           <span class="text-xs opacity-75">已汉化</span>
@@ -120,7 +120,7 @@ onUnmounted(() => {
         <h3 class="text-lg font-bold text-gray-800">
           {{ activeCategory === 'all' ? '全部资源' : activeCategory === 'raw' ? '生肉资源' : '熟肉资源' }}
         </h3>
-        <span class="text-sm text-gray-500">{{ filteredGames.length }} 个游戏</span>
+        <span class="text-sm text-pink-400">{{ filteredGames.length }} 个游戏</span>
       </div>
       
       <div class="grid grid-cols-2 gap-4 mt-4">
@@ -128,7 +128,7 @@ onUnmounted(() => {
           v-for="game in filteredGames" 
           :key="game.id"
           @click="goToGame(game.id)"
-          class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer"
+          class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer border border-pink-100"
         >
           <div class="aspect-[3/4] relative">
             <img 
@@ -142,7 +142,7 @@ onUnmounted(() => {
             </div>
           </div>
           <div class="p-3">
-            <div class="flex items-center justify-between text-xs text-gray-500">
+            <div class="flex items-center justify-between text-xs text-pink-400">
               <span>{{ game.size }}</span>
               <span>{{ game.downloads.toLocaleString() }} 下载</span>
             </div>
@@ -150,7 +150,7 @@ onUnmounted(() => {
               <span 
                 v-for="tag in game.tags.slice(0, 2)" 
                 :key="tag"
-                class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full"
+                class="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full border border-pink-200"
               >
                 {{ tag }}
               </span>
@@ -159,22 +159,22 @@ onUnmounted(() => {
         </div>
       </div>
       
-      <div class="bg-white rounded-xl shadow-sm p-4 mt-6">
+      <div class="bg-white rounded-xl shadow-sm p-4 mt-6 border border-pink-100">
         <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <HardDrive class="w-5 h-5 text-primary" />
+          <HardDrive class="w-5 h-5 text-pink-600" />
           下载须知
         </h3>
         <ul class="text-sm text-gray-600 space-y-2">
           <li class="flex items-start gap-2">
-            <span class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">*</span>
+            <span class="w-5 h-5 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">*</span>
             <span>PC游戏需要较高配置，请确保您的电脑满足游戏要求</span>
           </li>
           <li class="flex items-start gap-2">
-            <span class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">*</span>
+            <span class="w-5 h-5 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">*</span>
             <span>部分游戏需要安装虚拟光驱或解压缩工具</span>
           </li>
           <li class="flex items-start gap-2">
-            <span class="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">*</span>
+            <span class="w-5 h-5 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">*</span>
             <span>建议使用下载工具进行多线程下载以提高速度</span>
           </li>
         </ul>
