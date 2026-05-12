@@ -15,7 +15,7 @@ const isLoading = ref(true)
 const activeSubCategory = ref<'all' | 'raw' | 'cooked'>('all')
 
 const showSubCategory = computed(() => {
-  return true
+  return !['图集资源11', '图集资源', '游戏CG', '新人必读'].includes(categoryType.value)
 })
 
 const displayGames = computed(() => {
