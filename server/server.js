@@ -26,6 +26,7 @@ import Admin from './models/Admin.js';
 import Announcement from './models/Announcement.js';
 import PatchRequest from './models/PatchRequest.js';
 import Tool from './models/Tool.js';
+import InitFlag from './models/InitFlag.js';
 
 dotenv.config();
 
@@ -149,12 +150,9 @@ const initData = async () => {
   try {
     await initAdmin();
 
-    const existingGames = await Game.countDocuments();
-    const existingTools = await Tool.countDocuments();
-    const existingCategories = await Category.countDocuments();
-    
-    if (existingGames > 0 && existingTools > 0 && existingCategories > 0) {
-      console.log(`数据已存在，共有 ${existingGames} 个游戏，${existingTools} 个工具，${existingCategories} 个分类`);
+    const initFlag = await InitFlag.findOne({ name: 'initial_data' });
+    if (initFlag && initFlag.initialized) {
+      console.log('数据已初始化过，跳过初始化');
       return;
     }
 
@@ -245,6 +243,8 @@ const initData = async () => {
       }
     ];
     await Tool.insertMany(tools);
+
+    await InitFlag.create({ name: 'initial_data', initialized: true });
 
     console.log('✅ 数据初始化完成!');
     console.log(`   - 分类: ${categories.length} 个`);
