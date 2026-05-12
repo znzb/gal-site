@@ -102,13 +102,7 @@ onMounted(() => {
         @click="handleFeatureClick(feature.id)"
         class="flex flex-col items-center py-3 rounded-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-pink-100 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
       >
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-md transition-shadow hover:shadow-lg"
-             :class="{
-               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '1',
-               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '2',
-               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '3',
-               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '4'
-             }">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-md transition-shadow hover:shadow-lg bg-gradient-to-br from-pink-100 to-pink-200">
           <component :is="iconMap[feature.icon]" 
                      class="w-6 h-6 transition-transform group-hover:scale-110 text-pink-600" />
         </div>
