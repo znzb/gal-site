@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Menu } from 'lucide-vue-next'
 import GameCard from '@/components/GameCard.vue'
@@ -60,8 +60,19 @@ watch(
   }
 )
 
+let dataRefreshTimer: number | null = null
+
 onMounted(() => {
   loadGames()
+  dataRefreshTimer = window.setInterval(() => {
+    loadGamesForCategory(categoryType.value)
+  }, 30000)
+})
+
+onUnmounted(() => {
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
 })
 </script>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ArrowLeft, Monitor, HardDrive } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { gameApi, type Game } from '@/api/api'
@@ -37,8 +37,19 @@ const setCategory = (category: 'all' | 'raw' | 'cooked') => {
   activeCategory.value = category
 }
 
+let dataRefreshTimer: number | null = null
+
 onMounted(() => {
   loadGames()
+  dataRefreshTimer = window.setInterval(() => {
+    loadGames()
+  }, 30000)
+})
+
+onUnmounted(() => {
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
+  }
 })
 </script>
 

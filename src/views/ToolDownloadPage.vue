@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { ArrowLeft, Download, FileText, Shield, Zap, Settings } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { toolApi, toolGuideApi, type Tool, type ToolGuide } from '@/api/api'
@@ -32,6 +32,8 @@ const handleDownload = async (tool: Tool) => {
   }
 }
 
+let dataRefreshTimer: number | null = null
+
 onMounted(async () => {
   try {
     const [toolsData, guideData] = await Promise.all([
@@ -46,6 +48,24 @@ onMounted(async () => {
     guide.value = null
   } finally {
     isLoading.value = false
+  }
+  dataRefreshTimer = window.setInterval(async () => {
+    try {
+      const [toolsData, guideData] = await Promise.all([
+        toolApi.getAllTools(),
+        toolGuideApi.getGuide()
+      ])
+      tools.value = toolsData
+      guide.value = guideData
+    } catch (error) {
+      console.error('刷新失败:', error)
+    }
+  }, 30000)
+})
+
+onUnmounted(() => {
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
   }
 })
 </script>

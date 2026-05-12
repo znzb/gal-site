@@ -37,13 +37,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { announcementApi } from '@/api/api'
 
 const router = useRouter()
 const announcements = ref([])
 const isLoading = ref(true)
+let dataRefreshTimer: number | null = null
 
 const formatDate = (date) => {
   if (!date) return ''
@@ -54,7 +55,7 @@ const formatDate = (date) => {
   })
 }
 
-onMounted(async () => {
+const loadAnnouncements = async () => {
   try {
     const data = await announcementApi.getAnnouncements()
     announcements.value = data.announcements || data || []
@@ -63,6 +64,19 @@ onMounted(async () => {
     announcements.value = []
   } finally {
     isLoading.value = false
+  }
+}
+
+onMounted(async () => {
+  await loadAnnouncements()
+  dataRefreshTimer = window.setInterval(() => {
+    loadAnnouncements()
+  }, 30000)
+})
+
+onUnmounted(() => {
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
   }
 })
 </script>

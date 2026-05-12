@@ -74,14 +74,22 @@ const loadData = async () => {
   }
 }
 
+let dataRefreshTimer: number | null = null
+
 onMounted(() => {
   loadData()
   timer = window.setInterval(nextBanner, 4000)
+  dataRefreshTimer = window.setInterval(() => {
+    loadData()
+  }, 30000)
 })
 
 onUnmounted(() => {
   if (timer) {
     clearInterval(timer)
+  }
+  if (dataRefreshTimer) {
+    clearInterval(dataRefreshTimer)
   }
 })
 </script>
