@@ -8,11 +8,20 @@
     <div v-if="selectedCategory" class="category-detail">
       <div class="detail-header">
         <button @click="selectedCategory = null" class="back-btn">← 返回</button>
-        <h2>{{ selectedCategory.name }} - 游戏列表</h2>
-        <button @click="showAddGameModal = true" class="add-game-btn">+ 添加游戏</button>
+        <h2>{{ selectedCategory.name }} - {{ selectedCategory.name === '新人必读' ? '帮助中心内容' : '游戏列表' }}</h2>
+        <button 
+          v-if="selectedCategory.name !== '新人必读'" 
+          @click="showAddGameModal = true" 
+          class="add-game-btn"
+        >+ 添加游戏</button>
+        <button 
+          v-else 
+          @click="showAddFaqModal = true" 
+          class="add-game-btn"
+        >+ 添加常见问题</button>
       </div>
 
-      <div class="games-table">
+      <div v-if="selectedCategory.name !== '新人必读'" class="games-table">
         <table>
           <thead>
             <tr>
@@ -32,6 +41,30 @@
               <td class="actions">
                 <button @click="editGame(game)" class="edit-btn">编辑</button>
                 <button @click="deleteGame(game)" class="delete-btn">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-else class="faq-table">
+        <table>
+          <thead>
+            <tr>
+              <th>问题</th>
+              <th>答案</th>
+              <th>排序</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="faq in faqs" :key="faq._id">
+              <td>{{ faq.question }}</td>
+              <td class="answer-cell">{{ faq.answer }}</td>
+              <td>{{ faq.order }}</td>
+              <td class="actions">
+                <button @click="editFaq(faq)" class="edit-btn">编辑</button>
+                <button @click="deleteFaq(faq)" class="delete-btn">删除</button>
               </td>
             </tr>
           </tbody>
@@ -255,21 +288,54 @@
         </form>
       </div>
     </div>
+
+    <div v-if="showAddFaqModal" class="modal-overlay" @click.self="showAddFaqModal = false">
+      <div class="modal" @click.stop>
+        <h2>{{ editingFaq ? '编辑常见问题' : '添加常见问题' }}</h2>
+        <form @submit.prevent="saveFaq">
+          <div class="form-group">
+            <label>问题</label>
+            <input v-model="faqForm.question" required placeholder="请输入问题" />
+          </div>
+          <div class="form-group">
+            <label>答案</label>
+            <textarea v-model="faqForm.answer" rows="4" required placeholder="请输入答案"></textarea>
+          </div>
+          <div class="form-group">
+            <label>排序</label>
+            <input v-model.number="faqForm.order" type="number" min="0" placeholder="排序数字" />
+          </div>
+          <div class="modal-actions">
+            <button type="button" @click="closeFaqModal">取消</button>
+            <button type="submit">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { request } from '../api';
 
 const categories = ref([]);
 const games = ref([]);
+const faqs = ref([]);
 const showAddModal = ref(false);
 const showAddGameModal = ref(false);
+const showAddFaqModal = ref(false);
 const editingCategory = ref(null);
 const editingGameItem = ref(null);
+const editingFaq = ref(null);
 const selectedCategory = ref(null);
 const activeTab = ref('info');
+
+const faqForm = ref({
+  question: '',
+  answer: '',
+  order: 0
+});
 
 const categoryForm = ref({ name: '', icon: '', order: 0 });
 const gameForm = ref({
@@ -328,6 +394,71 @@ function getGameCount(categoryName) {
 
 function viewCategory(cat) {
   selectedCategory.value = cat;
+}
+
+watch(selectedCategory, async (newVal) => {
+  if (newVal && newVal.name === '新人必读') {
+    await loadFAQs();
+  }
+});
+
+async function loadFAQs() {
+  try {
+    faqs.value = await request('/faq');
+  } catch (error) {
+    console.error('加载FAQ失败:', error);
+    faqs.value = [];
+  }
+}
+
+function editFaq(faq) {
+  editingFaq.value = faq;
+  faqForm.value = {
+    question: faq.question,
+    answer: faq.answer,
+    order: faq.order || 0
+  };
+  showAddFaqModal.value = true;
+}
+
+async function saveFaq() {
+  try {
+    if (editingFaq.value) {
+      await request('/faq/' + editingFaq.value._id, {
+        method: 'PUT',
+        body: JSON.stringify(faqForm.value)
+      });
+    } else {
+      await request('/faq', {
+        method: 'POST',
+        body: JSON.stringify(faqForm.value)
+      });
+    }
+    closeFaqModal();
+    await loadFAQs();
+  } catch (error) {
+    console.error('保存FAQ失败:', error);
+    alert('保存失败');
+  }
+}
+
+function closeFaqModal() {
+  showAddFaqModal.value = false;
+  editingFaq.value = null;
+  faqForm.value = { question: '', answer: '', order: 0 };
+}
+
+async function deleteFaq(faq) {
+  if (!confirm('确定要删除这个常见问题吗？')) return;
+  try {
+    await request('/faq/' + faq._id, {
+      method: 'DELETE'
+    });
+    await loadFAQs();
+  } catch (error) {
+    console.error('删除FAQ失败:', error);
+    alert('删除失败');
+  }
 }
 
 function editCategory(cat) {

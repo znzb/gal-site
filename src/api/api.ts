@@ -74,6 +74,13 @@ export interface Announcement {
   updatedAt: string;
 }
 
+export interface FAQ {
+  _id?: string;
+  question: string;
+  answer: string;
+  order: number;
+}
+
 const fetchApi = async <T>(url: string, options?: RequestInit): Promise<T> => {
   const response = await fetch(url, {
     ...options,
@@ -202,5 +209,29 @@ export const commentApi = {
 
   likeComment: async (gameId: string, commentId: string): Promise<{ likes: number }> => {
     return fetchApi(`${BASE_URL}/games/${gameId}/comments/${commentId}/like`, { method: 'POST' });
+  }
+};
+
+export const faqApi = {
+  getAllFAQs: async (): Promise<FAQ[]> => {
+    return fetchApi(`${BASE_URL}/faq`);
+  },
+
+  createFAQ: async (faq: FAQ): Promise<FAQ> => {
+    return fetchApi(`${BASE_URL}/faq`, {
+      method: 'POST',
+      body: JSON.stringify(faq)
+    });
+  },
+
+  updateFAQ: async (id: string, faq: Partial<FAQ>): Promise<FAQ> => {
+    return fetchApi(`${BASE_URL}/faq/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(faq)
+    });
+  },
+
+  deleteFAQ: async (id: string): Promise<void> => {
+    await fetchApi(`${BASE_URL}/faq/${id}`, { method: 'DELETE' });
   }
 };

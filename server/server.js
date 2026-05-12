@@ -15,6 +15,7 @@ import adminBannersRouter from './routes/adminBanners.js';
 import patchRequestsRouter from './routes/patchRequests.js';
 import searchLogsRouter from './routes/searchLogs.js';
 import operationLogsRouter from './routes/operationLogs.js';
+import faqRouter from './routes/faq.js';
 import Game from './models/Game.js';
 import Category from './models/Category.js';
 import Feature from './models/Feature.js';
@@ -61,6 +62,7 @@ app.use('/api/admin/operation-logs', operationLogsRouter);
 app.use('/api/announcements', announcementsRouter);
 app.use('/api/patch-requests', patchRequestsRouter);
 app.use('/api/search', searchLogsRouter);
+app.use('/api/faq', faqRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: '游戏下载网站 API 服务运行中' });
