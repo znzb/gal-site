@@ -41,8 +41,11 @@ const filteredGames = computed(() => {
 
 const loadGames = async () => {
   try {
-    const data = await gameApi.getGames()
-    games.value = data.games || data || mockGames
+    const data = await gameApi.getAllGames()
+    console.log('API返回的原始数据:', data)
+    games.value = Array.isArray(data) ? data : data.games || data || mockGames
+    console.log('处理后的games:', games.value)
+    console.log('筛选后的柚子社游戏:', games.value.filter(game => game.isYuzusoft === true))
   } catch (error) {
     console.error('Failed to load games:', error)
     games.value = mockGames
