@@ -44,7 +44,9 @@ router.get('/category/:category', async (req, res) => {
       query = {
         $or: [
           { platforms: { $in: ['Android', 'KR'] } },
-          { platforms: { $all: ['PC'], $size: { $gt: 1 } } },
+          { platforms: { $all: ['PC', 'Android'] } },
+          { platforms: { $all: ['PC', 'KR'] } },
+          { platforms: { $size: 3 } },
           { platforms: { $exists: false }, category: 'Gal游戏' },
           { platforms: { $exists: false }, category: 'gal游戏' }
         ]
