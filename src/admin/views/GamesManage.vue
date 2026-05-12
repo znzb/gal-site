@@ -89,7 +89,7 @@
               <label>分类</label>
               <select v-model="gameForm.category">
                 <option value="">请选择分类</option>
-                <option v-for="cat in categories" :key="cat._id" :value="cat.name">
+                <option v-for="cat in filteredCategories" :key="cat._id" :value="cat.name">
                   {{ cat.name }}
                 </option>
               </select>
@@ -267,6 +267,12 @@ const searchQuery = ref('');
 const { setResources, setComments } = useGameStore();
 const filterCategory = ref('');
 const filterSubCategory = ref('');
+
+const filteredCategories = computed(() => {
+  return categories.value.filter(cat => 
+    cat.name !== 'PC资源' && cat.name !== 'Gal游戏' && cat.name !== 'pc资源' && cat.name !== 'gal游戏'
+  );
+});
 const showAddModal = ref(false);
 const editingGame = ref(null);
 
@@ -390,32 +396,34 @@ async function saveGame() {
   const comments = gameForm.value.comments.filter(c => c.user && c.content);
   
   const platforms = gameForm.value.platforms;
-  let category = gameForm.value.category;
-  let categories = category ? [category] : ['Gal游戏'];
+  let categories = [];
+  let primaryCategory = 'Gal游戏';
   
-  // 如果用户没有选择分类，才根据平台自动设置
-  if (!category) {
-    if (platforms.includes('PC')) {
-      if (platforms.length > 1) {
-        categories = ['PC资源', 'Gal游戏'];
-      } else {
-        categories = ['PC资源'];
-      }
-      category = 'PC资源';
-    }
-  } else {
-    // 如果用户选择了分类，检查是否需要根据平台添加额外分类
-    if (platforms.includes('PC') && category !== 'PC资源') {
-      categories = [category, 'PC资源'];
-    }
-    if (platforms.includes('PC') && platforms.length > 1 && !categories.includes('Gal游戏')) {
+  // 完全根据平台选择来设置分类
+  if (platforms.includes('PC')) {
+    categories.push('PC资源');
+    primaryCategory = 'PC资源';
+  }
+  if (platforms.includes('Android') || platforms.includes('KR') || platforms.length > 1) {
+    if (!categories.includes('Gal游戏')) {
       categories.push('Gal游戏');
     }
   }
   
+  // 如果用户选择了其他分类，也加进去
+  if (gameForm.value.category && !categories.includes(gameForm.value.category)) {
+    categories.unshift(gameForm.value.category);
+    primaryCategory = gameForm.value.category;
+  }
+  
+  // 如果没有任何分类，默认 Gal游戏
+  if (categories.length === 0) {
+    categories = ['Gal游戏'];
+  }
+  
   const gameData = {
     ...gameForm.value,
-    category,
+    category: primaryCategory,
     categories,
     platforms,
     tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
