@@ -17,22 +17,24 @@ const goToSearch = () => {
 
 <template>
   <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30">
-    <div class="flex items-center justify-between px-4 py-3">
+    <div class="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
       <button 
         @click="appState.toggleSideMenu()"
-        class="p-2 rounded-xl hover:bg-primary/10 transition-colors group"
+        class="p-2 rounded-xl hover:bg-primary/10 transition-colors group md:hidden"
       >
         <Menu class="w-6 h-6 text-gray-700 group-hover:text-primary transition-colors" />
       </button>
       
-      <div class="flex-1 mx-3">
+      <div class="hidden md:block md:w-48"></div>
+      
+      <div class="flex-1 mx-3 max-w-2xl md:max-w-xl">
         <div class="relative group">
           <Search class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-primary transition-colors" />
           <input 
             v-model="searchQuery"
             type="text" 
             placeholder="搜索游戏..." 
-            class="w-full pl-11 pr-12 py-2.5 bg-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all duration-300"
+            class="w-full pl-11 pr-12 py-2.5 bg-gray-100 rounded-2xl text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white transition-all duration-300"
             @keyup.enter="goToSearch"
           />
           <button 
@@ -49,7 +51,26 @@ const goToSearch = () => {
       </button>
     </div>
     
-    <div class="flex items-center justify-around py-2.5 bg-gradient-to-r from-primary via-secondary to-accent text-white text-sm font-medium">
+    <div class="hidden md:flex items-center justify-center gap-12 py-3 bg-gradient-to-r from-primary via-secondary to-accent text-white text-sm font-medium">
+      <button 
+        @click="router.push('/')"
+        class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"
+      >首页</button>
+      <button 
+        @click="router.push('/tools')"
+        class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"
+      >工具下载</button>
+      <button 
+        @click="router.push('/help')"
+        class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"
+      >帮助中心</button>
+      <button 
+        @click="router.push('/patch-records')"
+        class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"
+      >补档记录</button>
+    </div>
+    
+    <div class="flex items-center justify-around py-2.5 bg-gradient-to-r from-primary via-secondary to-accent text-white text-sm font-medium md:hidden">
       <button 
         @click="router.push('/tools')"
         class="relative hover:after:content-[''] hover:after:absolute hover:after:-bottom-1 hover:after:left-1/2 hover:after:-translate-x-1/2 hover:after:w-4 hover:after:h-0.5 hover:after:bg-white hover:after:rounded-full transition-all"

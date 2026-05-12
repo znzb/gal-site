@@ -105,9 +105,9 @@ onUnmounted(() => {
     </template>
     
     <template v-else>
-      <div class="mx-4 mt-4">
+      <div class="mx-4 mt-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-gray-100">
-          <div class="relative h-40">
+          <div class="relative h-40 md:h-64 lg:h-80">
             <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
               <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
                 <div class="w-8 h-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
@@ -172,25 +172,25 @@ onUnmounted(() => {
       
       <FeatureGrid />
       
-      <div id="announcements" v-if="announcements.length > 0" class="px-4 mt-6">
-        <div class="bg-white rounded-xl shadow-md p-4">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="text-xl">📢</span>
-            <h3 class="font-bold text-gray-800">公告</h3>
+      <div id="announcements" v-if="announcements.length > 0" class="mt-6">
+        <div class="bg-white rounded-xl shadow-md p-4 md:p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">📢</span>
+            <h3 class="font-bold text-gray-800 text-lg">公告</h3>
           </div>
-          <div class="space-y-3">
+          <div class="space-y-4">
             <div 
               v-for="announcement in announcements" 
               :key="announcement.id"
-              class="p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-l-4 border-indigo-500"
+              class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-l-4 border-indigo-500"
             >
-              <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start justify-between gap-4">
                 <div class="flex-1">
                   <h4 class="font-semibold text-gray-800 flex items-center gap-2">
                     <span v-if="announcement.isPinned" class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">置顶</span>
                     {{ announcement.title }}
                   </h4>
-                  <p class="text-sm text-gray-600 mt-1">{{ announcement.content }}</p>
+                  <p class="text-sm text-gray-600 mt-2">{{ announcement.content }}</p>
                 </div>
                 <span class="text-xs text-gray-400 whitespace-nowrap">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
               </div>
@@ -199,13 +199,13 @@ onUnmounted(() => {
         </div>
       </div>
       
-      <div class="px-4 mt-6">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-bold text-gray-800">热门游戏</h2>
-          <span class="text-xs text-primary">查看更多 →</span>
+      <div class="mt-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg md:text-xl font-bold text-gray-800">热门游戏</h2>
+          <span class="text-sm text-primary">查看更多 →</span>
         </div>
         
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           <GameCard 
             v-for="game in games" 
             :key="game.id" 
