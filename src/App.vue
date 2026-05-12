@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import SideMenu from '@/components/SideMenu.vue'
-import BottomNav from '@/components/BottomNav.vue'
 import { RouterView } from 'vue-router'
 import { appState } from '@/store/appStore'
 </script>
@@ -12,8 +11,6 @@ import { appState } from '@/store/appStore'
         <component :is="Component" />
       </transition>
     </RouterView>
-    
-    <BottomNav />
     
     <SideMenu 
       :show="appState.showSideMenu" 
