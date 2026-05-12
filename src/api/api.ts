@@ -29,6 +29,7 @@ export interface Comment {
 
 export interface Game {
   id: string;
+  _id?: string;
   name: string;
   cover: string;
   description: string;
@@ -36,6 +37,7 @@ export interface Game {
   categories?: string[];
   platforms?: string[];
   subCategory?: 'raw' | 'cooked';
+  isYuzusoft?: boolean;
   size: string;
   releaseDate: string;
   downloads: number;

@@ -34,6 +34,7 @@ const gameSchema = new mongoose.Schema({
   categories: { type: [String], default: [] },
   platforms: { type: [String], default: ['Android'] },
   subCategory: { type: String, default: '' },
+  isYuzusoft: { type: Boolean, default: false },
   size: { type: String, required: true },
   releaseDate: { type: String, required: true },
   downloads: { type: Number, default: 0 },

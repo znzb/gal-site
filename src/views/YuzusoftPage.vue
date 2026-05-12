@@ -36,11 +36,7 @@ const mockGames: Game[] = [
 ]
 
 const filteredGames = computed(() => {
-  return games.value.filter(game => {
-    const name = (game.name || '').toLowerCase()
-    const tags = (game.tags || []).map(t => t.toLowerCase())
-    return name.includes('柚子') || tags.some(tag => tag.includes('柚子'))
-  })
+  return games.value.filter(game => game.isYuzusoft === true)
 })
 
 const loadGames = async () => {

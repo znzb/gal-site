@@ -132,6 +132,15 @@
               </div>
             </div>
             <div class="form-group">
+              <label>
+                <input 
+                  type="checkbox" 
+                  v-model="gameForm.isYuzusoft"
+                />
+                <span>🎵 柚子社</span>
+              </label>
+            </div>
+            <div class="form-group">
               <label>封面图片URL</label>
               <input v-model="gameForm.cover" required />
             </div>
@@ -282,6 +291,7 @@ const gameForm = ref({
   name: '',
   category: '',
   subCategory: '',
+  isYuzusoft: false,
   cover: '',
   description: '',
   size: '',
@@ -339,6 +349,7 @@ function editGame(game) {
     name: game.name,
     category: game.category,
     subCategory: game.subCategory || '',
+    isYuzusoft: game.isYuzusoft || false,
     cover: game.cover,
     description: game.description,
     size: game.size,
@@ -426,6 +437,7 @@ async function saveGame() {
     category: primaryCategory,
     categories,
     platforms,
+    isYuzusoft: gameForm.value.isYuzusoft,
     tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
     downloads: editingGame.value ? editingGame.value.downloads : 0,
     resources: resources.map(r => ({
