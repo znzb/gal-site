@@ -432,6 +432,10 @@ async function saveGame() {
     categories = ['Gal游戏'];
   }
   
+  // 确保分类名称统一为大写开头
+  categories = categories.map(c => c.replace(/^pc资源$/, 'PC资源').replace(/^gal游戏$/, 'Gal游戏'));
+  primaryCategory = primaryCategory.replace(/^pc资源$/, 'PC资源').replace(/^gal游戏$/, 'Gal游戏');
+  
   const gameData = {
     ...gameForm.value,
     category: primaryCategory,
