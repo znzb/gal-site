@@ -30,6 +30,13 @@ export async function request(url, options = {}) {
     signal: AbortSignal.timeout(10000)
   });
 
+  if (response.status === 401) {
+    // Token失效，清除token并跳转到登录页
+    clearToken();
+    window.location.href = '/admin/login';
+    throw new Error('登录已过期，请重新登录');
+  }
+
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
