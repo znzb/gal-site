@@ -154,10 +154,9 @@
                 <div class="form-group">
                   <label>支持平台</label>
                   <select v-model="resource.platform">
-                    <option value="Android">Android</option>
-                    <option value="Windows">Windows</option>
-                    <option value="iOS">iOS</option>
-                    <option value="Mac">Mac</option>
+                    <option value="Android">安卓</option>
+                    <option value="PC">PC</option>
+                    <option value="KR">KR</option>
                   </select>
                 </div>
                 <div class="form-group">
