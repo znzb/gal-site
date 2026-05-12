@@ -31,14 +31,22 @@ router.get('/category/:category', async (req, res) => {
     
     // 根据分类名称直接通过platforms字段查询
     if (category === 'PC资源') {
-      // 只包含PC平台的游戏
-      query = { platforms: 'PC' };
+      // 只包含PC平台的游戏（兼容没有platforms字段的旧数据）
+      query = {
+        $or: [
+          { platforms: 'PC' },
+          { platforms: { $exists: false }, category: 'PC资源' },
+          { platforms: { $exists: false }, category: 'pc资源' }
+        ]
+      };
     } else if (category === 'Gal游戏') {
       // Gal游戏包含非PC平台，或者同时包含PC和其他平台
       query = {
         $or: [
           { platforms: { $in: ['Android', 'KR'] } },
-          { platforms: { $all: ['PC'], $size: { $gt: 1 } } }
+          { platforms: { $all: ['PC'], $size: { $gt: 1 } } },
+          { platforms: { $exists: false }, category: 'Gal游戏' },
+          { platforms: { $exists: false }, category: 'gal游戏' }
         ]
       };
     } else {
