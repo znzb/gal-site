@@ -66,7 +66,7 @@ const categories = [
  { value: '图集资源', label: '图集资源' },
  { value: 'PC资源', label: 'PC资源' }
 ];
-const platformOptions = ['Android', 'Windows', 'iOS', 'Mac'];
+const platformOptions = ['Android', 'PC', 'KR'];
 const languageOptions = ['简体中文', '繁体中文', '日文', '英文'];
 const loadGameData = async () => {
  if (isNew) {
@@ -130,7 +130,7 @@ const removeComment = (index: number) => {
 const saveGame = async () => {
  isSaving.value = true;
  try {
- const game: Partial<Game> = {
+ const game: any = {
  id: isNew ? Date.now().toString() : gameId.value,
  name: formData.value.name,
  cover: formData.value.cover,
@@ -140,10 +140,27 @@ const saveGame = async () => {
  size: formData.value.size,
  releaseDate: formData.value.releaseDate,
  downloads: formData.value.downloads,
- tags: formData.value.tags.split(',').map(t => t.trim()).filter(t => t)
+ tags: formData.value.tags.split(',').map(t => t.trim()).filter(t => t),
+ resources: resources.value.filter(r => r.name && r.url).map(r => ({
+ name: r.name,
+ url: r.url,
+ type: r.type,
+ size: r.size,
+ date: r.date,
+ platform: gameInfo.value.platforms[0] || 'Android',
+ language: gameInfo.value.languages[0] || '简体中文'
+ })),
+ comments: comments.value.filter(c => c.user && c.content).map(c => ({
+ user: c.user,
+ avatar: c.avatar,
+ content: c.content,
+ rating: c.rating,
+ date: c.date,
+ likes: c.likes
+ }))
  };
  if (isNew) {
- await gameApi.createGame(game as Game);
+ await gameApi.createGame(game);
  }
  else {
  await gameApi.updateGame(gameId.value, game);
