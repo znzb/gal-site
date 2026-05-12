@@ -84,7 +84,7 @@ onUnmounted(() => {
 <style scoped>
 .announcements-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 100%);
   padding: 20px;
 }
 
@@ -98,21 +98,25 @@ onUnmounted(() => {
 
 .back-btn {
   padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
+  background: rgba(236, 72, 153, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.2);
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
+  color: #ec4899;
   transition: all 0.3s;
 }
 
 .back-btn:hover {
-  background: white;
+  background: rgba(236, 72, 153, 0.2);
   transform: translateX(-2px);
 }
 
 .header-section h1 {
-  color: white;
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 28px;
   font-weight: bold;
   margin: 0;
@@ -128,8 +132,8 @@ onUnmounted(() => {
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 4px solid rgba(236, 72, 153, 0.2);
+  border-top-color: #ec4899;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -145,7 +149,8 @@ onUnmounted(() => {
   text-align: center;
   max-width: 400px;
   margin: 0 auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(236, 72, 153, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.1);
 }
 
 .empty-icon {
@@ -159,7 +164,7 @@ onUnmounted(() => {
 }
 
 .empty-state p {
-  color: #666;
+  color: #ec4899;
   margin: 0;
 }
 
@@ -175,19 +180,20 @@ onUnmounted(() => {
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid rgba(236, 72, 153, 0.1);
 }
 
 .announcement-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(236, 72, 153, 0.15);
 }
 
 .card-header {
   padding: 24px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
-  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 100%);
+  border-bottom: 1px solid rgba(236, 72, 153, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -201,7 +207,7 @@ onUnmounted(() => {
 }
 
 .pinned-badge {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
@@ -216,7 +222,7 @@ onUnmounted(() => {
 }
 
 .date {
-  color: #999;
+  color: #ec4899;
   font-size: 14px;
   white-space: nowrap;
 }

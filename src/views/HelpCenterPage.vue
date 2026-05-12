@@ -65,22 +65,22 @@ const isExpanded = (id: string) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 pb-24">
-    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm">
+  <div class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white pb-24">
+    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
           @click="router.back()"
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="p-2 rounded-lg hover:bg-pink-100 transition-colors"
         >
-          <ArrowLeft class="w-6 h-6 text-gray-600" />
+          <ArrowLeft class="w-6 h-6 text-pink-600" />
         </button>
-        <h1 class="text-lg font-bold text-gray-800">帮助中心</h1>
+        <h1 class="text-lg font-bold bg-gradient-to-r from-pink-600 to-pink-500 bg-clip-text text-transparent">帮助中心</h1>
         <div class="w-10"></div>
       </div>
     </header>
     
     <div class="pt-14 px-4">
-      <div class="bg-gradient-to-r from-primary via-secondary to-accent rounded-2xl p-4 mt-4 text-white">
+      <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl p-4 mt-4 text-white">
         <div class="flex items-center gap-3">
           <HelpCircle class="w-8 h-8" />
           <div>
@@ -91,25 +91,25 @@ const isExpanded = (id: string) => {
       </div>
       
       <div class="grid grid-cols-2 gap-4 mt-6">
-        <div class="bg-white rounded-xl shadow-sm p-4 text-center cursor-pointer hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-            <FileQuestion class="w-6 h-6 text-primary" />
+        <div class="bg-white rounded-xl shadow-sm p-4 text-center cursor-pointer hover:shadow-md transition-shadow border border-pink-100">
+          <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <FileQuestion class="w-6 h-6 text-pink-600" />
           </div>
           <h3 class="font-medium text-gray-800 text-sm">常见问题</h3>
-          <p class="text-xs text-gray-500 mt-1">查看常见问题解答</p>
+          <p class="text-xs text-pink-400 mt-1">查看常见问题解答</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 text-center cursor-pointer hover:shadow-md transition-shadow">
-          <div class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-            <MessageCircle class="w-6 h-6 text-secondary" />
+        <div class="bg-white rounded-xl shadow-sm p-4 text-center cursor-pointer hover:shadow-md transition-shadow border border-pink-100">
+          <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <MessageCircle class="w-6 h-6 text-pink-600" />
           </div>
           <h3 class="font-medium text-gray-800 text-sm">联系客服</h3>
-          <p class="text-xs text-gray-500 mt-1">获取人工帮助</p>
+          <p class="text-xs text-pink-400 mt-1">获取人工帮助</p>
         </div>
       </div>
       
-      <div class="bg-white rounded-xl shadow-sm p-4 mt-6">
+      <div class="bg-white rounded-xl shadow-sm p-4 mt-6 border border-pink-100">
         <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <FileQuestion class="w-5 h-5 text-primary" />
+          <FileQuestion class="w-5 h-5 text-pink-600" />
           常见问题
         </h3>
         
@@ -117,7 +117,7 @@ const isExpanded = (id: string) => {
           <div 
             v-for="faq in faqs" 
             :key="faq._id"
-            class="border-b border-gray-100 last:border-b-0"
+            class="border-b border-pink-100 last:border-b-0"
           >
             <button 
               @click="toggleFaq(faq._id)"
@@ -126,7 +126,7 @@ const isExpanded = (id: string) => {
               <span class="text-sm font-medium text-gray-800">{{ faq.question }}</span>
               <component 
                 :is="isExpanded(faq._id) ? ChevronUp : ChevronDown" 
-                class="w-5 h-5 text-gray-400" 
+                class="w-5 h-5 text-pink-400" 
               />
             </button>
             <div 
@@ -139,25 +139,25 @@ const isExpanded = (id: string) => {
         </div>
       </div>
       
-      <div class="bg-white rounded-xl shadow-sm p-4 mt-6">
+      <div class="bg-white rounded-xl shadow-sm p-4 mt-6 border border-pink-100">
         <h3 class="font-bold text-gray-800 mb-3">联系我们</h3>
         <div class="space-y-3 text-sm">
           <div class="flex items-center gap-3">
-            <span class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-              <MessageCircle class="w-4 h-4 text-primary" />
+            <span class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+              <MessageCircle class="w-4 h-4 text-pink-600" />
             </span>
             <div>
               <p class="font-medium text-gray-800">QQ群</p>
-              <p class="text-gray-500">123456789（点击加入）</p>
+              <p class="text-pink-400">123456789（点击加入）</p>
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <span class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
-              <MessageCircle class="w-4 h-4 text-secondary" />
+            <span class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+              <MessageCircle class="w-4 h-4 text-pink-600" />
             </span>
             <div>
               <p class="font-medium text-gray-800">邮箱</p>
-              <p class="text-gray-500">support@example.com</p>
+              <p class="text-pink-400">support@example.com</p>
             </div>
           </div>
         </div>

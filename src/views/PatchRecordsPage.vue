@@ -32,27 +32,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20">
-    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-lg shadow-sm z-30">
+  <div class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white pb-20">
+    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-lg shadow-sm z-30 border-b border-pink-100">
       <div class="flex items-center px-4 py-3">
         <button 
           @click="appState.toggleSideMenu()"
-          class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 mr-2 shadow-sm"
+          class="p-2 rounded-xl bg-gradient-to-br from-pink-50 to-pink-100 hover:from-pink-100 hover:to-pink-200 transition-all duration-300 mr-2 shadow-sm border border-pink-100"
         >
-          <Menu class="w-5 h-5 text-gray-700" />
+          <Menu class="w-5 h-5 text-pink-600" />
         </button>
-        <h1 class="flex-1 text-lg font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent text-center">📋 补档记录</h1>
+        <h1 class="flex-1 text-lg font-bold bg-gradient-to-r from-pink-600 to-pink-500 bg-clip-text text-transparent text-center">📋 补档记录</h1>
         <button 
           @click="router.back()"
-          class="p-2 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300 ml-2 shadow-sm"
+          class="p-2 rounded-xl bg-gradient-to-br from-pink-50 to-pink-100 hover:from-pink-100 hover:to-pink-200 transition-all duration-300 ml-2 shadow-sm border border-pink-100"
         >
-          <ArrowLeft class="w-5 h-5 text-gray-700" />
+          <ArrowLeft class="w-5 h-5 text-pink-600" />
         </button>
       </div>
     </header>
     
     <div v-if="isLoading" class="pt-16 flex items-center justify-center h-40">
-      <div class="w-12 h-12 border-4 border-gradient-to-r from-primary via-secondary to-accent border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
     </div>
     
     <div v-else class="pt-16 px-4 mt-4">
@@ -60,7 +60,7 @@ onMounted(() => {
         <div 
           v-for="record in records" 
           :key="record.id"
-          class="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition-all duration-300"
+          class="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition-all duration-300 border border-pink-100"
         >
           <div class="flex items-start justify-between mb-2">
             <h3 class="font-semibold text-gray-800">{{ record.gameName }}</h3>
@@ -69,23 +69,23 @@ onMounted(() => {
                 'px-3 py-1 text-xs font-medium rounded-full',
                 record.status === '已补档' ? 'bg-green-100 text-green-600' : 
                 record.status === '处理中' ? 'bg-yellow-100 text-yellow-600' : 
-                'bg-gray-100 text-gray-600'
+                'bg-pink-100 text-pink-600'
               ]"
             >
               {{ record.status }}
             </span>
           </div>
-          <p class="text-gray-500 text-xs mb-1">补档原因：{{ record.reason }}</p>
-          <p class="text-gray-400 text-xs">{{ record.time }}</p>
+          <p class="text-pink-400 text-xs mb-1">补档原因：{{ record.reason }}</p>
+          <p class="text-pink-300 text-xs">{{ record.time }}</p>
         </div>
       </div>
       
       <div v-else class="text-center py-20">
         <div class="text-6xl mb-4">📝</div>
-        <p class="text-gray-400">暂无补档记录</p>
+        <p class="text-pink-400">暂无补档记录</p>
         <button 
           @click="router.push('/')"
-          class="mt-4 px-6 py-2 bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md"
+          class="mt-4 px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
         >
           返回首页
         </button>
