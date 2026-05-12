@@ -18,7 +18,7 @@ const filteredGames = computed(() => {
 
 const loadGames = async () => {
   try {
-    const data = await gameApi.getGamesByCategory('pc资源')
+    const data = await gameApi.getGamesByCategory('PC资源')
     if (data) {
       pcGames.value = data
     }
