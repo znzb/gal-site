@@ -24,6 +24,7 @@ import Banner from './models/Banner.js';
 import Admin from './models/Admin.js';
 import Announcement from './models/Announcement.js';
 import PatchRequest from './models/PatchRequest.js';
+import Tool from './models/Tool.js';
 
 dotenv.config();
 
@@ -132,8 +133,9 @@ const initData = async () => {
     await initAdmin();
 
     const existingGames = await Game.countDocuments();
-    if (existingGames > 0) {
-      console.log(`数据已存在，共有 ${existingGames} 个游戏`);
+    const existingTools = await Tool.countDocuments();
+    if (existingGames > 0 && existingTools > 0) {
+      console.log(`数据已存在，共有 ${existingGames} 个游戏，${existingTools} 个工具`);
       return;
     }
 
@@ -176,11 +178,61 @@ const initData = async () => {
     ];
     await Banner.insertMany(banners);
 
+    const tools = [
+      {
+        id: '1',
+        name: 'Krkr模拟器',
+        description: '适用于运行KRKR引擎游戏的安卓模拟器，支持多种游戏格式',
+        size: '45MB',
+        tags: ['模拟器', '必备', 'KRKR'],
+        icon: 'Download',
+        order: 0
+      },
+      {
+        id: '2',
+        name: 'ONScripter模拟器',
+        description: '运行ONScripter引擎游戏的模拟器，支持多种平台',
+        size: '38MB',
+        tags: ['模拟器', 'ONS', '必备'],
+        icon: 'FileText',
+        order: 1
+      },
+      {
+        id: '3',
+        name: 'ZArchiver解压工具',
+        description: '强大的文件解压工具，支持各种压缩格式',
+        size: '8MB',
+        tags: ['工具', '解压', '必备'],
+        icon: 'Zap',
+        order: 2
+      },
+      {
+        id: '4',
+        name: 'MT管理器',
+        description: '功能强大的文件管理器，支持双面板操作',
+        size: '12MB',
+        tags: ['工具', '管理', '文件'],
+        icon: 'Settings',
+        order: 3
+      },
+      {
+        id: '5',
+        name: '游戏翻译工具',
+        description: '自动翻译游戏文本的工具，支持多种语言',
+        size: '25MB',
+        tags: ['工具', '翻译', '实用'],
+        icon: 'Shield',
+        order: 4
+      }
+    ];
+    await Tool.insertMany(tools);
+
     console.log('✅ 数据初始化完成!');
     console.log(`   - 分类: ${categories.length} 个`);
     console.log(`   - 游戏: ${games.length} 个`);
     console.log(`   - 功能: ${features.length} 个`);
     console.log(`   - 轮播图: ${banners.length} 个`);
+    console.log(`   - 工具: ${tools.length} 个`);
   } catch (error) {
     console.error('❌ 数据初始化失败:', error.message);
   }
