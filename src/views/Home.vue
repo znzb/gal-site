@@ -99,23 +99,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 pb-20 md:pb-8">
+  <div class="min-h-screen bg-gradient-to-br from-pink-50/30 via-white to-pink-50/30 pb-20 md:pb-8">
     <Header />
     
     <!-- Loading状态 -->
     <div v-if="isLoading" class="flex items-center justify-center h-40 pt-10">
-      <div class="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-10 h-10 border-3 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
     
     <div v-else>
       <!-- 移动端布局 -->
       <div class="md:hidden">
         <div class="mx-4 mt-4">
-          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-gray-200">
+          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-pink-100">
             <div class="relative h-40">
-              <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100">
+              <div class="absolute inset-0 bg-gradient-to-br from-pink-50 to-pink-100/50">
                 <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
-                  <div class="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div class="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               </div>
               
@@ -168,7 +168,7 @@ onUnmounted(() => {
                   :key="banner.id"
                   @click="goToBanner(index)"
                   class="w-2 h-2 rounded-full transition-all duration-300 transform hover:scale-125"
-                  :class="currentBanner === index ? 'bg-indigo-500 w-4' : 'bg-gray-300 hover:bg-gray-400'"
+                  :class="currentBanner === index ? 'bg-pink-500 w-4' : 'bg-pink-200 hover:bg-pink-300'"
                 ></button>
               </div>
             </div>
@@ -178,7 +178,7 @@ onUnmounted(() => {
         <FeatureGrid />
         
         <div id="announcements" v-if="announcements.length > 0" class="px-4 mt-6">
-          <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <div class="bg-white rounded-xl border border-pink-100 p-4 shadow-lg shadow-pink-50/50">
             <div class="flex items-center gap-2 mb-3">
               <span class="text-xl">📢</span>
               <h3 class="font-bold text-gray-800">公告</h3>
@@ -187,7 +187,7 @@ onUnmounted(() => {
               <div 
                 v-for="announcement in announcements" 
                 :key="announcement.id"
-                class="p-3 bg-gradient-to-br from-gray-50 to-white rounded-lg border-l-4 border-indigo-500"
+                class="p-3 bg-gradient-to-br from-pink-50 to-white rounded-lg border-l-4 border-pink-500 hover:shadow-md transition-all duration-300"
               >
                 <div class="flex items-start justify-between gap-2">
                   <div class="flex-1">
@@ -207,7 +207,7 @@ onUnmounted(() => {
         <div class="px-4 mt-6">
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-lg font-bold text-gray-800">热门游戏</h2>
-            <span class="text-xs text-indigo-600">查看更多 →</span>
+            <span class="text-xs text-pink-600">查看更多 →</span>
           </div>
           
           <div class="grid grid-cols-2 gap-3">
@@ -226,11 +226,11 @@ onUnmounted(() => {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           
           <!-- 轮播图区域 -->
-          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-gray-200 mb-8">
+          <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-pink-100 mb-8 shadow-lg shadow-pink-50/50">
             <div class="relative h-72 lg:h-96">
-              <div class="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100">
+              <div class="absolute inset-0 bg-gradient-to-br from-pink-50 to-pink-100/50">
                 <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
-                  <div class="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div class="w-10 h-10 border-3 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               </div>
               
@@ -283,38 +283,38 @@ onUnmounted(() => {
                   :key="banner.id"
                   @click="goToBanner(index)"
                   class="w-3 h-3 rounded-full transition-all duration-300 transform hover:scale-125"
-                  :class="currentBanner === index ? 'bg-indigo-500 w-8' : 'bg-gray-300 hover:bg-gray-400'"
+                  :class="currentBanner === index ? 'bg-pink-500 w-8' : 'bg-pink-200 hover:bg-pink-300'"
                 ></button>
               </div>
             </div>
           </div>
 
           <!-- 快捷导航区域 -->
-          <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+          <div class="bg-white rounded-xl border border-pink-100 p-6 mb-8 shadow-lg shadow-pink-50/50">
             <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <span class="text-indigo-600 text-2xl">⚡</span>
+              <span class="text-pink-600 text-2xl">⚡</span>
               快速导航
             </h3>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               <button 
                 @click="router.push('/pc-resources')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 hover:from-indigo-100 hover:to-indigo-50 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-100 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Monitor class="w-10 h-10 text-indigo-600 mb-2" />
+                <Monitor class="w-10 h-10 text-pink-600 mb-2" />
                 <span class="text-sm font-medium text-gray-700">PC资源</span>
               </button>
               <button 
                 @click="router.push('/category/PC资源')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-purple-50 to-white border border-purple-100 hover:from-purple-100 hover:to-purple-50 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Gamepad2 class="w-10 h-10 text-purple-600 mb-2" />
+                <Gamepad2 class="w-10 h-10 text-pink-600 mb-2" />
                 <span class="text-sm font-medium text-gray-700">Gal游戏</span>
               </button>
               <button 
                 @click="router.push('/yuzusoft')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 hover:from-blue-100 hover:to-blue-50 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Music class="w-10 h-10 text-blue-600 mb-2" />
+                <Music class="w-10 h-10 text-pink-600 mb-2" />
                 <span class="text-sm font-medium text-gray-700">柚子社</span>
               </button>
               <button 
@@ -326,23 +326,23 @@ onUnmounted(() => {
               </button>
               <button 
                 @click="router.push('/category/游戏CG')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-cyan-50 to-white border border-cyan-100 hover:from-cyan-100 hover:to-cyan-50 hover:border-cyan-300 hover:shadow-lg hover:shadow-cyan-100 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Image class="w-10 h-10 text-cyan-600 mb-2" />
+                <Image class="w-10 h-10 text-pink-600 mb-2" />
                 <span class="text-sm font-medium text-gray-700">游戏CG</span>
               </button>
               <button 
                 @click="router.push('/help')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 hover:from-green-100 hover:to-green-50 hover:border-green-300 hover:shadow-lg hover:shadow-green-100 transition-all duration-300 transform hover:scale-105"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
-                <BookOpen class="w-10 h-10 text-green-600 mb-2" />
+                <BookOpen class="w-10 h-10 text-pink-600 mb-2" />
                 <span class="text-sm font-medium text-gray-700">帮助中心</span>
               </button>
             </div>
           </div>
 
           <!-- 公告区域 -->
-          <div v-if="announcements.length > 0" class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+          <div v-if="announcements.length > 0" class="bg-white rounded-xl border border-pink-100 p-6 mb-8 shadow-lg shadow-pink-50/50">
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-3">
                 <span class="text-2xl">📢</span>
@@ -351,7 +351,7 @@ onUnmounted(() => {
               <button 
                 v-if="announcements.length > 3"
                 @click="router.push('/announcements')"
-                class="text-sm text-indigo-600 hover:text-indigo-500 transition-colors"
+                class="text-sm text-pink-600 hover:text-pink-500 transition-colors"
               >
                 查看全部 →
               </button>
@@ -360,7 +360,7 @@ onUnmounted(() => {
               <div 
                 v-for="announcement in announcements.slice(0, 3)" 
                 :key="announcement.id"
-                class="p-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border-l-4 border-indigo-500 hover:shadow-lg hover:shadow-indigo-100 transition-all duration-300"
+                class="p-4 bg-gradient-to-br from-pink-50 to-white rounded-xl border-l-4 border-pink-500 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300"
               >
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex-1">
@@ -380,10 +380,10 @@ onUnmounted(() => {
           <div>
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <span class="text-indigo-600">🎮</span>
+                <span class="text-pink-600">🎮</span>
                 热门游戏
               </h2>
-              <span class="text-sm text-indigo-600 cursor-pointer hover:text-indigo-500 transition-colors">查看更多 →</span>
+              <span class="text-sm text-pink-600 cursor-pointer hover:text-pink-500 transition-colors">查看更多 →</span>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

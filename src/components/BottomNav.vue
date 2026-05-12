@@ -45,17 +45,17 @@ const handleNavClick = (id: string) => {
 </script>
 
 <template>
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100/50 z-50 h-16 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-pink-100/50 z-50 h-16 shadow-[0_-4px_20px_rgba(236,72,153,0.1)]">
     <div class="flex items-center justify-around h-full max-w-lg mx-auto">
       <button 
         v-for="item in navItems" 
         :key="item.id"
         @click="handleNavClick(item.id)"
         class="flex flex-col items-center justify-center py-1 px-2 flex-1 h-full transition-all duration-300"
-        :class="activeNav === item.id ? 'text-primary' : 'text-gray-400'"
+        :class="activeNav === item.id ? 'text-pink-600' : 'text-gray-400'"
       >
         <div 
-          class="w-9 h-9 rounded-xl flex items-center justify-center mb-0.5 transition-all duration-300 bg-gradient-to-br from-red-400 to-red-500 text-white shadow-md"
+          class="w-9 h-9 rounded-xl flex items-center justify-center mb-0.5 transition-all duration-300 bg-gradient-to-br from-pink-500 to-pink-600 text-white shadow-md shadow-pink-200"
           :style="activeNav === item.id ? 'transform: scale(1.1)' : ''"
         >
           <component :is="item.icon" class="w-5 h-5" />

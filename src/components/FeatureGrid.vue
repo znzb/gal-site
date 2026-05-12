@@ -91,32 +91,26 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-4 mx-4 mt-4 shadow-lg border border-gray-100/50">
+  <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-4 mx-4 mt-4 shadow-lg border border-pink-100/50">
     <div v-if="isLoading" class="flex items-center justify-center h-20">
-      <div class="w-6 h-6 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+      <div class="w-6 h-6 border-2 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
     </div>
     <div v-else class="grid grid-cols-4 gap-2">
       <button 
         v-for="feature in features" 
         :key="feature.id"
         @click="handleFeatureClick(feature.id)"
-        class="flex flex-col items-center py-3 rounded-xl hover:bg-gradient-to-br hover:from-primary/5 hover:to-secondary/5 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
+        class="flex flex-col items-center py-3 rounded-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-pink-100 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
       >
         <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-md transition-shadow hover:shadow-lg"
              :class="{
-               'bg-gradient-to-br from-primary/10 to-primary/20': feature.id === '1',
-               'bg-gradient-to-br from-blue-100 to-blue-200': feature.id === '2',
-               'bg-gradient-to-br from-accent/20 to-accent/30': feature.id === '3',
+               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '1',
+               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '2',
+               'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '3',
                'bg-gradient-to-br from-pink-100 to-pink-200': feature.id === '4'
              }">
           <component :is="iconMap[feature.icon]" 
-                     class="w-6 h-6 transition-transform group-hover:scale-110"
-                     :class="{
-                       'text-primary': feature.id === '1',
-                       'text-blue-500': feature.id === '2',
-                       'text-yellow-600': feature.id === '3',
-                       'text-pink-500': feature.id === '4'
-                     }" />
+                     class="w-6 h-6 transition-transform group-hover:scale-110 text-pink-600" />
         </div>
         <span class="text-xs text-gray-700 font-medium">{{ feature.name }}</span>
       </button>
@@ -125,8 +119,8 @@ onMounted(() => {
 
   <!-- 公告弹窗 -->
   <div v-if="showAnnouncementModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @click="showAnnouncementModal = false">
-    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden" @click.stop>
-      <div class="bg-gradient-to-r from-primary to-secondary p-6 text-white">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-xl" @click.stop>
+      <div class="bg-gradient-to-r from-pink-500 to-pink-600 p-6 text-white">
         <div class="flex items-center justify-between">
           <h2 class="text-2xl font-bold">📢 网站公告</h2>
           <button @click="showAnnouncementModal = false" class="text-3xl hover:opacity-80">×</button>
@@ -139,7 +133,7 @@ onMounted(() => {
           <p class="text-gray-500">暂无公告</p>
         </div>
         <div v-else class="space-y-4">
-          <div v-for="ann in announcements" :key="ann.id || ann._id" class="bg-gray-50 rounded-xl p-4">
+          <div v-for="ann in announcements" :key="ann.id || ann._id" class="bg-pink-50 rounded-xl p-4 border border-pink-100">
             <div class="flex items-center gap-2 mb-2">
               <span v-if="ann.isPinned" class="bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-full">置顶</span>
               <h3 class="font-bold text-gray-800">{{ ann.title }}</h3>
@@ -154,20 +148,20 @@ onMounted(() => {
 
   <!-- 加群弹窗 -->
   <div v-if="showJoinGroupModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @click="showJoinGroupModal = false">
-    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden" @click.stop>
-      <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-6 text-white text-center">
+    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl" @click.stop>
+      <div class="bg-gradient-to-r from-pink-500 to-pink-600 p-6 text-white text-center">
         <h2 class="text-2xl font-bold">💬 加入Q群</h2>
       </div>
       
       <div class="p-6 text-center">
-        <div class="w-40 h-40 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+        <div class="w-40 h-40 bg-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-100">
           <span class="text-6xl">🐧</span>
         </div>
         
-        <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="bg-pink-50 rounded-xl p-4 mb-4 border border-pink-100">
           <p class="text-gray-600 text-sm mb-2">群号</p>
           <p class="text-2xl font-bold text-gray-800 mb-3">123456789</p>
-          <button @click="copyGroupNumber" class="px-6 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:opacity-90">
+          <button @click="copyGroupNumber" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg hover:opacity-90 shadow-md">
             复制群号
           </button>
         </div>
