@@ -26,7 +26,12 @@ router.get('/:id', async (req, res) => {
 
 router.get('/category/:category', async (req, res) => {
   try {
-    const games = await Game.find({ category: req.params.category });
+    const games = await Game.find({ 
+      $or: [
+        { category: req.params.category },
+        { categories: req.params.category }
+      ]
+    });
     res.json(games);
   } catch (error) {
     res.status(500).json({ message: error.message });
