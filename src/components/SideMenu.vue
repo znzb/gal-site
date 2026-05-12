@@ -75,7 +75,7 @@ onUnmounted(() => {
       class="fixed left-0 top-0 bottom-0 w-72 bg-gray-100 z-50 shadow-xl"
     >
       <div class="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-primary to-secondary">
-        <h2 class="text-lg font-bold text-white">Gal小站</h2>
+        <h2 class="text-lg font-bold text-white">三菜鱼小站</h2>
         <button 
           @click="emit('close')"
           class="p-2 rounded-lg hover:bg-white/20 transition-colors"
