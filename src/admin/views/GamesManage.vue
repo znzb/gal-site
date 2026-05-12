@@ -102,6 +102,35 @@
               </select>
             </div>
             <div class="form-group">
+              <label>支持平台 (可多选)</label>
+              <div class="platform-checkboxes">
+                <label class="platform-checkbox">
+                  <input 
+                    type="checkbox" 
+                    :checked="gameForm.platforms.includes('Android')" 
+                    @change="togglePlatform('Android')"
+                  />
+                  <span>📱 安卓</span>
+                </label>
+                <label class="platform-checkbox">
+                  <input 
+                    type="checkbox" 
+                    :checked="gameForm.platforms.includes('PC')" 
+                    @change="togglePlatform('PC')"
+                  />
+                  <span>🖥️ PC</span>
+                </label>
+                <label class="platform-checkbox">
+                  <input 
+                    type="checkbox" 
+                    :checked="gameForm.platforms.includes('KR')" 
+                    @change="togglePlatform('KR')"
+                  />
+                  <span>🇰🇷 KR</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
               <label>封面图片URL</label>
               <input v-model="gameForm.cover" required />
             </div>
@@ -149,14 +178,6 @@
                     <option value="繁体中文">繁体中文</option>
                     <option value="日文">日文</option>
                     <option value="英文">英文</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>支持平台</label>
-                  <select v-model="resource.platform">
-                    <option value="Android">安卓</option>
-                    <option value="PC">PC</option>
-                    <option value="KR">KR</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -259,11 +280,11 @@ const gameForm = ref({
   size: '',
   releaseDate: '',
   tagsInput: '',
+  platforms: ['Android'],
   resources: [{
     name: '',
     type: 'main',
     language: '简体中文',
-    platform: 'Android',
     url: '',
     size: '',
     date: '',
@@ -366,11 +387,29 @@ async function saveGame() {
   const resources = gameForm.value.resources.filter(r => r.name && r.url);
   const comments = gameForm.value.comments.filter(c => c.user && c.content);
   
+  const platforms = gameForm.value.platforms;
+  let category = 'Gal游戏';
+  let categories = ['Gal游戏'];
+  
+  if (platforms.includes('PC')) {
+    if (platforms.length > 1) {
+      categories = ['PC资源', 'Gal游戏'];
+    } else {
+      categories = ['PC资源'];
+    }
+    category = 'PC资源';
+  }
+  
   const gameData = {
     ...gameForm.value,
+    category,
+    categories,
     tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
     downloads: editingGame.value ? editingGame.value.downloads : 0,
-    resources,
+    resources: resources.map(r => ({
+      ...r,
+      platform: platforms[0] || 'Android'
+    })),
     comments
   };
 
@@ -439,6 +478,17 @@ function removeComment(index) {
   gameForm.value.comments.splice(index, 1);
 }
 
+function togglePlatform(platform) {
+  const index = gameForm.value.platforms.indexOf(platform);
+  if (index > -1) {
+    if (gameForm.value.platforms.length > 1) {
+      gameForm.value.platforms.splice(index, 1);
+    }
+  } else {
+    gameForm.value.platforms.push(platform);
+  }
+}
+
 function resetForm() {
   gameForm.value = {
     name: '',
@@ -449,11 +499,11 @@ function resetForm() {
     size: '',
     releaseDate: '',
     tagsInput: '',
+    platforms: ['Android'],
     resources: [{
       name: '',
       type: 'main',
       language: '简体中文',
-      platform: 'Android',
       url: '',
       size: '',
       date: '',

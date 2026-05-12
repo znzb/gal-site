@@ -240,11 +240,11 @@ watch(
               </div>
               <div class="flex flex-wrap gap-2">
                 <span 
-                  v-for="resource in resources" 
-                  :key="resource.id"
+                  v-for="platform in (game.platforms || [])" 
+                  :key="platform"
                   class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
                 >
-                  {{ resource.platform || 'Android' }}
+                  {{ platform }}
                 </span>
                 <span 
                   v-if="game.subCategory"
