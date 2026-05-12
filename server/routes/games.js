@@ -26,12 +26,31 @@ router.get('/:id', async (req, res) => {
 
 router.get('/category/:category', async (req, res) => {
   try {
-    const games = await Game.find({ 
-      $or: [
-        { category: req.params.category },
-        { categories: req.params.category }
-      ]
-    });
+    const category = req.params.category;
+    let query;
+    
+    // 根据分类名称直接通过platforms字段查询
+    if (category === 'PC资源') {
+      query = { platforms: 'PC' };
+    } else if (category === 'Gal游戏') {
+      // Gal游戏包含非PC平台，或者同时包含PC和其他平台
+      query = {
+        $or: [
+          { platforms: { $in: ['Android', 'KR'] } },
+          { $and: [{ platforms: 'PC' }, { platforms: { $size: { $gt: 1 } } }] }
+        ]
+      };
+    } else {
+      // 其他分类使用原来的查询方式
+      query = { 
+        $or: [
+          { category: category },
+          { categories: category }
+        ]
+      };
+    }
+    
+    const games = await Game.find(query);
     res.json(games);
   } catch (error) {
     res.status(500).json({ message: error.message });
