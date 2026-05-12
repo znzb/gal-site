@@ -33,6 +33,8 @@ export interface Game {
   cover: string;
   description: string;
   category: string;
+  categories?: string[];
+  platforms?: string[];
   subCategory?: 'raw' | 'cooked';
   size: string;
   releaseDate: string;

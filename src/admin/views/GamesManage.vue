@@ -87,7 +87,8 @@
             </div>
             <div class="form-group">
               <label>分类</label>
-              <select v-model="gameForm.category" required>
+              <select v-model="gameForm.category">
+                <option value="">请选择分类</option>
                 <option v-for="cat in categories" :key="cat._id" :value="cat.name">
                   {{ cat.name }}
                 </option>
