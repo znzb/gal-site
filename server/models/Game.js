@@ -33,6 +33,7 @@ const gameSchema = new mongoose.Schema({
   category: { type: String, required: true },
   categories: { type: [String], default: [] },
   platforms: { type: [String], default: ['Android'] },
+  subCategory: { type: String, default: '' },
   size: { type: String, required: true },
   releaseDate: { type: String, required: true },
   downloads: { type: Number, default: 0 },

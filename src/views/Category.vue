@@ -15,7 +15,7 @@ const isLoading = ref(true)
 const activeSubCategory = ref<'all' | 'raw' | 'cooked'>('all')
 
 const showSubCategory = computed(() => {
-  return ['安卓直装', 'kr资源'].includes(categoryType.value)
+  return true
 })
 
 const displayGames = computed(() => {
