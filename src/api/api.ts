@@ -81,6 +81,18 @@ export interface FAQ {
   order: number;
 }
 
+export interface Tool {
+  _id?: string;
+  name: string;
+  description: string;
+  size: string;
+  downloads: number;
+  tags: string[];
+  icon: string;
+  downloadUrl: string;
+  order: number;
+}
+
 const fetchApi = async <T>(url: string, options?: RequestInit): Promise<T> => {
   const response = await fetch(url, {
     ...options,
@@ -233,5 +245,33 @@ export const faqApi = {
 
   deleteFAQ: async (id: string): Promise<void> => {
     await fetchApi(`${BASE_URL}/faq/${id}`, { method: 'DELETE' });
+  }
+};
+
+export const toolApi = {
+  getAllTools: async (): Promise<Tool[]> => {
+    return fetchApi(`${BASE_URL}/tools`);
+  },
+
+  createTool: async (tool: Tool): Promise<Tool> => {
+    return fetchApi(`${BASE_URL}/tools`, {
+      method: 'POST',
+      body: JSON.stringify(tool)
+    });
+  },
+
+  updateTool: async (id: string, tool: Partial<Tool>): Promise<Tool> => {
+    return fetchApi(`${BASE_URL}/tools/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(tool)
+    });
+  },
+
+  deleteTool: async (id: string): Promise<void> => {
+    await fetchApi(`${BASE_URL}/tools/${id}`, { method: 'DELETE' });
+  },
+
+  downloadTool: async (id: string): Promise<{ downloads: number }> => {
+    return fetchApi(`${BASE_URL}/tools/${id}/download`, { method: 'POST' });
   }
 };

@@ -1,67 +1,46 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ArrowLeft, Download, FileText, Shield, Zap } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import { ArrowLeft, Download, FileText, Shield, Zap, Settings } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import { toolApi, type Tool } from '@/api/api'
 
 const router = useRouter()
+const tools = ref<Tool[]>([])
+const isLoading = ref(true)
 
-interface Tool {
-  id: string
-  name: string
-  description: string
-  size: string
-  downloads: number
-  tags: string[]
-  icon: string
+const iconMap: Record<string, any> = {
+  Zap,
+  Shield,
+  FileText,
+  Download,
+  Settings
 }
-
-const tools = ref<Tool[]>([
-  {
-    id: '1',
-    name: 'Krkr模拟器',
-    description: '用于运行KRKR格式游戏的安卓模拟器，支持大部分美少女游戏',
-    size: '15MB',
-    downloads: 12500,
-    tags: ['模拟器', '必备'],
-    icon: 'Zap'
-  },
-  {
-    id: '2',
-    name: 'JOI模拟器',
-    description: '支持JOI格式游戏的模拟器，兼容性强，运行稳定',
-    size: '22MB',
-    downloads: 8900,
-    tags: ['模拟器', '推荐'],
-    icon: 'Shield'
-  },
-  {
-    id: '3',
-    name: '文本提取工具',
-    description: '提取游戏中的文本内容，支持多种格式导出',
-    size: '8MB',
-    downloads: 5600,
-    tags: ['工具', '实用'],
-    icon: 'FileText'
-  },
-  {
-    id: '4',
-    name: '图片查看器',
-    description: '专门用于查看游戏CG图片的工具，支持多种格式',
-    size: '12MB',
-    downloads: 7200,
-    tags: ['工具', '图片'],
-    icon: 'FileText'
-  }
-])
 
 const getIcon = (iconName: string) => {
-  const icons: Record<string, any> = {
-    Zap,
-    Shield,
-    FileText
-  }
-  return icons[iconName] || FileText
+  return iconMap[iconName] || FileText
 }
+
+const handleDownload = async (tool: Tool) => {
+  try {
+    await toolApi.downloadTool(tool._id!)
+    if (tool.downloadUrl) {
+      window.open(tool.downloadUrl, '_blank')
+    }
+  } catch (error) {
+    console.error('下载失败:', error)
+  }
+}
+
+onMounted(async () => {
+  try {
+    tools.value = await toolApi.getAllTools()
+  } catch (error) {
+    console.error('加载工具失败:', error)
+    tools.value = []
+  } finally {
+    isLoading.value = false
+  }
+})
 </script>
 
 <template>
@@ -88,7 +67,7 @@ const getIcon = (iconName: string) => {
       <div class="space-y-4 mt-6">
         <div 
           v-for="tool in tools" 
-          :key="tool.id"
+          :key="tool._id"
           class="bg-white rounded-xl shadow-sm p-4"
         >
           <div class="flex items-start gap-4">
@@ -111,7 +90,10 @@ const getIcon = (iconName: string) => {
                     {{ tag }}
                   </span>
                 </div>
-                <button class="flex items-center gap-1 text-sm text-primary font-medium">
+                <button 
+                  @click="handleDownload(tool)"
+                  class="flex items-center gap-1 text-sm text-primary font-medium"
+                >
                   <Download class="w-4 h-4" />
                   <span>{{ tool.size }}</span>
                 </button>
@@ -119,6 +101,11 @@ const getIcon = (iconName: string) => {
             </div>
           </div>
         </div>
+      </div>
+      
+      <div v-if="tools.length === 0 && !isLoading" class="text-center py-20">
+        <div class="text-6xl mb-4">🛠️</div>
+        <p class="text-gray-400">暂无工具</p>
       </div>
       
       <div class="bg-white rounded-xl shadow-sm p-4 mt-6">

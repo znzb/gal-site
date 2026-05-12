@@ -8,6 +8,7 @@ import BannersManage from './views/BannersManage.vue';
 import AnnouncementsManage from './views/AnnouncementsManage.vue';
 import PatchRequestsManage from './views/PatchRequestsManage.vue';
 import SearchLogsManage from './views/SearchLogsManage.vue';
+import ToolsManage from './views/ToolsManage.vue';
 
 const routes = [
   {
@@ -57,6 +58,11 @@ const routes = [
         path: 'search-logs',
         name: 'SearchLogsManage',
         component: SearchLogsManage
+      },
+      {
+        path: 'tools',
+        name: 'ToolsManage',
+        component: ToolsManage
       }
     ]
   }

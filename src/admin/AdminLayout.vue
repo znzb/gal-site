@@ -35,6 +35,9 @@
         <router-link to="/admin/search-logs" class="nav-item" @click.native="showSidebar = false">
           <span>🔍</span> 搜索统计
         </router-link>
+        <router-link to="/admin/tools" class="nav-item" @click.native="showSidebar = false">
+          <span>🛠️</span> 工具下载管理
+        </router-link>
       </nav>
       <button @click="logout" class="logout-btn">退出登录</button>
     </aside>
