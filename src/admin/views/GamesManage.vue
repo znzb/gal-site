@@ -337,6 +337,7 @@ function editGame(game) {
     size: game.size,
     releaseDate: game.releaseDate,
     tagsInput: game.tags?.join(', ') || '',
+    platforms: game.platforms || ['Android'],
     resources: game.resources && game.resources.length > 0 ? game.resources.map(r => ({
       id: r.id,
       name: r.name || '',
