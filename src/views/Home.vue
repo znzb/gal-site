@@ -46,12 +46,21 @@ const handleBannerError = (index: number) => {
 }
 
 const preloadBannerImages = () => {
+  if (!Array.isArray(banners.value) || banners.value.length === 0) {
+    return
+  }
+  
   banners.value.forEach((banner, index) => {
-    if (!bannersLoaded.value[index]) {
-      const img = new Image()
-      img.onload = () => handleBannerLoad(index)
-      img.onerror = () => handleBannerError(index)
-      img.src = banner.image
+    if (!bannersLoaded.value[index] && banner && banner.image) {
+      try {
+        const img = new Image()
+        img.onload = () => handleBannerLoad(index)
+        img.onerror = () => handleBannerError(index)
+        img.src = banner.image
+      } catch (error) {
+        console.error('Failed to preload banner image:', error)
+        handleBannerError(index)
+      }
     }
   })
 }
@@ -64,14 +73,18 @@ const loadData = async () => {
       announcementApi.getAllAnnouncements(),
       categoryApi.getAllCategories()
     ])
-    games.value = gamesData || []
-    banners.value = bannersData || []
+    games.value = Array.isArray(gamesData) ? gamesData : []
+    banners.value = Array.isArray(bannersData) ? bannersData : []
     bannersLoaded.value = new Array(banners.value.length).fill(false)
     preloadBannerImages()
-    announcements.value = (announcementsData || []).filter(a => a.isVisible)
-    categories.value = categoriesData || []
+    announcements.value = (Array.isArray(announcementsData) ? announcementsData : []).filter(a => a && a.isVisible)
+    categories.value = Array.isArray(categoriesData) ? categoriesData : []
   } catch (error) {
     console.error('Failed to load from API:', error)
+    games.value = []
+    banners.value = []
+    announcements.value = []
+    categories.value = []
   } finally {
     isLoading.value = false
     isDataLoaded.value = true
