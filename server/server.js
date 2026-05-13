@@ -146,6 +146,38 @@ const initAdmin = async () => {
   }
 };
 
+const safeInsertMany = async (Model, items, name) => {
+  try {
+    const existingCount = await Model.countDocuments();
+    if (existingCount > 0) {
+      console.log(`${name} 已存在 ${existingCount} 条数据，跳过插入`);
+      return;
+    }
+    await Model.insertMany(items);
+    console.log(`✅ ${name} 插入成功: ${items.length} 条`);
+  } catch (error) {
+    if (error.code === 11000) {
+      console.log(`${name} 数据已存在，跳过插入`);
+    } else {
+      console.error(`❌ ${name} 插入失败:`, error.message);
+    }
+  }
+};
+
+const upsertData = async (Model, items) => {
+  for (const item of items) {
+    try {
+      await Model.updateOne(
+        { id: item.id },
+        { $set: item },
+        { upsert: true }
+      );
+    } catch (error) {
+      console.error(`更新失败 (id: ${item.id}):`, error.message);
+    }
+  }
+};
+
 const initData = async () => {
   try {
     await initAdmin();
@@ -165,7 +197,7 @@ const initData = async () => {
       { id: '4', name: '图集资源', icon: 'images' },
       { id: '5', name: '新人必读', icon: 'book-open' }
     ];
-    await Category.insertMany(categories);
+    await upsertData(Category, categories);
 
     const games = [
       { id: '1', name: '夏日物语', cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20summer%20visual%20novel%20game%20cover%20beautiful%20girl%20beach&image_size=portrait_4_3', description: '一款温馨浪漫的夏日恋爱冒险游戏，讲述主角在海边小镇度过的难忘夏天。', category: '安卓直装', size: '2.5GB', releaseDate: '2024-06-15', downloads: 12500, tags: ['恋爱', '校园', '治愈'] },
@@ -177,7 +209,7 @@ const initData = async () => {
       { id: '7', name: '游戏CG精选', cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20CG%20collection%20beautiful%20artwork%20gallery&image_size=portrait_4_3', description: '精选游戏CG合集，包含各种精美游戏插画。', category: '游戏CG', size: '1.2GB', releaseDate: '2024-06-01', downloads: 5600, tags: ['CG', '插画', '合集'] },
       { id: '8', name: '高清图集', cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20high%20quality%20image%20collection%20beautiful%20girls&image_size=portrait_4_3', description: '高清精美图集，包含各种主题的精美图片。', category: '图集资源', size: '3.8GB', releaseDate: '2024-05-15', downloads: 8200, tags: ['图集', '高清', '壁纸'] }
     ];
-    await Game.insertMany(games);
+    await upsertData(Game, games);
 
     const features = [
       { id: '1', name: '网站公告', icon: 'megaphone' },
@@ -185,7 +217,7 @@ const initData = async () => {
       { id: '3', name: '柚子社', icon: 'music' },
       { id: '4', name: '补档记录', icon: 'file-text' }
     ];
-    await Feature.insertMany(features);
+    await upsertData(Feature, features);
 
     const banners = [
       { id: '1', image: '/banners/banner1.jpg', title: '夏空彼方', subtitle: 'Summer Pockets' },
@@ -193,7 +225,7 @@ const initData = async () => {
       { id: '3', image: '/banners/banner3.jpg', title: '魔女的夜宴', subtitle: "Witch's Night" },
       { id: '4', image: '/banners/banner4.jpg', title: '天使☆嚣嚣 RE-BOOT', subtitle: 'Tenshi Hoshii' }
     ];
-    await Banner.insertMany(banners);
+    await upsertData(Banner, banners);
 
     const tools = [
       {
@@ -242,9 +274,13 @@ const initData = async () => {
         order: 4
       }
     ];
-    await Tool.insertMany(tools);
+    await upsertData(Tool, tools);
 
-    await InitFlag.create({ name: 'initial_data', initialized: true });
+    await InitFlag.findOneAndUpdate(
+      { name: 'initial_data' },
+      { $set: { initialized: true, updatedAt: new Date() } },
+      { upsert: true, new: true }
+    );
 
     console.log('✅ 数据初始化完成!');
     console.log(`   - 分类: ${categories.length} 个`);

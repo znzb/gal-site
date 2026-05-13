@@ -3,16 +3,26 @@ import Game from '../models/Game.js';
 import Category from '../models/Category.js';
 import Feature from '../models/Feature.js';
 import Banner from '../models/Banner.js';
+import Tool from '../models/Tool.js';
 
 const router = express.Router();
 
+const upsertData = async (Model, items) => {
+  for (const item of items) {
+    try {
+      await Model.updateOne(
+        { id: item.id },
+        { $set: item },
+        { upsert: true }
+      );
+    } catch (error) {
+      console.error(`更新失败 (id: ${item.id}):`, error.message);
+    }
+  }
+};
+
 router.post('/init', async (req, res) => {
   try {
-    await Game.deleteMany({});
-    await Category.deleteMany({});
-    await Feature.deleteMany({});
-    await Banner.deleteMany({});
-
     const categories = [
       { id: '1', name: '安卓直装', icon: 'gamepad-2' },
       { id: '2', name: 'kr资源', icon: 'image' },
@@ -20,7 +30,7 @@ router.post('/init', async (req, res) => {
       { id: '4', name: '图集资源', icon: 'images' },
       { id: '5', name: '新人必读', icon: 'book-open' }
     ];
-    await Category.insertMany(categories);
+    await upsertData(Category, categories);
 
     const games = [
       {
@@ -112,7 +122,7 @@ router.post('/init', async (req, res) => {
         tags: ['图集', '高清', '壁纸']
       }
     ];
-    await Game.insertMany(games);
+    await upsertData(Game, games);
 
     const features = [
       { id: '1', name: '网站公告', icon: 'megaphone' },
@@ -120,7 +130,7 @@ router.post('/init', async (req, res) => {
       { id: '3', name: '柚子社', icon: 'music' },
       { id: '4', name: '补档记录', icon: 'file-text' }
     ];
-    await Feature.insertMany(features);
+    await upsertData(Feature, features);
 
     const banners = [
       {
@@ -148,7 +158,56 @@ router.post('/init', async (req, res) => {
         subtitle: 'Tenshi Hoshii'
       }
     ];
-    await Banner.insertMany(banners);
+    await upsertData(Banner, banners);
+
+    const tools = [
+      {
+        id: '1',
+        name: 'Krkr模拟器',
+        description: '适用于运行KRKR引擎游戏的安卓模拟器，支持多种游戏格式',
+        size: '45MB',
+        tags: ['模拟器', '必备', 'KRKR'],
+        icon: 'Download',
+        order: 0
+      },
+      {
+        id: '2',
+        name: 'ONScripter模拟器',
+        description: '运行ONScripter引擎游戏的模拟器，支持多种平台',
+        size: '38MB',
+        tags: ['模拟器', 'ONS', '必备'],
+        icon: 'FileText',
+        order: 1
+      },
+      {
+        id: '3',
+        name: 'ZArchiver解压工具',
+        description: '强大的文件解压工具，支持各种压缩格式',
+        size: '8MB',
+        tags: ['工具', '解压', '必备'],
+        icon: 'Zap',
+        order: 2
+      },
+      {
+        id: '4',
+        name: 'MT管理器',
+        description: '功能强大的文件管理器，支持双面板操作',
+        size: '12MB',
+        tags: ['工具', '管理', '文件'],
+        icon: 'Settings',
+        order: 3
+      },
+      {
+        id: '5',
+        name: '游戏翻译工具',
+        description: '自动翻译游戏文本的工具，支持多种语言',
+        size: '25MB',
+        tags: ['工具', '翻译', '实用'],
+        icon: 'Shield',
+        order: 4
+      }
+    ];
+    await upsertData(Tool, tools);
 
     res.json({
       message: 'Data initialized successfully',
@@ -156,7 +215,8 @@ router.post('/init', async (req, res) => {
         categories: categories.length,
         games: games.length,
         features: features.length,
-        banners: banners.length
+        banners: banners.length,
+        tools: tools.length
       }
     });
   } catch (error) {
