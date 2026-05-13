@@ -45,24 +45,23 @@ const handleBannerError = (index: number) => {
   bannersLoaded.value[index] = true
 }
 
-const preloadBannerImages = () => {
+const preloadBannerImages = async () => {
   if (!Array.isArray(banners.value) || banners.value.length === 0) {
     return
   }
   
-  banners.value.forEach((banner, index) => {
+  for (let index = 0; index < banners.value.length; index++) {
+    const banner = banners.value[index]
     if (!bannersLoaded.value[index] && banner && banner.image) {
       try {
-        const img = new Image()
-        img.onload = () => handleBannerLoad(index)
-        img.onerror = () => handleBannerError(index)
-        img.src = banner.image
+        await fetch(banner.image, { method: 'HEAD' })
+        handleBannerLoad(index)
       } catch (error) {
         console.error('Failed to preload banner image:', error)
         handleBannerError(index)
       }
     }
-  })
+  }
 }
 
 const loadData = async () => {
