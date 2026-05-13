@@ -95,6 +95,15 @@ export interface Tool {
   order: number;
 }
 
+const createTimeoutSignal = (ms: number): AbortSignal => {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(ms);
+  }
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+};
+
 const fetchApi = async <T>(url: string, options?: RequestInit): Promise<T> => {
   const response = await fetch(url, {
     ...options,
@@ -102,7 +111,7 @@ const fetchApi = async <T>(url: string, options?: RequestInit): Promise<T> => {
       'Content-Type': 'application/json; charset=utf-8',
       ...options?.headers
     },
-    signal: AbortSignal.timeout(10000)
+    signal: createTimeoutSignal(10000)
   });
   if (!response.ok) {
     throw new Error(`API Error: ${response.status} ${response.statusText}`);

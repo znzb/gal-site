@@ -14,6 +14,15 @@ export function clearToken() {
   localStorage.removeItem('adminToken');
 }
 
+const createTimeoutSignal = (ms) => {
+  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+    return AbortSignal.timeout(ms);
+  }
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+};
+
 export async function request(url, options = {}) {
   const headers = {
     'Content-Type': 'application/json; charset=utf-8',
@@ -24,30 +33,34 @@ export async function request(url, options = {}) {
     headers['Authorization'] = `Bearer ${token.value}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${url}`, {
-    ...options,
-    headers,
-    signal: AbortSignal.timeout(10000)
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}${url}`, {
+      ...options,
+      headers,
+      signal: createTimeoutSignal(10000)
+    });
 
-  if (response.status === 401) {
-    // Token失效，清除token并跳转到登录页
-    clearToken();
-    window.location.href = '/admin/login';
-    throw new Error('登录已过期，请重新登录');
+    if (response.status === 401) {
+      clearToken();
+      window.location.href = '/admin/login';
+      throw new Error('登录已过期，请重新登录');
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (err) {
+    console.error('API request error:', err);
+    throw err;
   }
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return response.json();
 }
 
 export async function getResourcesByGameId(gameId) {
   try {
     const response = await fetch(`${API_BASE_URL}/games/${gameId}/resources`, {
-      signal: AbortSignal.timeout(5000)
+      signal: createTimeoutSignal(5000)
     });
     if (!response.ok) throw new Error('Resources not found');
     return response.json();
@@ -62,7 +75,7 @@ export async function createResource(gameId, resource) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(resource),
-      signal: AbortSignal.timeout(5000)
+      signal: createTimeoutSignal(5000)
     });
     if (!response.ok) throw new Error('Failed to create resource');
     return response.json();
@@ -77,7 +90,7 @@ export async function updateResource(gameId, resourceId, resource) {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(resource),
-      signal: AbortSignal.timeout(5000)
+      signal: createTimeoutSignal(5000)
     });
     if (!response.ok) throw new Error('Failed to update resource');
     return response.json();
@@ -90,7 +103,7 @@ export async function deleteResource(gameId, resourceId) {
   try {
     await fetch(`${API_BASE_URL}/games/${gameId}/resources/${resourceId}`, {
       method: 'DELETE',
-      signal: AbortSignal.timeout(5000)
+      signal: createTimeoutSignal(5000)
     });
     return { success: true };
   } catch {
@@ -101,7 +114,7 @@ export async function deleteResource(gameId, resourceId) {
 export async function getCommentsByGameId(gameId) {
   try {
     const response = await fetch(`${API_BASE_URL}/games/${gameId}/comments`, {
-      signal: AbortSignal.timeout(5000)
+      signal: createTimeoutSignal(5000)
     });
     if (!response.ok) throw new Error('Comments not found');
     return response.json();
@@ -116,7 +129,7 @@ export async function createComment(gameId, comment) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify(comment),
-      signal: AbortSignal.timeout(5000)
+      signal: createTimeoutSignal(5000)
     });
     if (!response.ok) throw new Error('Failed to create comment');
     return response.json();
@@ -129,7 +142,7 @@ export async function deleteComment(gameId, commentId) {
   try {
     await fetch(`${API_BASE_URL}/games/${gameId}/comments/${commentId}`, {
       method: 'DELETE',
-      signal: AbortSignal.timeout(5000)
+      signal: createTimeoutSignal(5000)
     });
     return { success: true };
   } catch {
