@@ -307,7 +307,14 @@ onUnmounted(() => {
               <span class="text-pink-600 text-2xl">⚡</span>
               快速导航
             </h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <button 
+                @click="router.push('/announcements')"
+                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
+              >
+                <FileText class="w-10 h-10 text-pink-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">网页公告</span>
+              </button>
               <button 
                 @click="router.push('/pc-resources')"
                 class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
@@ -335,13 +342,6 @@ onUnmounted(() => {
               >
                 <Download class="w-10 h-10 text-pink-600 mb-2" />
                 <span class="text-sm font-medium text-gray-700">工具下载</span>
-              </button>
-              <button 
-                @click="router.push('/category/游戏CG')"
-                class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
-              >
-                <Image class="w-10 h-10 text-pink-600 mb-2" />
-                <span class="text-sm font-medium text-gray-700">游戏CG</span>
               </button>
               <button 
                 @click="router.push('/help')"
