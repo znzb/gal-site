@@ -144,9 +144,11 @@ onUnmounted(() => {
                     loading="lazy"
                     class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
                     :class="[
-                      bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105',
-                      banner.title === '千恋*万花' ? 'object-position-[50%_0%]' : 'object-position-[50%_25%]'
+                      bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
                     ]"
+                    :style="{
+                      objectPosition: banner.title === '千恋*万花' ? '50% 0%' : '50% 25%'
+                    }"
                     @load="handleBannerLoad(index)"
                     @error="handleBannerError(index)"
                   />
@@ -262,9 +264,11 @@ onUnmounted(() => {
                     loading="lazy"
                     class="absolute inset-0 w-full h-full object-cover transition-all duration-700 transform"
                     :class="[
-                      bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105',
-                      banner.title === '千恋*万花' ? 'object-position-[50%_0%]' : 'object-position-[50%_25%]'
+                      bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
                     ]"
+                    :style="{
+                      objectPosition: banner.title === '千恋*万花' ? '50% 0%' : '50% 25%'
+                    }"
                     @load="handleBannerLoad(index)"
                     @error="handleBannerError(index)"
                   />
