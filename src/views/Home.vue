@@ -239,7 +239,7 @@ onUnmounted(() => {
           
           <!-- 轮播图区域 -->
           <div class="relative rounded-2xl shadow-xl overflow-hidden bg-white border border-pink-100 mb-8 shadow-lg shadow-pink-50/50">
-            <div class="relative h-96 lg:h-[400px]">
+            <div class="relative h-96 lg:h-[350px]">
               <div class="absolute inset-0 bg-gradient-to-br from-pink-50 to-pink-100/50">
                 <div v-if="banners.length > 0 && !bannersLoaded[currentBanner]" class="absolute inset-0 flex items-center justify-center">
                   <div class="w-10 h-10 border-3 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
