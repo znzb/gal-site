@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ArrowLeft, Menu, Monitor, HardDrive, MessageSquare, Eye, Heart, Calendar } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { gameApi, type Game } from '@/api/api'
+import { appState } from '@/store/appStore'
 
 const router = useRouter()
 const activeCategory = ref<'all' | 'raw' | 'cooked'>('all')
@@ -59,7 +60,7 @@ onUnmounted(() => {
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
-          @click="$emit('openMenu')"
+          @click="appState.toggleSideMenu()"
           class="p-2 rounded-lg hover:bg-pink-50 transition-colors"
         >
           <Menu class="w-6 h-6 text-pink-600" />
