@@ -493,6 +493,7 @@ async function loadGames() {
 const filteredGames = computed(() => {
   if (!selectedCategory.value) return [];
   const categoryName = selectedCategory.value.name;
+  const categoryNameLower = categoryName.toLowerCase();
   
   return games.value.filter(game => {
     // 柚子社分类：只要platforms包含柚子社或者isYuzusoft为true
@@ -500,21 +501,29 @@ const filteredGames = computed(() => {
       return game.platforms?.includes('柚子社') || game.isYuzusoft;
     }
     
-    // PC资源分类：只要platforms包含PC，且不包含柚子社
-    if (categoryName === 'PC资源') {
+    // PC资源分类：只要platforms包含PC，且不包含柚子社，或者兼容旧数据
+    if (categoryNameLower === 'pc资源') {
       if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
         return false;
       }
-      return game.platforms?.includes('PC');
+      // 如果有platforms字段，按platforms判断；否则按category字段判断（兼容旧数据）
+      if (game.platforms && game.platforms.length > 0) {
+        return game.platforms.includes('PC');
+      }
+      // 兼容旧数据：按category字段匹配（不区分大小写）
+      const gameCategoryLower = (game.category || '').toLowerCase();
+      return gameCategoryLower === 'pc资源';
     }
     
     // Gal游戏分类：platforms包含Android或KR，或者同时包含PC+Android/KR，且不包含柚子社
-    if (categoryName === 'Gal游戏') {
+    if (categoryNameLower === 'gal游戏') {
       if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
         return false;
       }
       if (!game.platforms || game.platforms.length === 0) {
-        return game.category === categoryName; // 兼容旧数据
+        // 兼容旧数据：按category字段匹配（不区分大小写）
+        const gameCategoryLower = (game.category || '').toLowerCase();
+        return gameCategoryLower === 'gal游戏';
       }
       const hasAndroid = game.platforms.includes('Android');
       const hasKR = game.platforms.includes('KR');
@@ -522,12 +531,15 @@ const filteredGames = computed(() => {
       return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR));
     }
     
-    // 其他分类：按旧的category字段匹配
-    return game.category === categoryName;
+    // 其他分类：按旧的category字段匹配（不区分大小写）
+    const gameCategoryLower = (game.category || '').toLowerCase();
+    return gameCategoryLower === categoryNameLower;
   });
 });
 
 function getGameCount(categoryName) {
+  const categoryNameLower = categoryName.toLowerCase();
+  
   return games.value.filter(game => {
     // 柚子社分类
     if (categoryName === '柚子社') {
@@ -535,20 +547,25 @@ function getGameCount(categoryName) {
     }
     
     // PC资源分类
-    if (categoryName === 'PC资源') {
+    if (categoryNameLower === 'pc资源') {
       if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
         return false;
       }
-      return game.platforms?.includes('PC');
+      if (game.platforms && game.platforms.length > 0) {
+        return game.platforms.includes('PC');
+      }
+      const gameCategoryLower = (game.category || '').toLowerCase();
+      return gameCategoryLower === 'pc资源';
     }
     
     // Gal游戏分类
-    if (categoryName === 'Gal游戏') {
+    if (categoryNameLower === 'gal游戏') {
       if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
         return false;
       }
       if (!game.platforms || game.platforms.length === 0) {
-        return game.category === categoryName;
+        const gameCategoryLower = (game.category || '').toLowerCase();
+        return gameCategoryLower === 'gal游戏';
       }
       const hasAndroid = game.platforms.includes('Android');
       const hasKR = game.platforms.includes('KR');
@@ -556,8 +573,9 @@ function getGameCount(categoryName) {
       return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR));
     }
     
-    // 其他分类
-    return game.category === categoryName;
+    // 其他分类（不区分大小写）
+    const gameCategoryLower = (game.category || '').toLowerCase();
+    return gameCategoryLower === categoryNameLower;
   }).length;
 }
 
