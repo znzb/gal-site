@@ -378,22 +378,21 @@ onUnmounted(() => {
                 查看全部 →
               </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="space-y-3">
               <div 
                 v-for="announcement in announcements.slice(0, 3)" 
                 :key="announcement.id"
-                class="p-4 bg-gradient-to-br from-pink-50 to-white rounded-xl border-l-4 border-pink-500 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300"
+                class="flex items-center gap-4 p-4 bg-gradient-to-r from-pink-50 to-white rounded-xl border-l-4 border-pink-500 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 w-full"
               >
-                <div class="flex items-start justify-between gap-3">
-                  <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800 flex items-center gap-2">
-                      <span v-if="announcement.isPinned" class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">置顶</span>
-                      {{ announcement.title }}
-                    </h4>
-                    <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ announcement.content }}</p>
+                <div class="flex-shrink-0 text-2xl">📢</div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span v-if="announcement.isPinned" class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">置顶</span>
+                    <h4 class="font-semibold text-gray-800">{{ announcement.title }}</h4>
                   </div>
-                  <span class="text-xs text-gray-500 whitespace-nowrap">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
+                  <p class="text-sm text-gray-600">{{ announcement.content }}</p>
                 </div>
+                <span class="flex-shrink-0 text-xs text-gray-500">{{ new Date(announcement.createdAt).toLocaleDateString() }}</span>
               </div>
             </div>
           </div>
