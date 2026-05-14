@@ -126,6 +126,7 @@ async function login() {
 
 .input-wrapper {
   position: relative;
+  padding: 0 8px;
 }
 
 .input-icon {
@@ -138,9 +139,8 @@ async function login() {
 }
 
 .form-group input {
-  width: calc(100% - 16px);
+  width: 100%;
   padding: 10px 10px 10px 36px;
-  margin: 0 8px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: 14px;
@@ -159,13 +159,17 @@ async function login() {
   color: #9ca3af;
 }
 
+form {
+  padding: 0 8px;
+}
+
 .login-btn {
   width: 100%;
-  padding: 16px;
+  padding: 14px;
   background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -246,16 +250,14 @@ async function login() {
   }
   
   .form-group input {
-    width: calc(100% - 16px);
+    width: 100%;
     padding: 10px 10px 10px 36px;
-    margin: 0 8px;
     font-size: 14px;
     border-radius: 8px;
   }
   
   .login-btn {
-    width: calc(100% - 16px);
-    margin: 0 8px;
+    width: 100%;
     padding: 12px;
     font-size: 15px;
     border-radius: 8px;
