@@ -166,8 +166,13 @@
             </div>
 
             <div class="form-group">
-              <label>游戏分类</label>
-              <input :value="selectedCategory?.name || ''" readonly />
+              <label>分类</label>
+              <select v-model="gameForm.category" class="w-full px-4 py-3 border border-gray-200 rounded-lg">
+                <option value="" disabled>请选择分类</option>
+                <option v-for="cat in categories" :key="cat._id" :value="cat.name">
+                  {{ cat.name }}
+                </option>
+              </select>
             </div>
 
             <div class="form-group">
@@ -279,43 +284,42 @@
                 </button>
               </div>
 
-              <div class="grid-cols-2">
-                <div class="form-group">
-                  <label>资源名称</label>
-                  <input v-model="resource.name" placeholder="例如: 完整版游戏本体" />
-                </div>
-                <div class="form-group">
-                  <label>资源类型</label>
-                  <select v-model="resource.type">
-                    <option value="main">🎮 游戏本体</option>
-                    <option value="patch">📦 汉化补丁</option>
-                    <option value="update">🔄 更新包</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="grid-cols-2">
-                <div class="form-group">
-                  <label>下载链接</label>
-                  <input v-model="resource.url" placeholder="请输入下载链接" />
-                </div>
-                <div class="form-group">
-                  <label>大小</label>
-                  <input v-model="resource.size" placeholder="例如: 2.5GB" />
-                </div>
+              <div class="form-group">
+                <label>下载链接</label>
+                <input v-model="resource.url" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
               </div>
 
               <div class="form-group">
-                <label>发布日期</label>
-                <input v-model="resource.date" type="date" />
+                <label>大小</label>
+                <input v-model="resource.size" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+              </div>
+
+              <div class="form-group">
+                <label>发布日期 (显示格式)</label>
+                <input v-model="resource.dateDisplay" class="w-full px-4 py-3 border border-gray-200 rounded-lg" placeholder="例如: 2025/5/1" />
+              </div>
+
+              <div class="form-group">
+                <label>发布者用户名</label>
+                <input v-model="resource.author" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+              </div>
+
+              <div class="form-group">
+                <label>发布者头像URL</label>
+                <input v-model="resource.authorAvatar" class="w-full px-4 py-3 border border-gray-200 rounded-lg" placeholder="https://example.com/avatar.jpg" />
+              </div>
+
+              <div class="form-group">
+                <label>已发布资源数量</label>
+                <input v-model.number="resource.authorCount" type="number" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
               </div>
             </div>
 
             <button 
               @click="addResource"
-              class="add-btn"
+              class="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 transition-colors text-gray-500 hover:text-blue-600"
             >
-              + 添加资源链接
+              + 添加资源
             </button>
           </div>
 
@@ -442,11 +446,12 @@ const gameForm = ref({
   tagsInput: '',
   resources: [{
     id: '1',
-    name: '',
-    type: 'main',
     url: '',
     size: '',
-    date: ''
+    dateDisplay: '',
+    author: '',
+    authorAvatar: '',
+    authorCount: 0
   }],
   comments: [{
     id: '1',
@@ -468,8 +473,8 @@ const gameInfo = ref({
   requirements: ''
 });
 
-const platformOptions = ['Android', 'PC', 'KR'];
-const platformIcons = ['📱', '💻', '🇰🇷'];
+const platformOptions = ['Android', 'PC', 'KR', '柚子社'];
+const platformIcons = ['📱', '💻', '🇰🇷', '🎵'];
 const languageOptions = ['简体中文', '繁体中文', '日文', '英文'];
 
 onMounted(async () => {
@@ -651,18 +656,20 @@ function editGame(game) {
     tagsInput: game.tags?.join(', ') || '',
     resources: game.resources?.map((r, i) => ({
       id: String(i + 1),
-      name: r.name || '',
-      type: r.type || 'main',
       url: r.url || '',
       size: r.size || '',
-      date: r.date || ''
+      dateDisplay: r.dateDisplay || r.date || '',
+      author: r.author || '',
+      authorAvatar: r.authorAvatar || '',
+      authorCount: r.authorCount || 0
     })) || [{
       id: '1',
-      name: '',
-      type: 'main',
       url: '',
       size: '',
-      date: ''
+      dateDisplay: '',
+      author: '',
+      authorAvatar: '',
+      authorCount: 0
     }],
     comments: game.comments?.map((c, i) => ({
       id: String(i + 1),
@@ -721,14 +728,13 @@ async function saveGame() {
       category: selectedCategory.value.name,
       tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
       downloads: editingGameItem.value ? editingGameItem.value.downloads : gameForm.value.downloads,
-      resources: gameForm.value.resources.filter(r => r.name && r.url).map(r => ({
-        name: r.name,
+      resources: gameForm.value.resources.filter(r => r.url).map(r => ({
         url: r.url,
-        type: r.type,
         size: r.size,
-        date: r.date,
-        platform: gameInfo.value.platforms[0] || 'Android',
-        language: gameInfo.value.languages[0] || '简体中文'
+        dateDisplay: r.dateDisplay,
+        author: r.author,
+        authorAvatar: r.authorAvatar,
+        authorCount: r.authorCount
       })),
       comments: gameForm.value.comments.filter(c => c.user && c.content)
     };
@@ -768,11 +774,12 @@ async function deleteGame(game) {
 function addResource() {
   gameForm.value.resources.push({
     id: Date.now().toString(),
-    name: '',
-    type: 'main',
     url: '',
     size: '',
-    date: ''
+    dateDisplay: '',
+    author: '',
+    authorAvatar: '',
+    authorCount: 0
   });
 }
 
@@ -810,11 +817,12 @@ function resetGameForm() {
     tagsInput: '',
     resources: [{
       id: '1',
-      name: '',
-      type: 'main',
       url: '',
       size: '',
-      date: ''
+      dateDisplay: '',
+      author: '',
+      authorAvatar: '',
+      authorCount: 0
     }],
     comments: [{
       id: '1',
