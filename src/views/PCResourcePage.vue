@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { ArrowLeft, Monitor, HardDrive, MessageSquare, Eye, Heart, Calendar } from 'lucide-vue-next'
+import { ArrowLeft, Menu, Monitor, HardDrive, MessageSquare, Eye, Heart, Calendar } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { gameApi, type Game } from '@/api/api'
 
@@ -62,10 +62,15 @@ onUnmounted(() => {
           @click="router.back()"
           class="p-2 rounded-lg hover:bg-pink-50 transition-colors"
         >
-          <ArrowLeft class="w-6 h-6 text-pink-600" />
+          <Menu class="w-6 h-6 text-pink-600" />
         </button>
         <h1 class="text-lg font-bold bg-gradient-to-r from-pink-600 to-pink-500 bg-clip-text text-transparent">PC资源</h1>
-        <div class="w-10"></div>
+        <button 
+          @click="router.back()"
+          class="p-2 rounded-lg hover:bg-pink-50 transition-colors"
+        >
+          <ArrowLeft class="w-6 h-6 text-pink-600" />
+        </button>
       </div>
     </header>
     
@@ -74,19 +79,9 @@ onUnmounted(() => {
     </div>
     
     <div v-else>
-      <!-- 手机端显示：保持原来的样子 -->
+      <!-- 手机端显示：与Gal游戏界面一致 -->
       <div class="pt-14 px-4 sm:hidden">
-        <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl p-4 mt-4 text-white shadow-lg shadow-pink-200">
-          <div class="flex items-center gap-3">
-            <Monitor class="w-8 h-8" />
-            <div>
-              <h2 class="text-lg font-bold">PC游戏资源</h2>
-              <p class="text-sm opacity-90">精选高品质PC游戏，享受极致游戏体验</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="flex gap-2 mt-6">
+        <div class="flex gap-2 mt-4">
           <button 
             @click="setCategory('all')"
             class="flex-1 py-3 rounded-xl font-medium transition-all border border-pink-100"
@@ -94,8 +89,7 @@ onUnmounted(() => {
               ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-200' 
               : 'bg-white text-gray-600 hover:bg-pink-50'"
           >
-            <span class="block">📦 全部</span>
-            <span class="text-xs opacity-75">所有资源</span>
+            全部
           </button>
           <button 
             @click="setCategory('raw')"
@@ -104,8 +98,7 @@ onUnmounted(() => {
               ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-200' 
               : 'bg-white text-gray-600 hover:bg-pink-50'"
           >
-            <span class="block">🍖 生肉</span>
-            <span class="text-xs opacity-75">未汉化</span>
+            🍖 生肉
           </button>
           <button 
             @click="setCategory('cooked')"
@@ -114,16 +107,8 @@ onUnmounted(() => {
               ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg shadow-pink-200' 
               : 'bg-white text-gray-600 hover:bg-pink-50'"
           >
-            <span class="block">🍳 熟肉</span>
-            <span class="text-xs opacity-75">已汉化</span>
+            🍳 熟肉
           </button>
-        </div>
-        
-        <div class="flex items-center justify-between mt-4">
-          <h3 class="text-lg font-bold text-gray-800">
-            {{ activeCategory === 'all' ? '全部资源' : activeCategory === 'raw' ? '生肉资源' : '熟肉资源' }}
-          </h3>
-          <span class="text-sm text-pink-400">{{ filteredGames.length }} 个游戏</span>
         </div>
         
         <div class="grid grid-cols-2 gap-4 mt-4">
@@ -139,24 +124,33 @@ onUnmounted(() => {
                 :alt="game.name"
                 class="w-full h-full object-cover"
               />
+              <div class="absolute top-2 right-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs px-3 py-1 rounded-full shadow-lg shadow-pink-200 font-medium">
+                {{ game.size }}
+              </div>
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div class="absolute bottom-2 left-2 right-2">
                 <p class="text-white text-sm font-medium truncate">{{ game.name }}</p>
               </div>
             </div>
             <div class="p-3">
-              <div class="flex items-center justify-between text-xs text-pink-400">
-                <span>{{ game.size }}</span>
-                <span>{{ game.downloads.toLocaleString() }} 下载</span>
-              </div>
-              <div class="flex flex-wrap gap-1 mt-2">
+              <p class="text-gray-600 text-xs line-clamp-2 mb-2 leading-relaxed">{{ game.description }}</p>
+              <div class="flex flex-wrap gap-1 mb-2">
                 <span 
-                  v-for="tag in game.tags.slice(0, 2)" 
+                  v-for="tag in game.tags.slice(0, 3)" 
                   :key="tag"
                   class="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full border border-pink-200"
                 >
                   {{ tag }}
                 </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500">{{ game.downloads.toLocaleString() }} 下载</span>
+                <button 
+                  @click.stop="goToGame(game.id)"
+                  class="bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs px-4 py-1 rounded-full hover:opacity-90 transition-opacity"
+                >
+                  下载
+                </button>
               </div>
             </div>
           </div>
