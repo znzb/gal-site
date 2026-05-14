@@ -146,6 +146,7 @@ async function login() {
   font-size: 14px;
   transition: all 0.3s ease;
   background: #f9fafb;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
