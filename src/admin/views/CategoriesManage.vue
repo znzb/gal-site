@@ -692,11 +692,11 @@ function editGame(game) {
     }]
   };
   gameInfo.value = {
-    developer: '',
-    publisher: '',
-    platforms: ['Android', 'Windows'],
-    languages: ['简体中文'],
-    requirements: ''
+    developer: game.developer || '',
+    publisher: game.publisher || '',
+    platforms: game.platforms || ['Android', 'Windows'],
+    languages: game.languages || ['简体中文'],
+    requirements: game.requirements || ''
   };
   activeTab.value = 'info';
   showAddGameModal.value = true;
@@ -725,7 +725,7 @@ async function saveGame() {
   try {
     const gameData = {
       ...gameForm.value,
-      category: selectedCategory.value.name,
+      category: gameForm.value.category,  // 使用表单中选择的分类
       tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
       downloads: editingGameItem.value ? editingGameItem.value.downloads : gameForm.value.downloads,
       resources: gameForm.value.resources.filter(r => r.url).map(r => ({
@@ -736,7 +736,13 @@ async function saveGame() {
         authorAvatar: r.authorAvatar,
         authorCount: r.authorCount
       })),
-      comments: gameForm.value.comments.filter(c => c.user && c.content)
+      comments: gameForm.value.comments.filter(c => c.user && c.content),
+      // 保存游戏详细信息（支持平台、语言等）
+      developer: gameInfo.value.developer,
+      publisher: gameInfo.value.publisher,
+      platforms: gameInfo.value.platforms,
+      languages: gameInfo.value.languages,
+      requirements: gameInfo.value.requirements
     };
 
     if (editingGameItem.value) {
