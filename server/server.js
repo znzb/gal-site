@@ -18,6 +18,7 @@ import operationLogsRouter from './routes/operationLogs.js';
 import faqRouter from './routes/faq.js';
 import toolsRouter from './routes/tools.js';
 import toolGuideRouter from './routes/toolGuide.js';
+import initRouter from './routes/init.js';
 import Game from './models/Game.js';
 import Category from './models/Category.js';
 import Feature from './models/Feature.js';
@@ -84,6 +85,7 @@ app.use('/api/search', searchLogsRouter);
 app.use('/api/faq', faqRouter);
 app.use('/api/tools', toolsRouter);
 app.use('/api/tool-guide', toolGuideRouter);
+app.use('/api', initRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: '游戏下载网站 API 服务运行中' });
