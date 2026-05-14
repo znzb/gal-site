@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Megaphone, MessageCircle, Music, FileText } from 'lucide-vue-next'
+import { Megaphone, MessageCircle, Music, Download } from 'lucide-vue-next'
 import { featureApi, type Feature } from '@/api/api'
 
 const router = useRouter()
