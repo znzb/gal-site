@@ -225,7 +225,7 @@ form {
   }
   
   .login-box {
-    padding: 32px 24px;
+    padding: 32px 16px;
     margin: 10px;
     max-width: none;
     width: calc(100% - 20px);
@@ -247,6 +247,14 @@ form {
   
   .form-group {
     margin-bottom: 16px;
+  }
+  
+  .input-wrapper {
+    padding: 0 4px;
+  }
+  
+  form {
+    padding: 0 4px;
   }
   
   .form-group input {
