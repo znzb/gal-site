@@ -128,19 +128,22 @@
           <div class="tabs">
             <button 
               @click="activeTab = 'info'"
-              :class="['tab-btn', activeTab === 'info' ? 'active' : '']"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors"
+              :class="activeTab === 'info' ? 'text-white bg-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
             >
               📝 游戏信息
             </button>
             <button 
               @click="activeTab = 'resources'"
-              :class="['tab-btn', activeTab === 'resources' ? 'active' : '']"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors"
+              :class="activeTab === 'resources' ? 'text-white bg-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
             >
               🔗 资源链接
             </button>
             <button 
               @click="activeTab = 'comments'"
-              :class="['tab-btn', activeTab === 'comments' ? 'active' : '']"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors"
+              :class="activeTab === 'comments' ? 'text-white bg-blue-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
             >
               💬 游戏评论
             </button>
@@ -168,17 +171,12 @@
             </div>
 
             <div class="form-group">
-              <label>子分类</label>
-              <div class="radio-group">
-                <label class="radio-label">
-                  <input type="radio" v-model="gameForm.subCategory" value="raw" />
-                  <span>🍖 生肉（未汉化）</span>
-                </label>
-                <label class="radio-label">
-                  <input type="radio" v-model="gameForm.subCategory" value="cooked" />
-                  <span>🍳 熟肉（已汉化）</span>
-                </label>
-              </div>
+              <label>类型 (生肉/熟肉)</label>
+              <select v-model="gameForm.subCategory" class="w-full px-4 py-3 border border-gray-200 rounded-lg">
+                <option value="" disabled>请选择类型</option>
+                <option value="raw">🍖 生肉（未汉化）</option>
+                <option value="cooked">🍳 熟肉（已汉化）</option>
+              </select>
             </div>
 
             <div class="form-group">
@@ -222,10 +220,10 @@
             </div>
 
             <div class="form-group">
-              <label>支持平台</label>
+              <label>支持平台 (可多选)</label>
               <div class="checkbox-group">
                 <label 
-                  v-for="platform in platformOptions" 
+                  v-for="(platform, index) in platformOptions" 
                   :key="platform"
                   class="checkbox-label"
                 >
@@ -234,6 +232,7 @@
                     :checked="gameInfo.platforms.includes(platform)"
                     @change="togglePlatform(platform)"
                   />
+                  <span class="platform-icon">{{ platformIcons[index] }}</span>
                   {{ platform }}
                 </label>
               </div>
@@ -470,6 +469,7 @@ const gameInfo = ref({
 });
 
 const platformOptions = ['Android', 'PC', 'KR'];
+const platformIcons = ['📱', '💻', '🇰🇷'];
 const languageOptions = ['简体中文', '繁体中文', '日文', '英文'];
 
 onMounted(async () => {
@@ -1122,33 +1122,6 @@ th, td {
   padding: 0 20px;
 }
 
-.tab-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  font-weight: 500;
-  transition: all 0.2s;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #6b7280;
-  border-bottom: 2px solid transparent;
-}
-
-.tab-btn:hover {
-  color: #1f2937;
-  background: #f9fafb;
-}
-
-.tab-btn.active {
-  color: #c44fff;
-  border-bottom: 2px solid #c44fff;
-  background: #fdf4ff;
-}
-
 .tab-content {
   max-width: 4xl;
   margin: 0 auto;
@@ -1220,10 +1193,14 @@ th, td {
   transition: all 0.2s;
 }
 
+.platform-icon {
+  font-size: 18px;
+}
+
 .checkbox-label:has(input:checked) {
-  border-color: #c44fff;
-  background: #fdf4ff;
-  color: #c44fff;
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .resource-item, .comment-item {
