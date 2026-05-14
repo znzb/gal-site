@@ -138,11 +138,12 @@ async function login() {
 }
 
 .form-group input {
-  width: 100%;
-  padding: 12px 12px 12px 40px;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
-  font-size: 15px;
+  width: calc(100% - 16px);
+  padding: 10px 10px 10px 36px;
+  margin: 0 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
   transition: all 0.3s ease;
   background: #f9fafb;
 }
@@ -245,15 +246,19 @@ async function login() {
   }
   
   .form-group input {
-    padding: 12px 12px 12px 38px;
+    width: calc(100% - 16px);
+    padding: 10px 10px 10px 36px;
+    margin: 0 8px;
     font-size: 14px;
-    border-radius: 10px;
+    border-radius: 8px;
   }
   
   .login-btn {
-    padding: 14px;
+    width: calc(100% - 16px);
+    margin: 0 8px;
+    padding: 12px;
     font-size: 15px;
-    border-radius: 10px;
+    border-radius: 8px;
   }
   
   .error {
