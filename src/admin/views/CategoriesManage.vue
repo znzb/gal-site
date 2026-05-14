@@ -492,11 +492,73 @@ async function loadGames() {
 
 const filteredGames = computed(() => {
   if (!selectedCategory.value) return [];
-  return games.value.filter(g => g.category === selectedCategory.value.name);
+  const categoryName = selectedCategory.value.name;
+  
+  return games.value.filter(game => {
+    // 柚子社分类：只要platforms包含柚子社或者isYuzusoft为true
+    if (categoryName === '柚子社') {
+      return game.platforms?.includes('柚子社') || game.isYuzusoft;
+    }
+    
+    // PC资源分类：只要platforms包含PC，且不包含柚子社
+    if (categoryName === 'PC资源') {
+      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+        return false;
+      }
+      return game.platforms?.includes('PC');
+    }
+    
+    // Gal游戏分类：platforms包含Android或KR，或者同时包含PC+Android/KR，且不包含柚子社
+    if (categoryName === 'Gal游戏') {
+      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+        return false;
+      }
+      if (!game.platforms || game.platforms.length === 0) {
+        return game.category === categoryName; // 兼容旧数据
+      }
+      const hasAndroid = game.platforms.includes('Android');
+      const hasKR = game.platforms.includes('KR');
+      const hasPC = game.platforms.includes('PC');
+      return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR));
+    }
+    
+    // 其他分类：按旧的category字段匹配
+    return game.category === categoryName;
+  });
 });
 
 function getGameCount(categoryName) {
-  return games.value.filter(g => g.category === categoryName).length;
+  return games.value.filter(game => {
+    // 柚子社分类
+    if (categoryName === '柚子社') {
+      return game.platforms?.includes('柚子社') || game.isYuzusoft;
+    }
+    
+    // PC资源分类
+    if (categoryName === 'PC资源') {
+      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+        return false;
+      }
+      return game.platforms?.includes('PC');
+    }
+    
+    // Gal游戏分类
+    if (categoryName === 'Gal游戏') {
+      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+        return false;
+      }
+      if (!game.platforms || game.platforms.length === 0) {
+        return game.category === categoryName;
+      }
+      const hasAndroid = game.platforms.includes('Android');
+      const hasKR = game.platforms.includes('KR');
+      const hasPC = game.platforms.includes('PC');
+      return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR));
+    }
+    
+    // 其他分类
+    return game.category === categoryName;
+  }).length;
 }
 
 function viewCategory(cat) {
