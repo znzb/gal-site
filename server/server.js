@@ -314,13 +314,24 @@ const startServer = async () => {
     console.log(`Server running on port ${PORT}`);
 
     if (process.env.RENDER_EXTERNAL_URL) {
-      const pingInterval = 14 * 60 * 1000;
-      setInterval(() => {
-        console.log(`[${new Date().toISOString()}] Pinging to prevent cold start...`);
-        fetch(process.env.RENDER_EXTERNAL_URL)
-          .then(res => console.log(`Ping response: ${res.status}`))
-          .catch(err => console.error(`Ping error: ${err.message}`));
-      }, pingInterval);
+      const pingInterval = 10 * 60 * 1000; // 缩短到10分钟
+      
+      // 立即发送一次ping
+      const sendPing = async () => {
+        try {
+          console.log(`[${new Date().toISOString()}] Pinging to prevent cold start...`);
+          const res = await fetch(process.env.RENDER_EXTERNAL_URL);
+          console.log(`Ping response: ${res.status}`);
+        } catch (err) {
+          console.error(`Ping error: ${err.message}`);
+        }
+      };
+      
+      // 立即ping一次
+      sendPing();
+      
+      // 设置定时器
+      setInterval(sendPing, pingInterval);
       console.log(`Cold start prevention active - will ping every ${pingInterval / 60000} minutes`);
     }
   });

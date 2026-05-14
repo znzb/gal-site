@@ -64,7 +64,7 @@ const handleDownload = (gameId: string) => {
       </div>
     </div>
     
-    <div class="p-3">
+    <div class="p-3 flex flex-col h-36">
       <p class="text-gray-600 text-xs line-clamp-2 mb-2 leading-relaxed">{{ game.description }}</p>
       
       <div class="flex flex-wrap gap-1 mb-3">
@@ -77,7 +77,7 @@ const handleDownload = (gameId: string) => {
         </span>
       </div>
       
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between mt-auto">
         <span class="text-xs text-gray-500">{{ game.downloads.toLocaleString() }} 下载</span>
         <button 
           @click.stop="handleDownload(game.id)"
