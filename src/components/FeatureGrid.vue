@@ -16,14 +16,14 @@ const mockFeatures: Feature[] = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
   { id: '2', name: '加入Q群', icon: 'message-circle' },
   { id: '3', name: '柚子社', icon: 'music' },
-  { id: '4', name: '补档记录', icon: 'file-text' }
+  { id: '4', name: '工具下载', icon: 'download' }
 ]
 
 const iconMap: Record<string, typeof Megaphone> = {
   megaphone: Megaphone,
   'message-circle': MessageCircle,
   music: Music,
-  'file-text': FileText
+  download: Download
 }
 
 const loadFeatures = async () => {
@@ -61,7 +61,7 @@ const handleFeatureClick = (featureId: string) => {
       router.push('/yuzusoft')
       break
     case '4':
-      router.push('/patch-records')
+      router.push('/tools')
       break
   }
 }
