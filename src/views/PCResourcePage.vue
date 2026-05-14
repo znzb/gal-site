@@ -59,7 +59,7 @@ onUnmounted(() => {
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-30 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
-          @click="router.back()"
+          @click="$emit('openMenu')"
           class="p-2 rounded-lg hover:bg-pink-50 transition-colors"
         >
           <Menu class="w-6 h-6 text-pink-600" />
