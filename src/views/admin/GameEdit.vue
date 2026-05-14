@@ -272,7 +272,7 @@ onMounted(() => {
                   v-model="formData.category"
                   class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
-                  <option value="" disabled>请选择分类</option>
+                  <option value="">请选择分类</option>
                   <option v-for="cat in categories" :key="cat.value" :value="cat.value">
                     {{ cat.label }}
                   </option>
