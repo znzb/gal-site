@@ -147,7 +147,7 @@ onUnmounted(() => {
                       bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
                     ]"
                     :style="{
-                      objectPosition: banner.title === '千恋*万花' ? '50% 0%' : '50% 25%'
+                      objectPosition: banner.title === '千恋*万花' ? '50% 0%' : banner.title === '魔女的夜宴' ? '50% 10%' : '50% 25%'
                     }"
                     @load="handleBannerLoad(index)"
                     @error="handleBannerError(index)"
@@ -267,7 +267,7 @@ onUnmounted(() => {
                       bannersLoaded[index] ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
                     ]"
                     :style="{
-                      objectPosition: banner.title === '千恋*万花' ? '50% 0%' : '50% 25%'
+                      objectPosition: banner.title === '千恋*万花' ? '50% 0%' : banner.title === '魔女的夜宴' ? '50% 10%' : '50% 25%'
                     }"
                     @load="handleBannerLoad(index)"
                     @error="handleBannerError(index)"
