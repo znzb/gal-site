@@ -114,78 +114,173 @@
       </div>
     </div>
 
-    <div v-if="showAddGameModal" class="modal-overlay" @click.self="showAddGameModal = false">
-      <div class="modal" @click.stop>
-        <h2>{{ editingGameItem ? '编辑游戏' : '添加游戏' }}</h2>
-        
-        <div class="tabs">
-          <button 
-            @click="activeTab = 'info'" 
-            :class="['tab-btn', activeTab === 'info' ? 'active' : '']"
-          >
-            📝 游戏信息
-          </button>
-          <button 
-            @click="activeTab = 'resources'" 
-            :class="['tab-btn', activeTab === 'resources' ? 'active' : '']"
-          >
-            🔗 资源链接
-          </button>
-          <button 
-            @click="activeTab = 'comments'" 
-            :class="['tab-btn', activeTab === 'comments' ? 'active' : '']"
-          >
-            💬 游戏评论
+    <div v-if="showAddGameModal" class="game-edit-modal-overlay" @click.self="showAddGameModal = false">
+      <div class="game-edit-modal" @click.stop>
+        <div class="modal-header">
+          <button class="close-btn" @click="showAddGameModal = false">✕</button>
+          <h1 class="modal-title">{{ editingGameItem ? '编辑游戏' : '添加游戏' }}</h1>
+          <button class="save-btn" @click="saveGame" :disabled="isSaving">
+            {{ isSaving ? '保存中...' : '保存' }}
           </button>
         </div>
 
-        <form @submit.prevent="saveGame">
-          <div v-show="activeTab === 'info'">
+        <div class="tabs-container">
+          <div class="tabs">
+            <button 
+              @click="activeTab = 'info'"
+              :class="['tab-btn', activeTab === 'info' ? 'active' : '']"
+            >
+              📝 游戏信息
+            </button>
+            <button 
+              @click="activeTab = 'resources'"
+              :class="['tab-btn', activeTab === 'resources' ? 'active' : '']"
+            >
+              🔗 资源链接
+            </button>
+            <button 
+              @click="activeTab = 'comments'"
+              :class="['tab-btn', activeTab === 'comments' ? 'active' : '']"
+            >
+              💬 游戏评论
+            </button>
+          </div>
+        </div>
+
+        <div class="tab-content">
+          <div v-if="activeTab === 'info'" class="space-y-6">
             <div class="form-group">
               <label>游戏名称</label>
-              <input v-model="gameForm.name" required />
+              <input v-model="gameForm.name" type="text" placeholder="请输入游戏名称" />
             </div>
-            <div class="form-group">
-              <label>分类</label>
-              <input :value="selectedCategory?.name || ''" readonly />
-            </div>
-            <div class="form-group">
-              <label>类型 (生肉/熟肉)</label>
-              <select v-model="gameForm.subCategory">
-                <option value="">无</option>
-                <option value="raw">🍖 生肉 (未汉化)</option>
-                <option value="cooked">🍳 熟肉 (已汉化)</option>
-              </select>
-            </div>
+
             <div class="form-group">
               <label>封面图片URL</label>
-              <input v-model="gameForm.cover" required />
+              <input v-model="gameForm.cover" type="text" placeholder="请输入封面图片URL" />
+              <div v-if="gameForm.cover" class="mt-2">
+                <img :src="gameForm.cover" :alt="gameForm.name" class="preview-image" />
+              </div>
             </div>
+
             <div class="form-group">
-              <label>描述</label>
-              <textarea v-model="gameForm.description" rows="4" required></textarea>
+              <label>游戏分类</label>
+              <input :value="selectedCategory?.name || ''" readonly />
             </div>
+
             <div class="form-group">
-              <label>大小</label>
-              <input v-model="gameForm.size" required />
+              <label>子分类</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" v-model="gameForm.subCategory" value="raw" />
+                  <span>🍖 生肉（未汉化）</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" v-model="gameForm.subCategory" value="cooked" />
+                  <span>🍳 熟肉（已汉化）</span>
+                </label>
+              </div>
             </div>
+
+            <div class="form-group">
+              <label>游戏大小</label>
+              <input v-model="gameForm.size" type="text" placeholder="例如: 2.5GB" />
+            </div>
+
             <div class="form-group">
               <label>发布日期</label>
-              <input v-model="gameForm.releaseDate" type="date" required />
+              <input v-model="gameForm.releaseDate" type="date" />
             </div>
+
             <div class="form-group">
-              <label>标签 (逗号分隔)</label>
-              <input v-model="gameForm.tagsInput" placeholder="例如: 恋爱,校园,治愈" />
+              <label>下载量</label>
+              <input v-model.number="gameForm.downloads" type="number" placeholder="请输入下载量" />
+            </div>
+
+            <div class="form-group">
+              <label>标签（用逗号分隔）</label>
+              <input v-model="gameForm.tagsInput" type="text" placeholder="例如: 恋爱, 校园, 治愈" />
+            </div>
+
+            <div class="form-group">
+              <label>游戏介绍</label>
+              <textarea v-model="gameForm.description" rows="4" placeholder="请输入游戏介绍"></textarea>
+            </div>
+
+            <div class="section-divider">
+              <h3 class="section-title">详细信息</h3>
+            </div>
+
+            <div class="grid-cols-2">
+              <div class="form-group">
+                <label>开发商</label>
+                <input v-model="gameInfo.developer" type="text" placeholder="请输入开发商" />
+              </div>
+              <div class="form-group">
+                <label>发行商</label>
+                <input v-model="gameInfo.publisher" type="text" placeholder="请输入发行商" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>支持平台</label>
+              <div class="checkbox-group">
+                <label 
+                  v-for="platform in platformOptions" 
+                  :key="platform"
+                  class="checkbox-label"
+                >
+                  <input 
+                    type="checkbox" 
+                    :checked="gameInfo.platforms.includes(platform)"
+                    @change="togglePlatform(platform)"
+                  />
+                  {{ platform }}
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>支持语言</label>
+              <div class="checkbox-group">
+                <label 
+                  v-for="lang in languageOptions" 
+                  :key="lang"
+                  class="checkbox-label"
+                >
+                  <input 
+                    type="checkbox" 
+                    :checked="gameInfo.languages.includes(lang)"
+                    @change="toggleLanguage(lang)"
+                  />
+                  {{ lang }}
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>系统要求</label>
+              <input v-model="gameInfo.requirements" type="text" placeholder="例如: Android 8.0+ / Windows 10+, 4GB RAM" />
             </div>
           </div>
 
-          <div v-show="activeTab === 'resources'">
-            <div v-for="(resource, index) in gameForm.resources" :key="index" class="resource-item">
+          <div v-if="activeTab === 'resources'" class="space-y-6">
+            <div 
+              v-for="(resource, index) in gameForm.resources" 
+              :key="resource.id"
+              class="resource-item"
+            >
               <div class="resource-header">
-                <span>资源 {{ index + 1 }}</span>
-                <button v-if="gameForm.resources.length > 1" @click="removeResource(index)" class="remove-btn">×</button>
+                <span class="resource-title">资源 {{ index + 1 }}</span>
+                <button 
+                  v-if="gameForm.resources.length > 1"
+                  @click="removeResource(index)"
+                  class="remove-btn"
+                >
+                  🗑️
+                </button>
               </div>
-              <div class="resource-fields">
+
+              <div class="grid-cols-2">
                 <div class="form-group">
                   <label>资源名称</label>
                   <input v-model="resource.name" placeholder="例如: 完整版游戏本体" />
@@ -198,24 +293,9 @@
                     <option value="update">🔄 更新包</option>
                   </select>
                 </div>
-                <div class="form-group">
-                  <label>支持语言</label>
-                  <select v-model="resource.language">
-                    <option value="简体中文">简体中文</option>
-                    <option value="繁体中文">繁体中文</option>
-                    <option value="日文">日文</option>
-                    <option value="英文">英文</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>支持平台</label>
-                  <select v-model="resource.platform">
-                    <option value="Android">Android</option>
-                    <option value="Windows">Windows</option>
-                    <option value="iOS">iOS</option>
-                    <option value="Mac">Mac</option>
-                  </select>
-                </div>
+              </div>
+
+              <div class="grid-cols-2">
                 <div class="form-group">
                   <label>下载链接</label>
                   <input v-model="resource.url" placeholder="请输入下载链接" />
@@ -224,34 +304,40 @@
                   <label>大小</label>
                   <input v-model="resource.size" placeholder="例如: 2.5GB" />
                 </div>
-                <div class="form-group">
-                  <label>发布日期（显示格式）</label>
-                  <input v-model="resource.dateDisplay" placeholder="例如: 3天前" />
-                </div>
-                <div class="form-group">
-                  <label>发布者用户名</label>
-                  <input v-model="resource.authorName" placeholder="例如: 愚者" />
-                </div>
-                <div class="form-group">
-                  <label>发布者头像URL</label>
-                  <input v-model="resource.authorAvatar" placeholder="请输入头像URL" />
-                </div>
-                <div class="form-group">
-                  <label>已发布资源数量</label>
-                  <input v-model.number="resource.authorResources" type="number" placeholder="例如: 198" />
-                </div>
+              </div>
+
+              <div class="form-group">
+                <label>发布日期</label>
+                <input v-model="resource.date" type="date" />
               </div>
             </div>
-            <button type="button" @click="addResource" class="add-resource-btn">+ 添加资源</button>
+
+            <button 
+              @click="addResource"
+              class="add-btn"
+            >
+              + 添加资源链接
+            </button>
           </div>
 
-          <div v-show="activeTab === 'comments'">
-            <div v-for="(comment, index) in gameForm.comments" :key="index" class="comment-item">
+          <div v-if="activeTab === 'comments'" class="space-y-6">
+            <div 
+              v-for="(comment, index) in gameForm.comments" 
+              :key="comment.id"
+              class="comment-item"
+            >
               <div class="comment-header">
-                <span>评论 {{ index + 1 }}</span>
-                <button v-if="gameForm.comments.length > 1" @click="removeComment(index)" class="remove-btn">×</button>
+                <span class="comment-title">评论 {{ index + 1 }}</span>
+                <button 
+                  v-if="gameForm.comments.length > 1"
+                  @click="removeComment(index)"
+                  class="remove-btn"
+                >
+                  🗑️
+                </button>
               </div>
-              <div class="comment-fields">
+
+              <div class="grid-cols-2">
                 <div class="form-group">
                   <label>用户名</label>
                   <input v-model="comment.user" placeholder="请输入用户名" />
@@ -260,12 +346,16 @@
                   <label>头像URL</label>
                   <input v-model="comment.avatar" placeholder="请输入头像URL" />
                 </div>
+              </div>
+
+              <div class="form-group">
+                <label>评论内容</label>
+                <textarea v-model="comment.content" rows="3" placeholder="请输入评论内容"></textarea>
+              </div>
+
+              <div class="grid-cols-3">
                 <div class="form-group">
-                  <label>评论内容</label>
-                  <textarea v-model="comment.content" rows="3" placeholder="请输入评论内容"></textarea>
-                </div>
-                <div class="form-group">
-                  <label>评分 (1-5)</label>
+                  <label>评分</label>
                   <input v-model.number="comment.rating" type="number" min="1" max="5" />
                 </div>
                 <div class="form-group">
@@ -278,14 +368,15 @@
                 </div>
               </div>
             </div>
-            <button type="button" @click="addComment" class="add-comment-btn">+ 添加评论</button>
-          </div>
 
-          <div class="modal-actions">
-            <button type="button" @click="showAddGameModal = false">取消</button>
-            <button type="submit">保存</button>
+            <button 
+              @click="addComment"
+              class="add-btn"
+            >
+              + 添加评论
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
@@ -330,6 +421,7 @@ const editingGameItem = ref(null);
 const editingFaq = ref(null);
 const selectedCategory = ref(null);
 const activeTab = ref('info');
+const isSaving = ref(false);
 
 const faqForm = ref({
   question: '',
@@ -338,6 +430,7 @@ const faqForm = ref({
 });
 
 const categoryForm = ref({ name: '', icon: '', order: 0 });
+
 const gameForm = ref({
   name: '',
   category: '',
@@ -346,29 +439,38 @@ const gameForm = ref({
   description: '',
   size: '',
   releaseDate: '',
+  downloads: 0,
   tagsInput: '',
   resources: [{
+    id: '1',
     name: '',
     type: 'main',
-    language: '简体中文',
-    platform: 'Android',
     url: '',
     size: '',
-    date: '',
-    dateDisplay: '3天前',
-    authorName: '愚者',
-    authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
-    authorResources: 198
+    date: ''
   }],
   comments: [{
+    id: '1',
     user: '',
     avatar: '',
     content: '',
     rating: 5,
     date: '',
-    likes: 0
+    likes: 0,
+    liked: false
   }]
 });
+
+const gameInfo = ref({
+  developer: '',
+  publisher: '',
+  platforms: ['Android', 'Windows'],
+  languages: ['简体中文'],
+  requirements: ''
+});
+
+const platformOptions = ['Android', 'PC', 'KR'];
+const languageOptions = ['简体中文', '繁体中文', '日文', '英文'];
 
 onMounted(async () => {
   await loadCategories();
@@ -545,78 +647,115 @@ function editGame(game) {
     description: game.description,
     size: game.size,
     releaseDate: game.releaseDate,
+    downloads: game.downloads || 0,
     tagsInput: game.tags?.join(', ') || '',
-    resources: game.resources?.map(r => ({
+    resources: game.resources?.map((r, i) => ({
+      id: String(i + 1),
       name: r.name || '',
       type: r.type || 'main',
-      language: r.language || '简体中文',
-      platform: r.platform || 'Android',
       url: r.url || '',
       size: r.size || '',
-      date: r.date || '',
-      dateDisplay: r.dateDisplay || '3天前',
-      authorName: r.authorName || '愚者',
-      authorAvatar: r.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
-      authorResources: r.authorResources || 198
+      date: r.date || ''
     })) || [{
+      id: '1',
       name: '',
       type: 'main',
-      language: '简体中文',
-      platform: 'Android',
       url: '',
       size: '',
-      date: '',
-      dateDisplay: '3天前',
-      authorName: '愚者',
-      authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
-      authorResources: 198
+      date: ''
     }],
-    comments: game.comments?.map(c => ({
+    comments: game.comments?.map((c, i) => ({
+      id: String(i + 1),
       user: c.user || '',
       avatar: c.avatar || '',
       content: c.content || '',
       rating: c.rating || 5,
       date: c.date || '',
-      likes: c.likes || 0
+      likes: c.likes || 0,
+      liked: false
     })) || [{
+      id: '1',
       user: '',
       avatar: '',
       content: '',
       rating: 5,
       date: '',
-      likes: 0
+      likes: 0,
+      liked: false
     }]
+  };
+  gameInfo.value = {
+    developer: '',
+    publisher: '',
+    platforms: ['Android', 'Windows'],
+    languages: ['简体中文'],
+    requirements: ''
   };
   activeTab.value = 'info';
   showAddGameModal.value = true;
 }
 
-async function saveGame() {
-  const gameData = {
-    ...gameForm.value,
-    category: selectedCategory.value.name,
-    tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
-    downloads: editingGameItem.value ? editingGameItem.value.downloads : 0,
-    resources: gameForm.value.resources.filter(r => r.name && r.url),
-    comments: gameForm.value.comments.filter(c => c.user && c.content)
-  };
-
-  if (editingGameItem.value) {
-    await request('/admin/games/' + editingGameItem.value.id, {
-      method: 'PUT',
-      body: JSON.stringify(gameData)
-    });
+function togglePlatform(platform) {
+  const index = gameInfo.value.platforms.indexOf(platform);
+  if (index > -1) {
+    gameInfo.value.platforms.splice(index, 1);
   } else {
-    await request('/admin/games', {
-      method: 'POST',
-      body: JSON.stringify(gameData)
-    });
+    gameInfo.value.platforms.push(platform);
   }
+}
 
-  showAddGameModal.value = false;
-  editingGameItem.value = null;
-  resetGameForm();
-  await loadGames();
+function toggleLanguage(lang) {
+  const index = gameInfo.value.languages.indexOf(lang);
+  if (index > -1) {
+    gameInfo.value.languages.splice(index, 1);
+  } else {
+    gameInfo.value.languages.push(lang);
+  }
+}
+
+async function saveGame() {
+  isSaving.value = true;
+  try {
+    const gameData = {
+      ...gameForm.value,
+      category: selectedCategory.value.name,
+      tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
+      downloads: editingGameItem.value ? editingGameItem.value.downloads : gameForm.value.downloads,
+      resources: gameForm.value.resources.filter(r => r.name && r.url).map(r => ({
+        name: r.name,
+        url: r.url,
+        type: r.type,
+        size: r.size,
+        date: r.date,
+        platform: gameInfo.value.platforms[0] || 'Android',
+        language: gameInfo.value.languages[0] || '简体中文'
+      })),
+      comments: gameForm.value.comments.filter(c => c.user && c.content)
+    };
+
+    if (editingGameItem.value) {
+      await request('/admin/games/' + editingGameItem.value.id, {
+        method: 'PUT',
+        body: JSON.stringify(gameData)
+      });
+    } else {
+      await request('/admin/games', {
+        method: 'POST',
+        body: JSON.stringify(gameData)
+      });
+    }
+
+    showAddGameModal.value = false;
+    editingGameItem.value = null;
+    resetGameForm();
+    await loadGames();
+    alert('保存成功！');
+  } catch (error) {
+    console.error('保存游戏失败:', error);
+    alert('保存失败，请重试');
+  } finally {
+    isSaving.value = false;
+  }
 }
 
 async function deleteGame(game) {
@@ -628,17 +767,12 @@ async function deleteGame(game) {
 
 function addResource() {
   gameForm.value.resources.push({
+    id: Date.now().toString(),
     name: '',
     type: 'main',
-    language: '简体中文',
-    platform: 'Android',
     url: '',
     size: '',
-    date: '',
-    dateDisplay: '3天前',
-    authorName: '愚者',
-    authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
-    authorResources: 198
+    date: ''
   });
 }
 
@@ -648,12 +782,14 @@ function removeResource(index) {
 
 function addComment() {
   gameForm.value.comments.push({
+    id: Date.now().toString(),
     user: '',
     avatar: '',
     content: '',
     rating: 5,
     date: '',
-    likes: 0
+    likes: 0,
+    liked: false
   });
 }
 
@@ -670,28 +806,33 @@ function resetGameForm() {
     description: '',
     size: '',
     releaseDate: '',
+    downloads: 0,
     tagsInput: '',
     resources: [{
+      id: '1',
       name: '',
       type: 'main',
-      language: '简体中文',
-      platform: 'Android',
       url: '',
       size: '',
-      date: '',
-      dateDisplay: '3天前',
-      authorName: '愚者',
-      authorAvatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
-      authorResources: 198
+      date: ''
     }],
     comments: [{
+      id: '1',
       user: '',
       avatar: '',
       content: '',
       rating: 5,
       date: '',
-      likes: 0
+      likes: 0,
+      liked: false
     }]
+  };
+  gameInfo.value = {
+    developer: '',
+    publisher: '',
+    platforms: ['Android', 'Windows'],
+    languages: ['简体中文'],
+    requirements: ''
   };
   activeTab.value = 'info';
 }
@@ -707,7 +848,7 @@ function resetGameForm() {
 
 .add-btn {
   padding: 10px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -734,7 +875,7 @@ function resetGameForm() {
 
 .add-game-btn {
   padding: 8px 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -815,7 +956,7 @@ function resetGameForm() {
 }
 
 .category-card.drag-over {
-  border: 2px dashed #667eea;
+  border: 2px dashed #ff6b9d;
 }
 
 .games-table {
@@ -877,11 +1018,12 @@ th, td {
   font-weight: 500;
 }
 
-.form-group input, .form-group textarea {
+.form-group input, .form-group textarea, .form-group select {
   width: 100%;
   padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .modal-actions {
@@ -899,85 +1041,217 @@ th, td {
 }
 
 .modal-actions button[type="submit"] {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
+}
+
+/* 游戏编辑模态框样式 */
+.game-edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: #f3f4f6;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.game-edit-modal {
+  min-height: 100vh;
+  background: white;
+}
+
+.modal-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.close-btn {
+  padding: 8px;
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0;
+}
+
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tabs-container {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 60px;
+  z-index: 40;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: none;
+  max-width: 4xl;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-weight: 500;
+  transition: all 0.2s;
   border: none;
   background: none;
   cursor: pointer;
-  border-radius: 6px 6px 0 0;
-  transition: all 0.2s;
-  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
 }
 
 .tab-btn:hover {
-  background: #f5f5f5;
+  color: #1f2937;
+  background: #f9fafb;
 }
 
 .tab-btn.active {
-  background: #667eea;
-  color: white;
+  color: #c44fff;
+  border-bottom: 2px solid #c44fff;
+  background: #fdf4ff;
+}
+
+.tab-content {
+  max-width: 4xl;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.space-y-6 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.preview-image {
+  max-width: 200px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 16px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.section-divider {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 24px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.grid-cols-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.checkbox-label:has(input:checked) {
+  border-color: #c44fff;
+  background: #fdf4ff;
+  color: #c44fff;
 }
 
 .resource-item, .comment-item {
-  margin-bottom: 16px;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fafafa;
 }
 
 .resource-header, .comment-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
+}
+
+.resource-title, .comment-title {
   font-weight: 500;
+  color: #374151;
 }
 
 .remove-btn {
-  width: 24px;
-  height: 24px;
+  padding: 6px;
   border: none;
-  background: #e74c3c;
-  color: white;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-}
-
-.add-resource-btn, .add-comment-btn {
-  width: 100%;
-  padding: 10px;
-  border: 2px dashed #e0e0e0;
   background: none;
-  border-radius: 6px;
+  color: #ef4444;
   cursor: pointer;
-  color: #667eea;
-  margin-top: 12px;
-  transition: all 0.2s;
-}
-
-.add-resource-btn:hover, .add-comment-btn:hover {
-  border-color: #667eea;
-}
-
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  font-size: 18px;
 }
 
 @media (max-width: 768px) {
@@ -1069,7 +1343,8 @@ th, td {
   }
   
   .form-group input,
-  .form-group textarea {
+  .form-group textarea,
+  .form-group select {
     padding: 12px;
     font-size: 16px;
   }
@@ -1082,6 +1357,38 @@ th, td {
     width: 100%;
     padding: 14px;
     font-size: 16px;
+  }
+
+  /* 游戏编辑模态框响应式 */
+  .modal-header {
+    padding: 12px 16px;
+  }
+
+  .tabs {
+    padding: 0 16px;
+  }
+
+  .tab-btn {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .tab-content {
+    padding: 20px 16px;
+  }
+
+  .grid-cols-2,
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox-group {
+    gap: 6px;
+  }
+
+  .checkbox-label {
+    padding: 8px 12px;
+    font-size: 14px;
   }
 }
 </style>
