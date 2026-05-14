@@ -168,7 +168,7 @@
             <div class="form-group">
               <label>分类</label>
               <select v-model="gameForm.category" class="w-full px-4 py-3 border border-gray-200 rounded-lg">
-                <option value="" disabled>请选择分类</option>
+                <option value="">请选择分类</option>
                 <option v-for="cat in categories" :key="cat._id" :value="cat.name">
                   {{ cat.name }}
                 </option>
