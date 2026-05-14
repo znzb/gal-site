@@ -28,7 +28,12 @@ const iconMap: Record<string, typeof Megaphone> = {
 
 const loadFeatures = async () => {
   try {
-    features.value = await featureApi.getAllFeatures()
+    const apiFeatures = await featureApi.getAllFeatures()
+    features.value = apiFeatures.map((feature, index) => ({
+      ...feature,
+      name: mockFeatures[index]?.name || feature.name,
+      icon: mockFeatures[index]?.icon || feature.icon
+    }))
   } catch (error) {
     console.error('Failed to load features, using mock data:', error)
     features.value = mockFeatures
