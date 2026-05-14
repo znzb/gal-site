@@ -139,10 +139,10 @@ async function login() {
 
 .form-group input {
   width: 100%;
-  padding: 14px 14px 14px 44px;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 16px;
+  padding: 12px 12px 12px 40px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
   transition: all 0.3s ease;
   background: #f9fafb;
 }
@@ -245,15 +245,15 @@ async function login() {
   }
   
   .form-group input {
-    padding: 16px 16px 16px 44px;
-    font-size: 16px;
-    border-radius: 12px;
+    padding: 12px 12px 12px 38px;
+    font-size: 14px;
+    border-radius: 10px;
   }
   
   .login-btn {
-    padding: 18px;
-    font-size: 16px;
-    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 10px;
   }
   
   .error {
