@@ -31,24 +31,54 @@ router.get('/category/:category', async (req, res) => {
     
     // 根据分类名称直接通过platforms字段查询
     if (category === 'PC资源') {
-      // 只包含PC平台的游戏（兼容没有platforms字段的旧数据）
+      // PC资源：只包含PC平台的游戏，且不包含柚子社，或者兼容旧数据
       query = {
-        $or: [
-          { platforms: 'PC' },
-          { platforms: { $exists: false }, category: 'PC资源' },
-          { platforms: { $exists: false }, category: 'pc资源' }
+        $and: [
+          {
+            $or: [
+              { platforms: 'PC' },
+              { platforms: { $exists: false }, category: 'PC资源' },
+              { platforms: { $exists: false }, category: 'pc资源' }
+            ]
+          },
+          {
+            $nor: [
+              { platforms: '柚子社' },
+              { isYuzusoft: true }
+            ]
+          }
         ]
       };
     } else if (category === 'Gal游戏') {
-      // Gal游戏包含非PC平台，或者同时包含PC和其他平台
+      // Gal游戏包含非PC平台，或者同时包含PC和其他平台，且不包含柚子社
+      query = {
+        $and: [
+          {
+            $or: [
+              { platforms: { $in: ['Android', 'KR'] } },
+              { platforms: { $all: ['PC', 'Android'] } },
+              { platforms: { $all: ['PC', 'KR'] } },
+              { platforms: { $size: 3 } },
+              { platforms: { $exists: false }, category: 'Gal游戏' },
+              { platforms: { $exists: false }, category: 'gal游戏' }
+            ]
+          },
+          {
+            $nor: [
+              { platforms: '柚子社' },
+              { isYuzusoft: true }
+            ]
+          }
+        ]
+      };
+    } else if (category === '柚子社') {
+      // 柚子社分类：只要平台包含柚子社，或者isYuzusoft为true，就只显示在这里
       query = {
         $or: [
-          { platforms: { $in: ['Android', 'KR'] } },
-          { platforms: { $all: ['PC', 'Android'] } },
-          { platforms: { $all: ['PC', 'KR'] } },
-          { platforms: { $size: 3 } },
-          { platforms: { $exists: false }, category: 'Gal游戏' },
-          { platforms: { $exists: false }, category: 'gal游戏' }
+          { platforms: '柚子社' },
+          { isYuzusoft: true },
+          { category: '柚子社' },
+          { categories: '柚子社' }
         ]
       };
     } else {
