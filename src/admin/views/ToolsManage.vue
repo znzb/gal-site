@@ -77,10 +77,6 @@
                     <label class="sub-label">标题</label>
                     <input v-model="tutorial.title" placeholder="教程标题" />
                   </div>
-                  <div class="form-col">
-                    <label class="sub-label">链接</label>
-                    <input v-model="tutorial.url" placeholder="https://..." />
-                  </div>
                   <div class="form-col order-col">
                     <label class="sub-label">排序</label>
                     <input v-model.number="tutorial.order" type="number" min="0" placeholder="0" />
@@ -92,6 +88,14 @@
                     <input v-model="tutorial.description" placeholder="教程描述" />
                   </div>
                 </div>
+                <div class="tutorial-content-section">
+                  <div class="form-row align-center">
+                    <label class="sub-label">教程内容</label>
+                    <button type="button" @click="openTutorialContentModal(index)" class="edit-content-btn">
+                      ✏️ 编辑内容
+                    </button>
+                  </div>
+                </div>
                 <button type="button" @click="removeTutorial(index)" class="remove-btn">删除</button>
               </div>
             </div>
@@ -101,6 +105,71 @@
           <div class="modal-actions">
             <button type="button" @click="closeGuideModal">取消</button>
             <button type="submit">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div v-if="showTutorialContentModal" class="modal-overlay" @click.self="showTutorialContentModal = false">
+      <div class="modal tutorial-content-modal" @click.stop>
+        <h2>编辑教程内容</h2>
+        <form @submit.prevent="saveTutorialContent">
+          <div class="form-group">
+            <label>章节列表</label>
+            <div class="sections-list">
+              <div 
+                v-for="(section, sIndex) in currentTutorialContent.sections" 
+                :key="sIndex"
+                class="section-item"
+              >
+                <div class="form-row">
+                  <div class="form-col">
+                    <label class="sub-label">章节标题</label>
+                    <input v-model="section.title" placeholder="章节标题" />
+                  </div>
+                  <button type="button" @click="removeSection(sIndex)" class="remove-section-btn">🗑️</button>
+                </div>
+                <div class="form-row">
+                  <div class="form-col full">
+                    <label class="sub-label">章节内容 (支持HTML)</label>
+                    <textarea v-model="section.content" rows="6" placeholder="输入章节内容，支持HTML标签"></textarea>
+                  </div>
+                </div>
+                <div class="subsections-section">
+                  <div class="form-row align-center">
+                    <label class="sub-label">子章节</label>
+                    <button type="button" @click="addSubsection(sIndex)" class="add-subsection-btn">+ 添加子章节</button>
+                  </div>
+                  <div class="subsections-list" v-if="section.subsections && section.subsections.length > 0">
+                    <div 
+                      v-for="(sub, subIndex) in section.subsections" 
+                      :key="subIndex"
+                      class="subsection-item"
+                    >
+                      <div class="form-row">
+                        <div class="form-col">
+                          <label class="sub-label">子章节标题</label>
+                          <input v-model="sub.title" placeholder="子章节标题" />
+                        </div>
+                        <button type="button" @click="removeSubsection(sIndex, subIndex)" class="remove-subsection-btn">🗑️</button>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-col full">
+                          <label class="sub-label">子章节内容</label>
+                          <textarea v-model="sub.content" rows="4" placeholder="子章节内容"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" @click="addSection" class="add-section-btn">+ 添加章节</button>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" @click="closeTutorialContentModal">取消</button>
+            <button type="submit">保存内容</button>
           </div>
         </form>
       </div>
@@ -152,13 +221,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { toolApi, toolGuideApi } from '@/api/api';
-import type { Tool, ToolGuide } from '@/api/api';
+import type { Tool, ToolGuide, TutorialSection, TutorialContent } from '@/api/api';
 
 const tools = ref<Tool[]>([]);
 const showAddModal = ref(false);
 const showGuideModal = ref(false);
+const showTutorialContentModal = ref(false);
 const editingTool = ref<Tool | null>(null);
 const guide = ref<ToolGuide | null>(null);
+const editingTutorialIndex = ref<number>(-1);
+const currentTutorialContent = ref<TutorialContent>({
+  sections: []
+});
 
 const toolForm = ref({
   name: '',
@@ -173,7 +247,13 @@ const toolForm = ref({
 const guideForm = ref({
   title: '',
   itemsInput: '',
-  tutorials: [] as Array<{ title: string; description: string; url: string; order: number }>
+  tutorials: [] as Array<{ 
+    title: string; 
+    description: string; 
+    url?: string; 
+    order: number;
+    content?: TutorialContent;
+  }>
 });
 
 const iconEmojis: Record<string, string> = {
@@ -289,8 +369,9 @@ function openGuideModal() {
       tutorials: guide.value.tutorials?.map(t => ({
         title: t.title,
         description: t.description,
-        url: t.url,
-        order: t.order
+        url: t.url || '',
+        order: t.order,
+        content: t.content || { sections: [] }
       })) || []
     };
   }
@@ -302,12 +383,62 @@ function addTutorial() {
     title: '',
     description: '',
     url: '',
-    order: guideForm.value.tutorials.length
+    order: guideForm.value.tutorials.length,
+    content: { sections: [] }
   });
 }
 
 function removeTutorial(index: number) {
   guideForm.value.tutorials.splice(index, 1);
+}
+
+function openTutorialContentModal(index: number) {
+  editingTutorialIndex.value = index;
+  const tutorial = guideForm.value.tutorials[index];
+  currentTutorialContent.value = tutorial.content ? 
+    JSON.parse(JSON.stringify(tutorial.content)) : 
+    { sections: [] };
+  showTutorialContentModal.value = true;
+}
+
+function closeTutorialContentModal() {
+  showTutorialContentModal.value = false;
+  editingTutorialIndex.value = -1;
+  currentTutorialContent.value = { sections: [] };
+}
+
+function addSection() {
+  currentTutorialContent.value.sections.push({
+    title: '',
+    content: '',
+    subsections: []
+  });
+}
+
+function removeSection(index: number) {
+  currentTutorialContent.value.sections.splice(index, 1);
+}
+
+function addSubsection(sectionIndex: number) {
+  if (!currentTutorialContent.value.sections[sectionIndex].subsections) {
+    currentTutorialContent.value.sections[sectionIndex].subsections = [];
+  }
+  currentTutorialContent.value.sections[sectionIndex].subsections!.push({
+    title: '',
+    content: ''
+  });
+}
+
+function removeSubsection(sectionIndex: number, subIndex: number) {
+  currentTutorialContent.value.sections[sectionIndex].subsections!.splice(subIndex, 1);
+}
+
+function saveTutorialContent() {
+  if (editingTutorialIndex.value >= 0) {
+    guideForm.value.tutorials[editingTutorialIndex.value].content = 
+      JSON.parse(JSON.stringify(currentTutorialContent.value));
+  }
+  closeTutorialContentModal();
 }
 
 async function saveGuide() {
@@ -321,7 +452,7 @@ async function saveGuide() {
       title: guideForm.value.title,
       items,
       tutorials: guideForm.value.tutorials
-        .filter(t => t.title && t.url)
+        .filter(t => t.title)
         .sort((a, b) => a.order - b.order)
     });
     closeGuideModal();
@@ -358,6 +489,16 @@ function closeGuideModal() {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.guide-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 10px;
 }
 
 .tools-table {
@@ -448,6 +589,10 @@ th, td {
   overflow-y: auto;
 }
 
+.tutorial-content-modal {
+  max-width: 800px;
+}
+
 .form-group {
   margin-bottom: 16px;
 }
@@ -465,6 +610,7 @@ th, td {
   padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .modal-actions {
@@ -499,10 +645,28 @@ th, td {
   position: relative;
 }
 
+.tutorial-content-section {
+  margin-top: 8px;
+}
+
+.edit-content-btn {
+  padding: 6px 12px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
 .form-row {
   display: flex;
   gap: 12px;
   margin-bottom: 8px;
+}
+
+.form-row.align-center {
+  align-items: center;
 }
 
 .form-col {
@@ -545,5 +709,78 @@ th, td {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-item {
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.remove-section-btn {
+  padding: 4px 8px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-section-btn {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.subsections-section {
+  margin-top: 12px;
+  padding-left: 16px;
+  border-left: 2px solid #ddd;
+}
+
+.add-subsection-btn {
+  padding: 4px 12px;
+  background: #9b59b6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.subsections-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subsection-item {
+  background: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px dashed #ccc;
+}
+
+.remove-subsection-btn {
+  padding: 4px 8px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
 }
 </style>

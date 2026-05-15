@@ -264,12 +264,26 @@ export interface ToolGuideItem {
   content: string;
 }
 
+export interface TutorialSection {
+  title: string;
+  content: string;
+  subsections?: {
+    title: string;
+    content: string;
+  }[];
+}
+
+export interface TutorialContent {
+  sections: TutorialSection[];
+}
+
 export interface TutorialCard {
   id?: string;
   title: string;
   description: string;
-  url: string;
+  url?: string;
   order: number;
+  content?: TutorialContent;
 }
 
 export interface ToolGuide {

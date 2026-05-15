@@ -10,6 +10,7 @@ import SearchPage from '@/views/SearchPage.vue'
 import ToolDownloadPage from '@/views/ToolDownloadPage.vue'
 import PCResourcePage from '@/views/PCResourcePage.vue'
 import HelpCenterPage from '@/views/HelpCenterPage.vue'
+import TutorialDetailPage from '@/views/TutorialDetailPage.vue'
 import AdminLayout from '@/admin/AdminLayout.vue'
 import Login from '@/admin/views/Login.vue'
 import Dashboard from '@/admin/views/Dashboard.vue'
@@ -75,6 +76,11 @@ const routes = [
     path: '/help',
     name: 'HelpCenter',
     component: HelpCenterPage
+  },
+  {
+    path: '/tutorial/:id',
+    name: 'tutorial-detail',
+    component: TutorialDetailPage
   },
   {
     path: '/admin/login',

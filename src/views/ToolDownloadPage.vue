@@ -41,6 +41,10 @@ const handleDownload = async (tool: Tool) => {
   }
 }
 
+const goToTutorial = (tutorial: any) => {
+  router.push({ name: 'tutorial-detail', params: { id: tutorial.id || tutorial.order } })
+}
+
 let dataRefreshTimer: number | null = null
 
 onMounted(async () => {
@@ -162,22 +166,29 @@ onUnmounted(() => {
             </li>
           </ul>
         </div>
-        
-        <!-- 教程卡片 -->
-        <div v-if="guide.tutorials && guide.tutorials.length > 0" class="mt-6">
-          <h3 class="text-lg font-bold text-gray-800 mb-4">教程</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a 
-              v-for="tutorial in guide.tutorials" 
-              :key="tutorial.id || tutorial.order"
-              :href="tutorial.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="bg-white rounded-xl shadow-sm p-4 border border-pink-100 hover:border-pink-300 hover:shadow-md transition-all cursor-pointer block"
-            >
-              <h4 class="font-bold text-gray-800 mb-2">{{ tutorial.title }}</h4>
-              <p class="text-sm text-gray-500">{{ tutorial.description }}</p>
-            </a>
+      </div>
+      
+      <!-- 教程卡片 -->
+      <div v-if="guide && guide.tutorials && guide.tutorials.length > 0" class="mt-6">
+        <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl p-4 text-white">
+          <h2 class="text-lg font-bold mb-2">教程</h2>
+        </div>
+        <div class="space-y-3 mt-6">
+          <div 
+            v-for="tutorial in guide.tutorials" 
+            :key="tutorial.id || tutorial.order"
+            @click="goToTutorial(tutorial)"
+            class="bg-white rounded-xl shadow-sm p-4 border border-pink-100 hover:border-pink-300 hover:shadow-md transition-all cursor-pointer"
+          >
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center">
+                <FileText class="w-5 h-5 text-pink-600" />
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-gray-800">{{ tutorial.title }}</h3>
+                <p class="text-sm text-gray-600 mt-1">{{ tutorial.description }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
