@@ -215,8 +215,17 @@ onUnmounted(() => {
     <div class="w-10 h-10 border-3 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
   </div>
   
+  <div v-else-if="!game" class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white flex items-center justify-center">
+    <div class="text-center">
+      <div class="text-6xl mb-4">🎮</div>
+      <h2 class="text-xl font-bold text-gray-800 mb-2">游戏不存在</h2>
+      <p class="text-gray-500 mb-4">找不到该游戏，请检查是否正确</p>
+      <button @click="router.push('/')" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:opacity-90">返回首页</button>
+    </div>
+  </div>
+  
   <!-- 手机端显示 - 保持旧版本 -->
-  <div v-if="game && !isDesktop" :key="gameId" class="min-h-screen bg-gradient-to-b from-pink-50/50 to-white pb-24 sm:hidden">
+  <div v-else-if="!isDesktop" :key="gameId" class="min-h-screen bg-gradient-to-b from-pink-50/50 to-white pb-24 sm:hidden">
     <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
@@ -582,7 +591,7 @@ onUnmounted(() => {
   </div>
   
   <!-- 电脑端显示 - 新设计 -->
-  <div v-if="game && isDesktop" :key="gameId" class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white hidden sm:block">
+  <div v-else-if="isDesktop" :key="gameId" class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white hidden sm:block">
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 

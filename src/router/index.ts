@@ -145,7 +145,7 @@ const router = createRouter({
 // 全局路由守卫：从游戏详情页返回时强制刷新页面
 router.beforeEach((to, from, next) => {
   next()
-  if (from.path.includes('/game/')) {
+  if (from.path.includes('/game/') && !to.path.includes('/game/')) {
     setTimeout(() => {
       window.location.reload()
     }, 100)
