@@ -422,6 +422,14 @@ async function loadGames() {
   games.value = await request('/admin/games');
 }
 
+const hasPlatform = (gamePlatforms, platform) => {
+  if (!gamePlatforms) return false;
+  if (Array.isArray(gamePlatforms)) {
+    return gamePlatforms.includes(platform);
+  }
+  return gamePlatforms === platform;
+};
+
 const filteredGames = computed(() => {
   if (!selectedCategory.value) return [];
   const categoryName = selectedCategory.value.name;
@@ -430,17 +438,19 @@ const filteredGames = computed(() => {
   return games.value.filter(game => {
     // 柚子社分类：只要platforms包含柚子社或者isYuzusoft为true
     if (categoryNameLower === '柚子社') {
-      return game.platforms?.includes('柚子社') || game.isYuzusoft;
+      return hasPlatform(game.platforms, '柚子社') || game.isYuzusoft;
     }
     
     // PC资源分类：只要platforms包含PC，且不包含柚子社，或者兼容旧数据
     if (categoryNameLower === 'pc资源') {
-      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+      if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
       // 如果有platforms字段，按platforms判断；否则按category字段判断（兼容旧数据）
-      if (game.platforms && game.platforms.length > 0) {
-        return game.platforms.includes('PC');
+      if (game.platforms) {
+        if (hasPlatform(game.platforms, 'PC')) {
+          return true;
+        }
       }
       // 兼容旧数据：按category字段匹配（不区分大小写）
       const gameCategoryLower = (game.category || '').toLowerCase();
@@ -449,18 +459,19 @@ const filteredGames = computed(() => {
     
     // Gal游戏分类：platforms包含Android或KR，或者同时包含PC+Android/KR，或者平台数为3，且不包含柚子社
     if (categoryNameLower === 'gal游戏') {
-      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+      if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
-      if (!game.platforms || game.platforms.length === 0) {
+      if (!game.platforms) {
         // 兼容旧数据：按category字段匹配（不区分大小写）
         const gameCategoryLower = (game.category || '').toLowerCase();
         return gameCategoryLower === 'gal游戏';
       }
-      const hasAndroid = game.platforms.includes('Android');
-      const hasKR = game.platforms.includes('KR');
-      const hasPC = game.platforms.includes('PC');
-      const platformCount = game.platforms.length;
+      const platforms = Array.isArray(game.platforms) ? game.platforms : [game.platforms];
+      const hasAndroid = platforms.includes('Android');
+      const hasKR = platforms.includes('KR');
+      const hasPC = platforms.includes('PC');
+      const platformCount = platforms.length;
       return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR)) || platformCount === 3;
     }
     
@@ -476,16 +487,18 @@ function getGameCount(categoryName) {
   return games.value.filter(game => {
     // 柚子社分类
     if (categoryNameLower === '柚子社') {
-      return game.platforms?.includes('柚子社') || game.isYuzusoft;
+      return hasPlatform(game.platforms, '柚子社') || game.isYuzusoft;
     }
     
     // PC资源分类
     if (categoryNameLower === 'pc资源') {
-      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+      if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
-      if (game.platforms && game.platforms.length > 0) {
-        return game.platforms.includes('PC');
+      if (game.platforms) {
+        if (hasPlatform(game.platforms, 'PC')) {
+          return true;
+        }
       }
       const gameCategoryLower = (game.category || '').toLowerCase();
       return gameCategoryLower === 'pc资源';
@@ -493,17 +506,18 @@ function getGameCount(categoryName) {
     
     // Gal游戏分类
     if (categoryNameLower === 'gal游戏') {
-      if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
+      if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
-      if (!game.platforms || game.platforms.length === 0) {
+      if (!game.platforms) {
         const gameCategoryLower = (game.category || '').toLowerCase();
         return gameCategoryLower === 'gal游戏';
       }
-      const hasAndroid = game.platforms.includes('Android');
-      const hasKR = game.platforms.includes('KR');
-      const hasPC = game.platforms.includes('PC');
-      const platformCount = game.platforms.length;
+      const platforms = Array.isArray(game.platforms) ? game.platforms : [game.platforms];
+      const hasAndroid = platforms.includes('Android');
+      const hasKR = platforms.includes('KR');
+      const hasPC = platforms.includes('PC');
+      const platformCount = platforms.length;
       return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR)) || platformCount === 3;
     }
     
