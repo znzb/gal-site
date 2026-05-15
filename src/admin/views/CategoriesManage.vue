@@ -429,7 +429,7 @@ const filteredGames = computed(() => {
   
   return games.value.filter(game => {
     // 柚子社分类：只要platforms包含柚子社或者isYuzusoft为true
-    if (categoryName === '柚子社') {
+    if (categoryNameLower === '柚子社') {
       return game.platforms?.includes('柚子社') || game.isYuzusoft;
     }
     
@@ -447,7 +447,7 @@ const filteredGames = computed(() => {
       return gameCategoryLower === 'pc资源';
     }
     
-    // Gal游戏分类：platforms包含Android或KR，或者同时包含PC+Android/KR，且不包含柚子社
+    // Gal游戏分类：platforms包含Android或KR，或者同时包含PC+Android/KR，或者平台数为3，且不包含柚子社
     if (categoryNameLower === 'gal游戏') {
       if (game.platforms?.includes('柚子社') || game.isYuzusoft) {
         return false;
@@ -460,7 +460,8 @@ const filteredGames = computed(() => {
       const hasAndroid = game.platforms.includes('Android');
       const hasKR = game.platforms.includes('KR');
       const hasPC = game.platforms.includes('PC');
-      return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR));
+      const platformCount = game.platforms.length;
+      return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR)) || platformCount === 3;
     }
     
     // 其他分类：按旧的category字段匹配（不区分大小写）
@@ -474,7 +475,7 @@ function getGameCount(categoryName) {
   
   return games.value.filter(game => {
     // 柚子社分类
-    if (categoryName === '柚子社') {
+    if (categoryNameLower === '柚子社') {
       return game.platforms?.includes('柚子社') || game.isYuzusoft;
     }
     
@@ -502,7 +503,8 @@ function getGameCount(categoryName) {
       const hasAndroid = game.platforms.includes('Android');
       const hasKR = game.platforms.includes('KR');
       const hasPC = game.platforms.includes('PC');
-      return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR));
+      const platformCount = game.platforms.length;
+      return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR)) || platformCount === 3;
     }
     
     // 其他分类（不区分大小写）
