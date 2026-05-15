@@ -13,8 +13,12 @@ router.get('/', async (req, res) => {
           { order: 0, content: '下载并安装所需的工具' },
           { order: 1, content: '根据游戏格式选择对应的模拟器' },
           { order: 2, content: '将游戏文件导入模拟器即可开始游玩' }
-        ]
+        ],
+        tutorials: []
       });
+    }
+    if (!guide.tutorials) {
+      guide.tutorials = [];
     }
     res.json(guide);
   } catch (error) {
@@ -24,13 +28,14 @@ router.get('/', async (req, res) => {
 
 router.put('/', async (req, res) => {
   try {
-    const { title, items } = req.body;
+    const { title, items, tutorials } = req.body;
     let guide = await ToolGuide.findOne();
     if (!guide) {
       guide = new ToolGuide();
     }
     if (title) guide.title = title;
     if (items) guide.items = items;
+    if (tutorials) guide.tutorials = tutorials;
     guide.updatedAt = Date.now();
     await guide.save();
     res.json(guide);
