@@ -12,11 +12,12 @@ const showAnnouncementModal = ref(false)
 const showJoinGroupModal = ref(false)
 const announcements = ref([])
 
-const mockFeatures: Feature[] = [
+// 固定的功能列表，按用户要求的顺序
+const fixedFeatures: Feature[] = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
-  { id: '2', name: '加入Q群', icon: 'message-circle' },
-  { id: '3', name: '柚子社', icon: 'music' },
-  { id: '4', name: '工具下载', icon: 'download' }
+  { id: '2', name: '柚子社', icon: 'music' },
+  { id: '3', name: '工具下载', icon: 'download' },
+  { id: '4', name: '加入Q群', icon: 'message-circle' }
 ]
 
 const iconMap: Record<string, typeof Megaphone> = {
@@ -27,19 +28,9 @@ const iconMap: Record<string, typeof Megaphone> = {
 }
 
 const loadFeatures = async () => {
-  try {
-    const apiFeatures = await featureApi.getAllFeatures()
-    features.value = apiFeatures.map((feature, index) => ({
-      ...feature,
-      name: mockFeatures[index]?.name || feature.name,
-      icon: mockFeatures[index]?.icon || feature.icon
-    }))
-  } catch (error) {
-    console.error('Failed to load features, using mock data:', error)
-    features.value = mockFeatures
-  } finally {
-    isLoading.value = false
-  }
+  // 直接使用固定的功能列表，确保顺序正确
+  features.value = fixedFeatures
+  isLoading.value = false
 }
 
 const loadAnnouncements = async () => {
@@ -60,13 +51,13 @@ const handleFeatureClick = (featureId: string) => {
       showAnnouncementModal.value = true
       break
     case '2':
-      showJoinGroupModal.value = true
-      break
-    case '3':
       router.push('/yuzusoft')
       break
-    case '4':
+    case '3':
       router.push('/tools')
+      break
+    case '4':
+      showJoinGroupModal.value = true
       break
   }
 }
