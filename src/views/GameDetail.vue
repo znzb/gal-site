@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar, MessageSquare, Link2, User, ChevronDown, ChevronUp, Home, BookOpen, Eye } from 'lucide-vue-next'
 import { gameApi, type Game, type ResourceLink, type Comment } from '@/api/api'
@@ -39,6 +39,14 @@ const downloadProgress = ref(0)
 const relatedGames = ref<Game[]>([])
 const expandedComments = ref<string[]>([])
 const expandedResources = ref<string[]>([])
+
+// 检测是否为桌面端
+const windowWidth = ref(window.innerWidth)
+const isDesktop = computed(() => windowWidth.value >= 640)
+
+const handleResize = () => {
+  windowWidth.value = window.innerWidth
+}
 
 const toggleFavorite = () => {
   isFavorite.value = !isFavorite.value
@@ -182,6 +190,7 @@ onMounted(() => {
   if (tab === 'resources') {
     activeTab.value = 'resources'
   }
+  window.addEventListener('resize', handleResize)
 })
 
 watch(
@@ -195,6 +204,10 @@ watch(
     }
   }
 )
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <template>
@@ -203,7 +216,7 @@ watch(
   </div>
   
   <!-- 手机端显示 - 保持旧版本 -->
-  <div v-else-if="game" :key="gameId" class="min-h-screen bg-gradient-to-b from-pink-50/50 to-white pb-24 sm:hidden">
+  <div v-if="game && !isDesktop" :key="gameId" class="min-h-screen bg-gradient-to-b from-pink-50/50 to-white pb-24 sm:hidden">
     <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
@@ -569,7 +582,7 @@ watch(
   </div>
   
   <!-- 电脑端显示 - 新设计 -->
-  <div v-else-if="game" :key="gameId" class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white hidden sm:block">
+  <div v-if="game && isDesktop" :key="gameId" class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white hidden sm:block">
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
         <button 
