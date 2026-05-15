@@ -60,8 +60,6 @@ const gameInfo = ref<GameInfo>({
  requirements: ''
 });
 const categories = [
- { value: '安卓直装', label: '安卓直装' },
- { value: 'kr资源', label: 'kr资源' },
  { value: '游戏CG', label: '游戏CG' },
  { value: '图集资源', label: '图集资源' },
  { value: 'PC资源', label: 'PC资源' }

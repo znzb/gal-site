@@ -10,30 +10,7 @@ const router = useRouter()
 const games = ref<Game[]>([])
 const isLoading = ref(true)
 
-const mockGames: Game[] = [
-  {
-    id: '1',
-    name: '夏日物语',
-    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20summer%20visual%20novel%20game%20cover%20beautiful%20girl%20beach&image_size=portrait_4_3',
-    description: '一款温馨浪漫的夏日恋爱冒险游戏，讲述主角在海边小镇度过的难忘夏天。',
-    category: '安卓直装',
-    size: '2.5GB',
-    releaseDate: '2024-06-15',
-    downloads: 12500,
-    tags: ['恋爱', '校园', '治愈', '柚子']
-  },
-  {
-    id: '2',
-    name: '星空幻想',
-    cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20fantasy%20game%20cover%20starry%20night%20magic%20girl%20sword&image_size=portrait_4_3',
-    description: '穿越星空的奇幻冒险，与神秘少女一同探索未知的世界。',
-    category: '安卓直装',
-    size: '3.2GB',
-    releaseDate: '2024-03-20',
-    downloads: 8900,
-    tags: ['奇幻', '冒险', '魔法']
-  }
-]
+const mockGames: Game[] = []
 
 const filteredGames = computed(() => {
   return games.value.filter(game => game.isYuzusoft === true)

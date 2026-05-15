@@ -30,8 +30,6 @@ const displayGames = computed(() => {
 const categoryInfo = computed(() => {
   const infoMap: Record<string, { desc: string, bgImg: string }> = {
     'PC资源': { desc: '这里是PC资源，资源请使用Bandizip等工具解压后打开', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20girl%20beach%20summer%20visual%20novel%20background&image_size=landscape_16_9' },
-    '安卓直装': { desc: '安卓直装游戏，下载后直接安装即可游玩', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20girl%20phone%20mobile%20game%20android&image_size=landscape_16_9' },
-    'kr资源': { desc: 'KR资源专区，包含各类稀有游戏资源', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20fantasy%20kingdom%20castle%20pink%20sky&image_size=landscape_16_9' },
     '柚子社': { desc: '柚子社官方游戏合集', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=yuzusoft%20anime%20girl%20purple%20hair%20music%20notes&image_size=landscape_16_9' },
   }
   return infoMap[categoryType.value] || { desc: '游戏资源专区', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20collection%20colorful%20background&image_size=landscape_16_9' }
