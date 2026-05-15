@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, onActivated, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
@@ -103,11 +103,14 @@ onMounted(() => {
   }, 30000)
 })
 
-// 监听路由变化，当从其他页面返回首页时重新加载数据
-watch(() => route.path, (newPath) => {
-  if (newPath === '/') {
-    loadData()
-  }
+// 每次组件被激活时重新加载数据（适用于 keep-alive 缓存场景）
+onActivated(() => {
+  loadData()
+})
+
+// 监听路由变化，确保进入首页时重新加载数据
+watch(() => route.path, () => {
+  loadData()
 })
 
 onUnmounted(() => {
