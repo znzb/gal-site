@@ -73,7 +73,7 @@ onMounted(async () => {
     } catch (error) {
       console.error('刷新失败:', error)
     }
-  }, 30000)
+  }, 60000)
 })
 
 onUnmounted(() => {

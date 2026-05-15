@@ -86,7 +86,7 @@ onMounted(() => {
   loadCategoryInfo()
   dataRefreshTimer = window.setInterval(() => {
     loadGamesForCategory(categoryType.value)
-  }, 30000)
+  }, 60000)
 })
 
 onUnmounted(() => {

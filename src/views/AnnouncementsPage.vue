@@ -71,7 +71,7 @@ onMounted(async () => {
   await loadAnnouncements()
   dataRefreshTimer = window.setInterval(() => {
     loadAnnouncements()
-  }, 30000)
+  }, 60000)
 })
 
 onUnmounted(() => {

@@ -111,7 +111,7 @@ onMounted(() => {
   timer = window.setInterval(nextBanner, 4000)
   dataRefreshTimer = window.setInterval(() => {
     loadData()
-  }, 30000)
+  }, 60000)
 })
 
 // 每次组件被激活时重新加载数据（适用于 keep-alive 缓存场景）

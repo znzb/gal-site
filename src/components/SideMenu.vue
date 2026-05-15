@@ -58,7 +58,7 @@ const loadCategories = async () => {
 
 onMounted(() => {
   loadCategories()
-  refreshInterval = window.setInterval(loadCategories, 5000)
+  refreshInterval = window.setInterval(loadCategories, 60000)
 })
 
 onUnmounted(() => {

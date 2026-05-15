@@ -37,7 +37,7 @@ onMounted(() => {
   loadGames()
   dataRefreshTimer = window.setInterval(() => {
     loadGames()
-  }, 30000)
+  }, 60000)
 })
 
 onUnmounted(() => {
