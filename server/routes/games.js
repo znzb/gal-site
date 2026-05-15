@@ -14,7 +14,8 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const game = await Game.findOne({ id: req.params.id });
+    const gameId = String(req.params.id);
+    const game = await Game.findOne({ id: gameId });
     if (!game) {
       return res.status(404).json({ message: '游戏不存在' });
     }
