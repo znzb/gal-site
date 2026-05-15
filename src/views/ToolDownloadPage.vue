@@ -100,16 +100,16 @@ onUnmounted(() => {
         <p class="text-sm opacity-90">下载必备工具，让游戏体验更流畅</p>
       </div>
       
-      <div class="space-y-4 mt-6">
+      <div class="space-y-3 mt-6">
         <div 
           v-for="tool in tools" 
           :key="tool._id"
-          class="bg-white rounded-xl shadow-sm p-4 border border-pink-100"
+          class="bg-white rounded-xl shadow-sm p-3 border border-pink-100"
         >
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center overflow-hidden">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center overflow-hidden">
               <img v-if="isValidUrl(tool.icon)" :src="tool.icon" alt="图标" class="w-full h-full object-cover" />
-              <component v-else :is="getIcon(tool.icon)" class="w-6 h-6 text-pink-600" />
+              <component v-else :is="getIcon(tool.icon)" class="w-5 h-5 text-pink-600" />
             </div>
             <div class="flex-1">
               <div class="flex items-center justify-between">
@@ -117,7 +117,7 @@ onUnmounted(() => {
                 <span class="text-xs text-pink-400">{{ tool.downloads.toLocaleString() }} 下载</span>
               </div>
               <p class="text-sm text-gray-600 mt-1">{{ tool.description }}</p>
-              <div class="flex items-center justify-between mt-3">
+              <div class="flex items-center justify-between mt-2">
                 <div class="flex flex-wrap gap-2">
                   <span 
                     v-for="tag in tool.tags" 
