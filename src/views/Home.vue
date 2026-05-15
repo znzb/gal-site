@@ -16,6 +16,17 @@ const announcements = ref<Announcement[]>([])
 const categories = ref<CategoryItem[]>([])
 const isLoading = ref(true)
 const isDataLoaded = ref(false)
+const showJoinGroupModal = ref(false)
+
+const copyGroupNumber = async () => {
+  try {
+    await navigator.clipboard.writeText('123456789')
+    alert('群号已复制到剪贴板')
+  } catch (error) {
+    console.error('复制失败:', error)
+    alert('复制失败，请手动复制群号：123456789')
+  }
+}
 
 const handleGameClick = (id: string) => {
   router.push(`/game/${id}`)
@@ -360,7 +371,7 @@ onUnmounted(() => {
                 <span class="text-sm font-medium text-gray-700">柚子社</span>
               </button>
               <button 
-                @click="router.push('/join-group')"
+                @click="showJoinGroupModal = true"
                 class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
                 <MessageCircle class="w-10 h-10 text-pink-600 mb-2" />
@@ -430,6 +441,38 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加群弹窗 -->
+  <div v-if="showJoinGroupModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @click="showJoinGroupModal = false">
+    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl" @click.stop>
+      <div class="bg-gradient-to-r from-pink-500 to-pink-600 p-6 text-white text-center">
+        <h2 class="text-2xl font-bold">💬 加入Q群</h2>
+      </div>
+      
+      <div class="p-6 text-center">
+        <div class="w-40 h-40 bg-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-100">
+          <span class="text-6xl">🐧</span>
+        </div>
+        
+        <div class="bg-pink-50 rounded-xl p-4 mb-4 border border-pink-100">
+          <p class="text-gray-600 text-sm mb-2">群号</p>
+          <p class="text-2xl font-bold text-gray-800 mb-3">123456789</p>
+          <button @click="copyGroupNumber" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg hover:opacity-90 shadow-md">
+            复制群号
+          </button>
+        </div>
+        
+        <p class="text-sm text-gray-500 mb-4">
+          方法一：扫描上方二维码<br>
+          方法二：复制群号搜索添加
+        </p>
+        
+        <button @click="showJoinGroupModal = false" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+          关闭
+        </button>
       </div>
     </div>
   </div>
