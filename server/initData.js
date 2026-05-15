@@ -18,12 +18,12 @@ const initData = async () => {
     await Banner.deleteMany({});
 
     const categories = [
-      { id: '1', name: '安卓直装', icon: 'gamepad-2' },
-      { id: '2', name: 'kr资源', icon: 'image' },
-      { id: '3', name: '游戏CG', icon: 'image' },
-      { id: '4', name: '图集资源', icon: 'images' },
-      { id: '5', name: '新人必读', icon: 'book-open' },
-      { id: '6', name: 'PC资源', icon: 'monitor' }
+      { id: '1', name: '游戏CG', icon: 'image' },
+      { id: '2', name: '图集资源', icon: 'images' },
+      { id: '3', name: '新人必读', icon: 'book-open' },
+      { id: '4', name: 'PC资源', icon: 'monitor' },
+      { id: '5', name: 'Gal游戏', icon: 'gamepad-2' },
+      { id: '6', name: '柚子社', icon: 'music' }
     ];
     await Category.insertMany(categories);
     console.log('Categories inserted');

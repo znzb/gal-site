@@ -31,10 +31,12 @@ export interface Banner {
 }
 
 export const categories: CategoryItem[] = [
-  { id: '3', name: 'PC资源', icon: '🖥️' },
-  { id: '4', name: '游戏CG', icon: '🎨' },
-  { id: '5', name: '图集资源', icon: '🖼️' },
-  { id: '6', name: '新人必读', icon: '📖' }
+  { id: '1', name: '游戏CG', icon: '🎨' },
+  { id: '2', name: '图集资源', icon: '🖼️' },
+  { id: '3', name: '新人必读', icon: '📖' },
+  { id: '4', name: 'PC资源', icon: '🖥️' },
+  { id: '5', name: 'Gal游戏', icon: '🎮' },
+  { id: '6', name: '柚子社', icon: '🎵' }
 ]
 
 export const games: Game[] = [
@@ -130,9 +132,9 @@ export const games: Game[] = [
 
 export const features: Feature[] = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
-  { id: '2', name: '加入Q群', icon: 'message-circle' },
-  { id: '3', name: '柚子社', icon: 'music' },
-  { id: '4', name: '补档记录', icon: 'file-text' }
+  { id: '2', name: '柚子社', icon: 'music' },
+  { id: '3', name: '工具下载', icon: 'download' },
+  { id: '4', name: '加入Q群', icon: 'message-circle' }
 ]
 
 export const banners: Banner[] = [
