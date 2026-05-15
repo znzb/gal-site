@@ -441,18 +441,15 @@ const filteredGames = computed(() => {
       return hasPlatform(game.platforms, '柚子社') || game.isYuzusoft;
     }
     
-    // PC资源分类：只要platforms包含PC，且不包含柚子社，或者兼容旧数据
+    // PC资源分类：platforms包含PC且不包含柚子社，或者platforms字段不存在且category匹配
     if (categoryNameLower === 'pc资源') {
       if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
-      // 如果有platforms字段，按platforms判断；否则按category字段判断（兼容旧数据）
-      if (game.platforms) {
-        if (hasPlatform(game.platforms, 'PC')) {
-          return true;
-        }
+      const platformsExist = game.platforms !== undefined && game.platforms !== null;
+      if (platformsExist) {
+        return hasPlatform(game.platforms, 'PC');
       }
-      // 兼容旧数据：按category字段匹配（不区分大小写）
       const gameCategoryLower = (game.category || '').toLowerCase();
       return gameCategoryLower === 'pc资源';
     }
@@ -462,8 +459,8 @@ const filteredGames = computed(() => {
       if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
-      if (!game.platforms) {
-        // 兼容旧数据：按category字段匹配（不区分大小写）
+      const platformsExist = game.platforms !== undefined && game.platforms !== null;
+      if (!platformsExist) {
         const gameCategoryLower = (game.category || '').toLowerCase();
         return gameCategoryLower === 'gal游戏';
       }
@@ -495,10 +492,9 @@ function getGameCount(categoryName) {
       if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
-      if (game.platforms) {
-        if (hasPlatform(game.platforms, 'PC')) {
-          return true;
-        }
+      const platformsExist = game.platforms !== undefined && game.platforms !== null;
+      if (platformsExist) {
+        return hasPlatform(game.platforms, 'PC');
       }
       const gameCategoryLower = (game.category || '').toLowerCase();
       return gameCategoryLower === 'pc资源';
@@ -509,7 +505,8 @@ function getGameCount(categoryName) {
       if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
         return false;
       }
-      if (!game.platforms) {
+      const platformsExist = game.platforms !== undefined && game.platforms !== null;
+      if (!platformsExist) {
         const gameCategoryLower = (game.category || '').toLowerCase();
         return gameCategoryLower === 'gal游戏';
       }
