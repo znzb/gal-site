@@ -24,7 +24,12 @@
         </thead>
         <tbody>
           <tr v-for="tool in tools" :key="tool._id">
-            <td><span class="icon-cell">{{ getIconEmoji(tool.icon) }}</span></td>
+            <td>
+              <span v-if="isValidUrl(tool.icon)" class="icon-cell">
+                <img :src="tool.icon" alt="图标" class="icon-img" />
+              </span>
+              <span v-else class="icon-cell">{{ getIconEmoji(tool.icon) }}</span>
+            </td>
             <td>{{ tool.name }}</td>
             <td class="description-cell">{{ tool.description }}</td>
             <td>{{ tool.size }}</td>
@@ -88,13 +93,8 @@
           </div>
           <div class="form-group">
             <label>图标</label>
-            <select v-model="toolForm.icon">
-              <option value="Zap">⚡ Zap (闪电)</option>
-              <option value="Shield">🛡️ Shield (盾牌)</option>
-              <option value="FileText">📄 FileText (文件)</option>
-              <option value="Download">📥 Download (下载)</option>
-              <option value="Settings">⚙️ Settings (设置)</option>
-            </select>
+            <input v-model="toolForm.icon" placeholder="输入图标名称(如: Zap)或图片URL" />
+            <p class="text-sm text-gray-500 mt-1">可选图标名称: Zap ⚡ | Shield 🛡️ | FileText 📄 | Download 📥 | Settings ⚙️ | 或直接输入图片URL</p>
           </div>
           <div class="form-group">
             <label>标签 (逗号分隔)</label>
@@ -150,6 +150,15 @@ const iconEmojis: Record<string, string> = {
 
 function getIconEmoji(iconName: string): string {
   return iconEmojis[iconName] || '📄';
+}
+
+function isValidUrl(string: string): boolean {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 onMounted(async () => {
@@ -311,6 +320,13 @@ th, td {
 
 .icon-cell {
   font-size: 24px;
+}
+
+.icon-img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .description-cell {
