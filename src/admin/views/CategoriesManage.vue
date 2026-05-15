@@ -33,7 +33,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="game in filteredGames" :key="game._id">
+            <tr v-for="game in categoryGames" :key="game._id">
               <td><img :src="game.cover" class="game-cover-small" /></td>
               <td>{{ game.name }}</td>
               <td>{{ game.size }}</td>
@@ -418,8 +418,19 @@ async function loadCategories() {
   categories.value = await request('/admin/categories');
 }
 
+const categoryGames = ref<Game[]>([]);
+
 async function loadGames() {
   games.value = await request('/admin/games');
+}
+
+async function loadCategoryGames(categoryName: string) {
+  try {
+    categoryGames.value = await request('/games/category/' + encodeURIComponent(categoryName));
+  } catch (error) {
+    console.error('加载分类游戏失败:', error);
+    categoryGames.value = [];
+  }
 }
 
 const hasPlatform = (gamePlatforms, platform) => {
@@ -526,6 +537,9 @@ function getGameCount(categoryName) {
 
 function viewCategory(cat) {
   selectedCategory.value = cat;
+  if (cat.name !== '新人必读') {
+    loadCategoryGames(cat.name);
+  }
 }
 
 watch(selectedCategory, async (newVal) => {
@@ -803,6 +817,9 @@ async function saveGame() {
     editingGameItem.value = null;
     resetGameForm();
     await loadGames();
+    if (selectedCategory.value && selectedCategory.value.name !== '新人必读') {
+      await loadCategoryGames(selectedCategory.value.name);
+    }
     alert('保存成功！');
   } catch (error) {
     console.error('保存游戏失败:', error);
@@ -816,6 +833,9 @@ async function deleteGame(game) {
   if (confirm('确定要删除这个游戏吗?')) {
     await request('/admin/games/' + (game.id || game._id), { method: 'DELETE' });
     await loadGames();
+    if (selectedCategory.value && selectedCategory.value.name !== '新人必读') {
+      await loadCategoryGames(selectedCategory.value.name);
+    }
   }
 }
 
