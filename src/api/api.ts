@@ -264,10 +264,19 @@ export interface ToolGuideItem {
   content: string;
 }
 
+export interface TutorialCard {
+  id?: string;
+  title: string;
+  description: string;
+  url: string;
+  order: number;
+}
+
 export interface ToolGuide {
   id?: string;
   title: string;
   items: ToolGuideItem[];
+  tutorials?: TutorialCard[];
 }
 
 export const toolApi = {

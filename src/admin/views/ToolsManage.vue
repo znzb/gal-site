@@ -61,8 +61,43 @@
           </div>
           <div class="form-group">
             <label>说明内容 (每行一条)</label>
-            <textarea v-model="guideForm.itemsInput" rows="6" placeholder="每行输入一条说明&#10;例如:&#10;下载并安装所需的工具&#10;根据游戏格式选择对应的模拟器"></textarea>
+            <textarea v-model="guideForm.itemsInput" rows="4" placeholder="每行输入一条说明&#10;例如:&#10;下载并安装所需的工具&#10;根据游戏格式选择对应的模拟器"></textarea>
           </div>
+          
+          <div class="form-group">
+            <label>教程卡片</label>
+            <div class="tutorials-list">
+              <div 
+                v-for="(tutorial, index) in guideForm.tutorials" 
+                :key="index"
+                class="tutorial-item"
+              >
+                <div class="form-row">
+                  <div class="form-col">
+                    <label class="sub-label">标题</label>
+                    <input v-model="tutorial.title" placeholder="教程标题" />
+                  </div>
+                  <div class="form-col">
+                    <label class="sub-label">链接</label>
+                    <input v-model="tutorial.url" placeholder="https://..." />
+                  </div>
+                  <div class="form-col order-col">
+                    <label class="sub-label">排序</label>
+                    <input v-model.number="tutorial.order" type="number" min="0" placeholder="0" />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-col full">
+                    <label class="sub-label">描述</label>
+                    <input v-model="tutorial.description" placeholder="教程描述" />
+                  </div>
+                </div>
+                <button type="button" @click="removeTutorial(index)" class="remove-btn">删除</button>
+              </div>
+            </div>
+            <button type="button" @click="addTutorial" class="add-tutorial-btn">+ 添加教程</button>
+          </div>
+          
           <div class="modal-actions">
             <button type="button" @click="closeGuideModal">取消</button>
             <button type="submit">保存</button>
@@ -137,7 +172,8 @@ const toolForm = ref({
 
 const guideForm = ref({
   title: '',
-  itemsInput: ''
+  itemsInput: '',
+  tutorials: [] as Array<{ title: string; description: string; url: string; order: number }>
 });
 
 const iconEmojis: Record<string, string> = {
@@ -249,10 +285,29 @@ function openGuideModal() {
   if (guide.value) {
     guideForm.value = {
       title: guide.value.title,
-      itemsInput: guide.value.items.map(item => item.content).join('\n')
+      itemsInput: guide.value.items.map(item => item.content).join('\n'),
+      tutorials: guide.value.tutorials?.map(t => ({
+        title: t.title,
+        description: t.description,
+        url: t.url,
+        order: t.order
+      })) || []
     };
   }
   showGuideModal.value = true;
+}
+
+function addTutorial() {
+  guideForm.value.tutorials.push({
+    title: '',
+    description: '',
+    url: '',
+    order: guideForm.value.tutorials.length
+  });
+}
+
+function removeTutorial(index: number) {
+  guideForm.value.tutorials.splice(index, 1);
 }
 
 async function saveGuide() {
@@ -264,7 +319,10 @@ async function saveGuide() {
 
     await toolGuideApi.updateGuide({
       title: guideForm.value.title,
-      items
+      items,
+      tutorials: guideForm.value.tutorials
+        .filter(t => t.title && t.url)
+        .sort((a, b) => a.order - b.order)
     });
     closeGuideModal();
     await loadGuide();
@@ -279,7 +337,8 @@ function closeGuideModal() {
   showGuideModal.value = false;
   guideForm.value = {
     title: '',
-    itemsInput: ''
+    itemsInput: '',
+    tutorials: []
   };
 }
 </script>
@@ -425,5 +484,66 @@ th, td {
 .modal-actions button[type="submit"] {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+}
+
+.tutorials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tutorial-item {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.form-col {
+  flex: 1;
+}
+
+.form-col.full {
+  flex: 2;
+}
+
+.form-col.order-col {
+  flex: 0.5;
+}
+
+.sub-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.add-tutorial-btn {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 </style>
