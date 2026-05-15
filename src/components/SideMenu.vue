@@ -38,8 +38,6 @@ const handleMenuClick = (item: { id: string; name: string }) => {
     router.push('/')
   } else if (item.name === 'PC资源' || item.name === 'pc资源') {
     router.push('/pc-resources')
-  } else if (item.name === '柚子社') {
-    router.push('/yuzusoft')
   } else if (item.name === '新人必读') {
     router.push('/help')
   } else {

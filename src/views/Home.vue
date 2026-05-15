@@ -353,7 +353,7 @@ onUnmounted(() => {
                 <span class="text-sm font-medium text-gray-700">Gal游戏</span>
               </button>
               <button 
-                @click="router.push('/yuzusoft')"
+                @click="router.push('/category/柚子社')"
                 class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
                 <Music class="w-10 h-10 text-pink-600 mb-2" />
