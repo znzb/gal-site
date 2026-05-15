@@ -70,7 +70,7 @@ const goToSearch = () => {
         💻 PC资源
       </button>
       <button 
-        @click="router.push('/category/PC资源')"
+        @click="router.push('/category/Gal游戏')"
         class="relative px-6 py-2 rounded-lg text-gray-700 text-sm font-medium hover:text-pink-500 hover:bg-pink-50 transition-all duration-300"
       >
         🎮 Gal游戏
