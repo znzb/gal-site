@@ -145,9 +145,13 @@ onUnmounted(() => {
         <p class="text-pink-400">暂无工具</p>
       </div>
       
-      <div v-if="guide" class="bg-white rounded-xl shadow-sm p-4 mt-6 border border-pink-100">
-        <h3 class="font-bold text-gray-800 mb-3">{{ guide.title }}</h3>
-        <ul class="text-sm text-gray-600 space-y-2">
+      <div v-if="guide" class="mt-6">
+        <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl p-4 text-white">
+          <h2 class="text-lg font-bold mb-2">工具说明</h2>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-pink-100">
+          <h3 class="font-bold text-gray-800 mb-3">{{ guide.title }}</h3>
+          <ul class="text-sm text-gray-600 space-y-2">
           <li 
             v-for="(item, index) in guide.items" 
             :key="item.order"
