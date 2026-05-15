@@ -9,9 +9,7 @@ import { appState } from '@/store/appStore'
   <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50/30">
     <RouterView v-slot="{ Component }">
       <transition name="fade" mode="out-in">
-        <keep-alive>
-          <component :is="Component" />
-        </keep-alive>
+        <component :is="Component" />
       </transition>
     </RouterView>
     
