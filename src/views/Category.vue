@@ -27,13 +27,22 @@ const displayGames = computed(() => {
   return games
 })
 
-const categoryInfo = computed(() => {
-  const infoMap: Record<string, { desc: string, bgImg: string }> = {
-    'PC资源': { desc: '这里是PC资源，资源请使用Bandizip等工具解压后打开', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20girl%20beach%20summer%20visual%20novel%20background&image_size=landscape_16_9' },
-    '柚子社': { desc: '柚子社官方游戏合集', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=yuzusoft%20anime%20girl%20purple%20hair%20music%20notes&image_size=landscape_16_9' },
+const categoryInfo = ref({ desc: '游戏资源专区', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20collection%20colorful%20background&image_size=landscape_16_9' })
+
+const loadCategoryInfo = async () => {
+  try {
+    const categories = await categoryApi.getAllCategories()
+    const found = categories.find(cat => cat.name === categoryType.value)
+    if (found) {
+      categoryInfo.value = {
+        desc: found.description || '游戏资源专区',
+        bgImg: found.bannerImage || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20collection%20colorful%20background&image_size=landscape_16_9'
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load category info:', error)
   }
-  return infoMap[categoryType.value] || { desc: '游戏资源专区', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20collection%20colorful%20background&image_size=landscape_16_9' }
-})
+}
 
 const loadGames = async () => {
   try {
@@ -74,6 +83,7 @@ let dataRefreshTimer: number | null = null
 
 onMounted(() => {
   loadGames()
+  loadCategoryInfo()
   dataRefreshTimer = window.setInterval(() => {
     loadGamesForCategory(categoryType.value)
   }, 30000)
@@ -202,7 +212,7 @@ onUnmounted(() => {
     <div class="pt-16 hidden sm:block">
       <div class="relative mx-4 mt-2 rounded-3xl overflow-hidden shadow-xl border border-pink-100">
         <img 
-          :src="categoryInfo.bgImg" 
+          :src="categoryInfo.value.bgImg" 
           :alt="categoryType"
           class="w-full h-48 sm:h-64 object-cover"
         />
@@ -217,7 +227,7 @@ onUnmounted(() => {
               <span class="text-sm text-white/80">共 {{ displayGames.length }} 篇</span>
             </div>
           </div>
-          <p class="text-white/80 text-sm">{{ categoryInfo.desc }}</p>
+          <p class="text-white/80 text-sm">{{ categoryInfo.value.desc }}</p>
         </div>
       </div>
       

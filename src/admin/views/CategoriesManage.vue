@@ -106,6 +106,15 @@
             <label>图标 (emoji)</label>
             <input v-model="categoryForm.icon" placeholder="例如: 🎮" />
           </div>
+          <div class="form-group">
+            <label>主图 URL</label>
+            <input v-model="categoryForm.bannerImage" placeholder="分区页面顶部大图的URL" />
+            <p class="form-hint">图片建议尺寸: 1920x600 像素</p>
+          </div>
+          <div class="form-group">
+            <label>描述</label>
+            <textarea v-model="categoryForm.description" rows="3" placeholder="分区描述文字"></textarea>
+          </div>
           <div class="modal-actions">
             <button type="button" @click="showAddModal = false">取消</button>
             <button type="submit">保存</button>
@@ -373,7 +382,7 @@ const faqForm = ref({
   order: 0
 });
 
-const categoryForm = ref({ name: '', icon: '', order: 0 });
+const categoryForm = ref({ name: '', icon: '', order: 0, bannerImage: '', description: '' });
 
 const gameForm = ref({
   name: '',
@@ -595,7 +604,13 @@ async function deleteFaq(faq) {
 
 function editCategory(cat) {
   editingCategory.value = cat;
-  categoryForm.value = { name: cat.name, icon: cat.icon, order: cat.order || 0 };
+  categoryForm.value = { 
+    name: cat.name, 
+    icon: cat.icon, 
+    order: cat.order || 0,
+    bannerImage: cat.bannerImage || '',
+    description: cat.description || ''
+  };
   showAddModal.value = true;
 }
 
@@ -664,7 +679,7 @@ async function updateOrder(categoriesList) {
 }
 
 function resetCategoryForm() {
-  categoryForm.value = { name: '', icon: '', order: 0 };
+  categoryForm.value = { name: '', icon: '', order: 0, bannerImage: '', description: '' };
 }
 
 function editGame(game) {
