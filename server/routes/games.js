@@ -38,6 +38,7 @@ router.get('/category/:category', async (req, res) => {
           {
             $or: [
               { platforms: 'PC' },
+              { platforms: { $in: ['PC'] } },
               { platforms: { $exists: false }, category: 'PC资源' },
               { platforms: { $exists: false }, category: 'pc资源' }
             ]
@@ -45,6 +46,7 @@ router.get('/category/:category', async (req, res) => {
           {
             $nor: [
               { platforms: '柚子社' },
+              { platforms: { $in: ['柚子社'] } },
               { isYuzusoft: true }
             ]
           }
@@ -67,6 +69,7 @@ router.get('/category/:category', async (req, res) => {
           {
             $nor: [
               { platforms: '柚子社' },
+              { platforms: { $in: ['柚子社'] } },
               { isYuzusoft: true }
             ]
           }
@@ -77,6 +80,7 @@ router.get('/category/:category', async (req, res) => {
       query = {
         $or: [
           { platforms: '柚子社' },
+          { platforms: { $in: ['柚子社'] } },
           { isYuzusoft: true },
           { category: '柚子社' },
           { categories: '柚子社' }
