@@ -623,19 +623,30 @@ onUnmounted(() => {
         </div>
         
         <div class="absolute bottom-0 left-0 right-0 p-6">
-          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4 drop-shadow-lg">{{ game.name }}</h2>
-          <div class="flex items-center gap-2 text-white/80 text-sm">
-            <span class="flex items-center gap-1 cursor-pointer hover:text-white transition-colors" @click="router.push('/')">
-              <Home class="w-4 h-4" />
-              首页
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3 drop-shadow-lg">{{ game.name }}</h2>
+          <div class="flex flex-wrap gap-2 mb-2">
+            <span 
+              v-for="tag in game.tags" 
+              :key="tag"
+              class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
+            >
+              {{ tag }}
             </span>
-            <span>/</span>
-            <span class="flex items-center gap-1 cursor-pointer hover:text-white transition-colors" @click="router.push(`/category/${game.category}`)">
-              <BookOpen class="w-4 h-4" />
-              {{ game.category }}
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span 
+              v-for="platform in (game.platforms || [])" 
+              :key="platform"
+              class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
+            >
+              {{ platform }}
             </span>
-            <span>/</span>
-            <span class="text-pink-300">正文</span>
+            <span 
+              v-if="game.subCategory"
+              class="bg-white/25 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm font-medium"
+            >
+              {{ game.subCategory === 'raw' ? '生肉' : '熟肉' }}
+            </span>
           </div>
         </div>
       </div>
