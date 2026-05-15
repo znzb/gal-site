@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, onActivated, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe } from 'lucide-vue-next'
+import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe, MessageCircle } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
 import FeatureGrid from '@/components/FeatureGrid.vue'
 import GameCard from '@/components/GameCard.vue'
@@ -360,11 +360,11 @@ onUnmounted(() => {
                 <span class="text-sm font-medium text-gray-700">柚子社</span>
               </button>
               <button 
-                @click="router.push('/tools')"
+                @click="router.push('/join-group')"
                 class="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:from-pink-100 hover:to-pink-50 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100 transition-all duration-300 transform hover:scale-105"
               >
-                <Download class="w-10 h-10 text-pink-600 mb-2" />
-                <span class="text-sm font-medium text-gray-700">工具下载</span>
+                <MessageCircle class="w-10 h-10 text-pink-600 mb-2" />
+                <span class="text-sm font-medium text-gray-700">加入Q群</span>
               </button>
               <button 
                 @click="router.push('/help')"
