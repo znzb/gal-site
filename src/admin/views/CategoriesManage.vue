@@ -168,7 +168,7 @@
                 <label class="platform-checkbox">
                   <input 
                     type="checkbox" 
-                    :checked="gameInfo.platforms.includes('Android')" 
+                    :checked="gameForm.platforms.includes('Android')" 
                     @change="togglePlatform('Android')"
                   />
                   <span>📱 安卓</span>
@@ -176,7 +176,7 @@
                 <label class="platform-checkbox">
                   <input 
                     type="checkbox" 
-                    :checked="gameInfo.platforms.includes('PC')" 
+                    :checked="gameForm.platforms.includes('PC')" 
                     @change="togglePlatform('PC')"
                   />
                   <span>🖥️ PC</span>
@@ -184,7 +184,7 @@
                 <label class="platform-checkbox">
                   <input 
                     type="checkbox" 
-                    :checked="gameInfo.platforms.includes('KR')" 
+                    :checked="gameForm.platforms.includes('KR')" 
                     @change="togglePlatform('KR')"
                   />
                   <span>🇰🇷 KR</span>
@@ -195,7 +195,7 @@
               <label>
                 <input 
                   type="checkbox" 
-                  :checked="gameInfo.platforms.includes('柚子社')"
+                  :checked="gameForm.platforms.includes('柚子社')"
                   @change="togglePlatform('柚子社')"
                 />
                 <span>🎵 柚子社</span>
