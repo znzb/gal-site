@@ -11,6 +11,10 @@ const tutorial = ref<TutorialCard | null>(null)
 const isLoading = ref(true)
 const activeSection = ref(0)
 
+const formatContent = (content: string) => {
+  return content.replace(/\n/g, '<br>')
+}
+
 const scrollToSection = (index: number) => {
   activeSection.value = index
   const element = document.getElementById(`section-${index}`)
@@ -95,7 +99,7 @@ onMounted(async () => {
                   <h2 class="text-xl font-bold text-gray-900 mb-4">{{ section.title }}</h2>
                   <div 
                     class="text-gray-700 space-y-4"
-                    v-html="section.content"
+                    v-html="formatContent(section.content)"
                   ></div>
                   <div v-if="index < tutorial.content.sections.length - 1" class="mt-8 border-t border-gray-200"></div>
                 </div>
