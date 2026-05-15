@@ -21,6 +21,15 @@ const getIcon = (iconName: string) => {
   return iconMap[iconName] || FileText
 }
 
+const isValidUrl = (string: string): boolean => {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
 const handleDownload = async (tool: Tool) => {
   try {
     await toolApi.downloadTool(tool._id!)
@@ -98,8 +107,9 @@ onUnmounted(() => {
           class="bg-white rounded-xl shadow-sm p-4 border border-pink-100"
         >
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center">
-              <component :is="getIcon(tool.icon)" class="w-6 h-6 text-pink-600" />
+            <div class="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center overflow-hidden">
+              <img v-if="isValidUrl(tool.icon)" :src="tool.icon" alt="图标" class="w-full h-full object-cover" />
+              <component v-else :is="getIcon(tool.icon)" class="w-6 h-6 text-pink-600" />
             </div>
             <div class="flex-1">
               <div class="flex items-center justify-between">
