@@ -9,11 +9,73 @@ router.get('/', async (req, res) => {
     const { category, search } = req.query;
     let query = {};
     
+    // 根据分类名称使用和前台一致的过滤逻辑
     if (category) {
-      query.category = category;
+      if (category === 'PC资源') {
+        query = {
+          $and: [
+            {
+              $or: [
+                { platforms: 'PC' },
+                { platforms: { $in: ['PC'] } },
+                { platforms: { $exists: false }, category: 'PC资源' },
+                { platforms: { $exists: false }, category: 'pc资源' }
+              ]
+            },
+            {
+              $nor: [
+                { platforms: '柚子社' },
+                { platforms: { $in: ['柚子社'] } },
+                { isYuzusoft: true }
+              ]
+            }
+          ]
+        };
+      } else if (category === 'Gal游戏') {
+        query = {
+          $and: [
+            {
+              $or: [
+                { platforms: { $in: ['Android', 'KR'] } },
+                { platforms: { $all: ['PC', 'Android'] } },
+                { platforms: { $all: ['PC', 'KR'] } },
+                { platforms: { $size: 3 } },
+                { platforms: { $exists: false }, category: 'Gal游戏' },
+                { platforms: { $exists: false }, category: 'gal游戏' }
+              ]
+            },
+            {
+              $nor: [
+                { platforms: '柚子社' },
+                { platforms: { $in: ['柚子社'] } },
+                { isYuzusoft: true }
+              ]
+            }
+          ]
+        };
+      } else if (category === '柚子社') {
+        query = {
+          $or: [
+            { platforms: '柚子社' },
+            { platforms: { $in: ['柚子社'] } },
+            { isYuzusoft: true },
+            { category: '柚子社' },
+            { categories: '柚子社' }
+          ]
+        };
+      } else {
+        // 其他分类使用原来的查询方式
+        query = { 
+          $or: [
+            { category: category },
+            { categories: category }
+          ]
+        };
+      }
     }
+    
     if (search) {
-      query.name = { $regex: search, $options: 'i' };
+      query = { $and: [query, { name: { $regex: search, $options: 'i' } }] };
     }
 
     const games = await Game.find(query).sort({ createdAt: -1 });
