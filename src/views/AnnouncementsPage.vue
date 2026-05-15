@@ -57,8 +57,8 @@ const formatDate = (date) => {
 
 const loadAnnouncements = async () => {
   try {
-    const data = await announcementApi.getAnnouncements()
-    announcements.value = data.announcements || data || []
+    const data = await announcementApi.getAllAnnouncements()
+    announcements.value = data || []
   } catch (error) {
     console.error('Failed to load announcements:', error)
     announcements.value = []
