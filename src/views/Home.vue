@@ -66,6 +66,8 @@ const preloadBannerImages = async () => {
 }
 
 const loadData = async () => {
+  // 每次开始加载前重置状态
+  isLoading.value = true
   try {
     const [gamesData, bannersData, announcementsData, categoriesData] = await Promise.all([
       gameApi.getAllGames(),
@@ -102,8 +104,8 @@ onMounted(() => {
 })
 
 // 监听路由变化，当从其他页面返回首页时重新加载数据
-watch(() => route.path, (newPath, oldPath) => {
-  if (newPath === '/' && (oldPath?.startsWith('/game/') || oldPath?.startsWith('/category/'))) {
+watch(() => route.path, (newPath) => {
+  if (newPath === '/') {
     loadData()
   }
 })
