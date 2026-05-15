@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
 import FeatureGrid from '@/components/FeatureGrid.vue'
@@ -8,6 +8,7 @@ import GameCard from '@/components/GameCard.vue'
 import { gameApi, bannerApi, announcementApi, categoryApi, type Game, type Banner, type Announcement, type CategoryItem } from '@/api/api'
 
 const router = useRouter()
+const route = useRoute()
 
 const games = ref<Game[]>([])
 const banners = ref<Banner[]>([])
@@ -98,6 +99,13 @@ onMounted(() => {
   dataRefreshTimer = window.setInterval(() => {
     loadData()
   }, 30000)
+})
+
+// 监听路由变化，当从其他页面返回首页时重新加载数据
+watch(() => route.path, (newPath, oldPath) => {
+  if (newPath === '/' && (oldPath?.startsWith('/game/') || oldPath?.startsWith('/category/'))) {
+    loadData()
+  }
 })
 
 onUnmounted(() => {
