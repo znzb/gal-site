@@ -418,13 +418,13 @@ async function loadCategories() {
   categories.value = await request('/admin/categories');
 }
 
-const categoryGames = ref<Game[]>([]);
+const categoryGames = ref([]);
 
 async function loadGames() {
   games.value = await request('/admin/games');
 }
 
-async function loadCategoryGames(categoryName: string) {
+async function loadCategoryGames(categoryName) {
   try {
     categoryGames.value = await request('/games/category/' + encodeURIComponent(categoryName));
   } catch (error) {
