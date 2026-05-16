@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe, MessageCircle } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
@@ -8,7 +8,6 @@ import GameCard from '@/components/GameCard.vue'
 import { gameApi, bannerApi, announcementApi, categoryApi, type Game, type Banner, type Announcement, type CategoryItem } from '@/api/api'
 import { dataCache } from '@/utils/cache'
 
-let savedScrollY = 0
 let hasLoadedOnce = false
 
 const router = useRouter()
@@ -17,7 +16,7 @@ const games = ref<Game[]>([])
 const banners = ref<Banner[]>([])
 const announcements = ref<Announcement[]>([])
 const categories = ref<CategoryItem[]>([])
-const isLoading = ref(true)
+const isLoading = ref(!hasLoadedOnce)
 const showJoinGroupModal = ref(false)
 
 const groupInfo = ref({
@@ -38,7 +37,6 @@ const copyGroupNumber = async () => {
 }
 
 const handleGameClick = (id: string) => {
-  savedScrollY = window.scrollY
   router.push(`/game/${id}`)
 }
 
@@ -112,13 +110,6 @@ const loadData = async () => {
   } finally {
     isLoading.value = false
     hasLoadedOnce = true
-    
-    if (savedScrollY > 0) {
-      await nextTick()
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: savedScrollY, behavior: 'instant' })
-      })
-    }
   }
 }
 
