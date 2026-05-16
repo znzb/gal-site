@@ -74,17 +74,24 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         };
 
         const parsePlatforms = (row) => {
-          const platformsStr = String(row['支持平台'] || row['platforms'] || 'PC');
-          const platforms = platformsStr.split(/[,，;；|]/).map(p => p.trim()).filter(p => p);
-          // 标准化平台名称（英文和中文都保留，确保查询都能匹配）
-          const normalized = [];
-          platforms.forEach(p => {
-            normalized.push(p);
-            if (p.toLowerCase() === 'android') normalized.push('安卓');
-            if (p === '安卓') normalized.push('Android');
+          const platformsStr = String(row['支持平台'] || row['platforms'] || 'Android');
+          const inputPlatforms = platformsStr.split(/[,，;；|]/).map(p => p.trim()).filter(p => p);
+          
+          // 标准化为英文，和后台编辑界面一致
+          const platforms = [];
+          inputPlatforms.forEach(p => {
+            const lowerP = p.toLowerCase();
+            if (lowerP === 'android' || lowerP === '安卓') {
+              if (!platforms.includes('Android')) platforms.push('Android');
+            } else if (lowerP === 'pc') {
+              if (!platforms.includes('PC')) platforms.push('PC');
+            } else if (lowerP === 'kr' || lowerP === '韩国') {
+              if (!platforms.includes('KR')) platforms.push('KR');
+            }
           });
-          // 去重
-          return [...new Set(normalized)];
+          
+          // 如果没有有效平台，默认 Android
+          return platforms.length > 0 ? platforms : ['Android'];
         };
 
         const parseCategories = (row) => {
@@ -92,20 +99,62 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           return categoriesStr.split(/[,，;；|]/).map(c => c.trim()).filter(c => c);
         };
 
+        const platforms = parsePlatforms(row);
+        const tags = parseTags(row);
+        
+        // 和后台编辑界面一致：根据平台自动设置分类
+        let categories = [];
+        let primaryCategory = 'Gal游戏';
+        
+        if (platforms.includes('PC')) {
+          categories.push('PC资源');
+          primaryCategory = 'PC资源';
+        }
+        if (platforms.includes('Android') || platforms.includes('KR') || platforms.length > 1) {
+          if (!categories.includes('Gal游戏')) {
+            categories.push('Gal游戏');
+          }
+        }
+        
+        // 如果用户填了分类列，也加进去
+        const userCategoriesStr = String(row['分类'] || row['categories'] || '').trim();
+        if (userCategoriesStr) {
+          const userCategories = userCategoriesStr.split(/[,，;；|]/).map(c => c.trim()).filter(c => c);
+          userCategories.forEach(cat => {
+            if (!categories.includes(cat)) {
+              categories.push(cat);
+            }
+          });
+        }
+        
+        // 如果用户填了主分类，也加进去
+        const userCategory = String(row['主分类'] || row['category'] || '').trim();
+        if (userCategory) {
+          if (!categories.includes(userCategory)) {
+            categories.unshift(userCategory);
+          }
+          primaryCategory = userCategory;
+        }
+        
+        // 如果没有任何分类，默认 Gal游戏
+        if (categories.length === 0) {
+          categories = ['Gal游戏'];
+        }
+        
         const newGame = new Game({
           id,
           name: String(row['游戏名称'] || row['name'] || `游戏${i + 1}`),
           cover: String(row['封面图'] || row['cover'] || ''),
           description: String(row['游戏描述'] || row['description'] || ''),
-          category: String(row['主分类'] || row['category'] || 'PC资源'),
-          categories: parseCategories(row),
-          platforms: parsePlatforms(row),
+          category: primaryCategory,
+          categories,
+          platforms,
           subCategory: String(row['子分类'] || row['subCategory'] || ''),
           isYuzusoft: Boolean(row['柚子社'] || row['isYuzusoft']) || false,
           size: String(row['大小'] || row['size'] || '0MB'),
           releaseDate: String(row['发布日期'] || row['releaseDate'] || new Date().toISOString().split('T')[0]),
           downloads: Number(row['下载量'] || row['downloads'] || 0),
-          tags: parseTags(row),
+          tags,
           resources: parseResources(row),
           comments: []
         });
