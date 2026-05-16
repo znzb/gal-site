@@ -179,8 +179,8 @@ onMounted(() => {
           </button>
         </div>
         
-        <p v-if="groupInfo.description" class="text-sm text-gray-500 mb-4">{{ groupInfo.description }}</p>
-        <p v-else class="text-sm text-gray-500 mb-4">
+        <p v-if="groupInfo.description" class="text-sm text-gray-500 mb-2">{{ groupInfo.description }}</p>
+        <p class="text-sm text-gray-500 mb-4">
           方法一：扫描上方二维码<br/>
           方法二：复制群号搜索添加
         </p>
