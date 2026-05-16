@@ -279,7 +279,9 @@ const filterSubCategory = ref('');
 
 const filteredCategories = computed(() => {
   return categories.value.filter(cat => 
-    cat.name !== 'PC资源' && cat.name !== 'Gal游戏' && cat.name !== 'pc资源' && cat.name !== 'gal游戏'
+    cat.name !== 'PC资源' && cat.name !== 'Gal游戏' && 
+    cat.name !== 'pc资源' && cat.name !== 'gal游戏' &&
+    cat.name !== '新人必读'
   );
 });
 const showAddModal = ref(false);

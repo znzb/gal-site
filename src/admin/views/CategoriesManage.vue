@@ -74,7 +74,7 @@
 
     <div v-else class="categories-grid">
       <div 
-        v-for="(cat, index) in categories" 
+        v-for="(cat, index) in filteredCategoriesList" 
         :key="cat._id" 
         class="category-card" 
         @click="viewCategory(cat)"
@@ -158,7 +158,7 @@
               <label>分类</label>
               <select v-model="gameForm.category">
                 <option value="">请选择分类</option>
-                <option v-for="cat in categories" :key="cat._id" :value="cat.name">
+                <option v-for="cat in filteredCategoriesList" :key="cat._id" :value="cat.name">
                   {{ cat.name }}
                 </option>
               </select>
@@ -439,6 +439,15 @@ const hasPlatform = (gamePlatforms, platform) => {
   return gamePlatforms === platform;
 };
 
+// 在 filteredCategories 计算属性之前添加这个
+const filteredCategoriesList = computed(() => {
+  return categories.value.filter(cat => 
+    cat.name !== 'PC资源' && cat.name !== 'Gal游戏' && 
+    cat.name !== 'pc资源' && cat.name !== 'gal游戏' &&
+    cat.name !== '新人必读'
+  );
+});
+
 const filteredGames = computed(() => {
   if (!selectedCategory.value) return [];
   const categoryName = selectedCategory.value.name;
@@ -657,7 +666,7 @@ async function onDrop(event, targetIndex) {
     return;
   }
   
-  const categoriesList = [...categories.value];
+  const categoriesList = [...filteredCategoriesList.value];
   const [draggedItem] = categoriesList.splice(draggedIndex, 1);
   categoriesList.splice(targetIndex, 0, draggedItem);
   
