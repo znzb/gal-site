@@ -169,12 +169,16 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    return { top: 0 }
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
   }
 })
 
 router.afterEach((to, from) => {
-  if (to.name !== from.name) {
+  if (to.name !== from.name && from.name !== 'GameDetail' && to.name !== 'GameDetail') {
     dataCache.clear()
   }
 })
