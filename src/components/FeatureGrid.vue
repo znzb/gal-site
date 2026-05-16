@@ -11,8 +11,13 @@ const isLoading = ref(true)
 const showAnnouncementModal = ref(false)
 const showJoinGroupModal = ref(false)
 const announcements = ref([])
+const groupInfo = ref({
+  groupNumber: '123456789',
+  groupName: '',
+  qrCode: '',
+  description: ''
+})
 
-// 固定的功能列表，按用户要求的顺序
 const fixedFeatures: Feature[] = [
   { id: '1', name: '网站公告', icon: 'megaphone' },
   { id: '2', name: '柚子社', icon: 'music' },
@@ -28,7 +33,6 @@ const iconMap: Record<string, typeof Megaphone> = {
 }
 
 const loadFeatures = async () => {
-  // 直接使用固定的功能列表，确保顺序正确
   features.value = fixedFeatures
   isLoading.value = false
 }
@@ -41,6 +45,23 @@ const loadAnnouncements = async () => {
   } catch (error) {
     console.error('Failed to load announcements:', error)
     announcements.value = []
+  }
+}
+
+const loadGroupInfo = async () => {
+  try {
+    const response = await fetch('https://game-api-p1zc.onrender.com/api/group-info')
+    const data = await response.json()
+    if (data) {
+      groupInfo.value = {
+        groupNumber: data.groupNumber || '123456789',
+        groupName: data.groupName || '',
+        qrCode: data.qrCode || '',
+        description: data.description || ''
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load group info:', error)
   }
 }
 
@@ -57,6 +78,7 @@ const handleFeatureClick = (featureId: string) => {
       router.push('/tools')
       break
     case '4':
+      loadGroupInfo()
       showJoinGroupModal.value = true
       break
   }
@@ -64,11 +86,11 @@ const handleFeatureClick = (featureId: string) => {
 
 const copyGroupNumber = async () => {
   try {
-    await navigator.clipboard.writeText('123456789')
+    await navigator.clipboard.writeText(groupInfo.value.groupNumber)
     alert('群号已复制到剪贴板')
   } catch (error) {
     console.error('复制失败:', error)
-    alert('复制失败，请手动复制群号：123456789')
+    alert('复制失败，请手动复制群号：' + groupInfo.value.groupNumber)
   }
 }
 
@@ -145,19 +167,21 @@ onMounted(() => {
       
       <div class="p-6 text-center">
         <div class="w-40 h-40 bg-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-100">
-          <span class="text-6xl">🐧</span>
+          <img v-if="groupInfo.qrCode" :src="groupInfo.qrCode" alt="群二维码" class="w-full h-full object-cover rounded-2xl" onerror="this.style.display='none'" />
+          <span v-else class="text-6xl">🐧</span>
         </div>
         
         <div class="bg-pink-50 rounded-xl p-4 mb-4 border border-pink-100">
-          <p class="text-gray-600 text-sm mb-2">群号</p>
-          <p class="text-2xl font-bold text-gray-800 mb-3">123456789</p>
+          <p v-if="groupInfo.groupName" class="text-gray-600 text-sm mb-2">{{ groupInfo.groupName }}</p>
+          <p class="text-2xl font-bold text-gray-800 mb-3">{{ groupInfo.groupNumber }}</p>
           <button @click="copyGroupNumber" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg hover:opacity-90 shadow-md">
             复制群号
           </button>
         </div>
         
-        <p class="text-sm text-gray-500 mb-4">
-          方法一：扫描上方二维码<br>
+        <p v-if="groupInfo.description" class="text-sm text-gray-500 mb-4">{{ groupInfo.description }}</p>
+        <p v-else class="text-sm text-gray-500 mb-4">
+          方法一：扫描上方二维码<br/>
           方法二：复制群号搜索添加
         </p>
         

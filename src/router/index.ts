@@ -20,6 +20,9 @@ import BannersManage from '@/admin/views/BannersManage.vue'
 import AnnouncementsManage from '@/admin/views/AnnouncementsManage.vue'
 import PatchRequestsManage from '@/admin/views/PatchRequestsManage.vue'
 import SearchLogsManage from '@/admin/views/SearchLogsManage.vue'
+import ToolsManage from '@/admin/views/ToolsManage.vue'
+import BatchImport from '@/admin/views/BatchImport.vue'
+import GroupInfoManage from '@/admin/views/GroupInfoManage.vue'
 
 const routes = [
   {
@@ -141,6 +144,21 @@ const routes = [
         path: 'search-logs',
         name: 'SearchLogsManage',
         component: SearchLogsManage
+      },
+      {
+        path: 'tools',
+        name: 'ToolsManage',
+        component: ToolsManage
+      },
+      {
+        path: 'batch-import',
+        name: 'BatchImport',
+        component: BatchImport
+      },
+      {
+        path: 'group-info',
+        name: 'GroupInfoManage',
+        component: GroupInfoManage
       }
     ]
   }

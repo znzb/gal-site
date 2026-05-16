@@ -6,12 +6,18 @@
     </div>
 
     <div class="content-container">
-      <div class="qrcode-card">
+      <div v-if="isLoading" class="loading">
+        <div class="animate-spin w-12 h-12 border-4 border-white/30 border-t-white rounded-full mx-auto"></div>
+        <p class="text-white mt-4">加载中...</p>
+      </div>
+
+      <div v-else class="qrcode-card">
         <div class="card-icon">🐧</div>
         <h2>QQ群</h2>
         
         <div class="qrcode-section">
-          <div class="qrcode-placeholder">
+          <img v-if="groupInfo.qrCode" :src="groupInfo.qrCode" alt="群二维码" class="qrcode-img" onerror="this.style.display='none'" />
+          <div v-else class="qrcode-placeholder">
             <div class="qrcode-icon">📱</div>
             <p>群二维码</p>
           </div>
@@ -20,13 +26,17 @@
         <div class="group-info">
           <div class="info-item">
             <span class="label">群号</span>
-            <span class="value">123456789</span>
+            <span class="value">{{ groupInfo.groupNumber }}</span>
             <button @click="copyGroupNumber" class="copy-btn">复制</button>
           </div>
-          <div class="info-item">
+          <div v-if="groupInfo.groupName" class="info-item">
             <span class="label">群名称</span>
-            <span class="value">GalGame资源共享</span>
+            <span class="value">{{ groupInfo.groupName }}</span>
           </div>
+        </div>
+
+        <div v-if="groupInfo.description" class="description">
+          <p>{{ groupInfo.description }}</p>
         </div>
 
         <div class="instructions">
@@ -49,18 +59,49 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 
 const router = useRouter()
+const isLoading = ref(true)
+const groupInfo = ref({
+  groupNumber: '123456789',
+  groupName: '',
+  qrCode: '',
+  description: ''
+})
+
+const loadGroupInfo = async () => {
+  try {
+    const response = await fetch('https://game-api-p1zc.onrender.com/api/group-info')
+    const data = await response.json()
+    if (data) {
+      groupInfo.value = {
+        groupNumber: data.groupNumber || '123456789',
+        groupName: data.groupName || '',
+        qrCode: data.qrCode || '',
+        description: data.description || ''
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load group info:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 const copyGroupNumber = async () => {
   try {
-    await navigator.clipboard.writeText('123456789')
+    await navigator.clipboard.writeText(groupInfo.value.groupNumber)
     alert('群号已复制到剪贴板')
   } catch (error) {
     console.error('复制失败:', error)
-    alert('复制失败，请手动复制群号：123456789')
+    alert('复制失败，请手动复制群号：' + groupInfo.value.groupNumber)
   }
 }
+
+onMounted(() => {
+  loadGroupInfo()
+})
 </script>
 
 <style scoped>
@@ -105,6 +146,11 @@ const copyGroupNumber = async () => {
   margin: 0 auto;
 }
 
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
 .qrcode-card {
   background: white;
   border-radius: 20px;
@@ -129,6 +175,13 @@ const copyGroupNumber = async () => {
   display: flex;
   justify-content: center;
   margin-bottom: 30px;
+}
+
+.qrcode-img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 16px;
 }
 
 .qrcode-placeholder {
@@ -157,7 +210,7 @@ const copyGroupNumber = async () => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .info-item {
@@ -195,6 +248,20 @@ const copyGroupNumber = async () => {
 
 .copy-btn:hover {
   transform: scale(1.05);
+}
+
+.description {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-radius: 12px;
+}
+
+.description p {
+  margin: 0;
+  color: #e65100;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .instructions {

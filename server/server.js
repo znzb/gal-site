@@ -20,6 +20,7 @@ import toolsRouter from './routes/tools.js';
 import toolGuideRouter from './routes/toolGuide.js';
 import initRouter from './routes/init.js';
 import batchImportRouter from './routes/batchImport.js';
+import groupInfoRouter from './routes/groupInfo.js';
 import Game from './models/Game.js';
 import Category from './models/Category.js';
 import Feature from './models/Feature.js';
@@ -96,6 +97,8 @@ app.use('/api/tools', toolsRouter);
 app.use('/api/tool-guide', toolGuideRouter);
 app.use('/api', initRouter);
 app.use('/api/admin/batch-import', batchImportRouter);
+app.use('/api/group-info', groupInfoRouter);
+app.use('/api/admin/group-info', groupInfoRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: '游戏下载网站 API 服务运行中' });
