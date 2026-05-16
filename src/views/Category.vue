@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Menu, MessageSquare, Eye, Heart, Calendar } from 'lucide-vue-next'
 import GameCard from '@/components/GameCard.vue'
-import { gameApi, type Game } from '@/api/api'
+import { gameApi, categoryApi, type Game } from '@/api/api'
 import { appState } from '@/store/appStore'
 
 const route = useRoute()
@@ -212,7 +212,7 @@ onUnmounted(() => {
     <div class="pt-16 hidden sm:block">
       <div class="relative mx-4 mt-2 rounded-3xl overflow-hidden shadow-xl border border-pink-100">
         <img 
-          :src="categoryInfo.value.bgImg" 
+          :src="categoryInfo.bgImg" 
           :alt="categoryType"
           class="w-full h-48 sm:h-64 object-cover"
         />
@@ -227,7 +227,7 @@ onUnmounted(() => {
               <span class="text-sm text-white/80">共 {{ displayGames.length }} 篇</span>
             </div>
           </div>
-          <p class="text-white/80 text-sm">{{ categoryInfo.value.desc }}</p>
+          <p class="text-white/80 text-sm">{{ categoryInfo.desc }}</p>
         </div>
       </div>
       
