@@ -6,7 +6,7 @@ const isLoading = ref(false)
 const importResults = ref<{
   success: number
   failed: number
-  errors: Array<{ index: number; name: string; error: string }>
+  errors: Array<{ row: number; name: string; error: string }>
 } | null>(null)
 const uploadedFileName = ref('')
 
@@ -15,8 +15,8 @@ const handleFileUpload = async (event: Event) => {
   if (!input.files || !input.files[0]) return
 
   const file = input.files[0]
-  if (!file.name.endsWith('.json')) {
-    alert('请上传 JSON 格式文件')
+  if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+    alert('请上传 Excel 格式文件 (.xlsx 或 .xls)')
     return
   }
 
@@ -25,19 +25,12 @@ const handleFileUpload = async (event: Event) => {
   importResults.value = null
 
   try {
-    const text = await file.text()
-    const data = JSON.parse(text)
-    
-    if (!data.games || !Array.isArray(data.games)) {
-      throw new Error('JSON格式不正确，需要包含 games 数组')
-    }
+    const formData = new FormData()
+    formData.append('file', file)
 
-    const response = await fetch('https://game-api-p1zc.onrender.com/api/admin/batch-import', {
+    const response = await fetch('https://game-api-p1zc.onrender.com/api/admin/batch-import/upload', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ games: data.games })
+      body: formData
     })
 
     const result = await response.json()
@@ -60,13 +53,16 @@ const handleFileUpload = async (event: Event) => {
 const downloadTemplate = async () => {
   try {
     const response = await fetch('https://game-api-p1zc.onrender.com/api/admin/batch-import/template')
-    const data = await response.json()
     
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    if (!response.ok) {
+      throw new Error('下载模板失败')
+    }
+    
+    const blob = await response.blob()
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'games-template.json'
+    a.download = 'games-template.xlsx'
     a.click()
     URL.revokeObjectURL(url)
   } catch (error) {
@@ -84,7 +80,7 @@ const clearResults = () => {
   <div class="p-6">
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-800">批量导入游戏</h1>
-      <p class="text-gray-600 mt-1">上传JSON格式的游戏数据文件进行批量导入</p>
+      <p class="text-gray-600 mt-1">上传Excel格式的游戏数据文件进行批量导入</p>
     </div>
 
     <!-- 操作区 -->
@@ -92,10 +88,10 @@ const clearResults = () => {
       <div class="flex items-center gap-4 mb-4">
         <label class="flex items-center gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg cursor-pointer hover:bg-pink-600 transition-colors">
           <Upload class="w-5 h-5" />
-          <span>选择JSON文件</span>
+          <span>选择Excel文件</span>
           <input 
             type="file" 
-            accept=".json" 
+            accept=".xlsx,.xls" 
             @change="handleFileUpload" 
             class="hidden"
             :disabled="isLoading"
@@ -168,10 +164,10 @@ const clearResults = () => {
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
       <h3 class="font-semibold text-blue-800 mb-3">使用说明：</h3>
       <ol class="list-decimal list-inside space-y-2 text-blue-700">
-        <li>点击「下载模板」获取JSON格式示例文件</li>
-        <li>按照模板格式编辑游戏数据</li>
-        <li>确保每个游戏的 <code class="bg-blue-100 px-1 rounded">id</code> 唯一</li>
-        <li>上传编辑好的JSON文件进行导入</li>
+        <li>点击「下载模板」获取Excel格式示例文件</li>
+        <li>按照模板格式编辑游戏数据（每行一个游戏）</li>
+        <li>确保每个游戏的 <code class="bg-blue-100 px-1 rounded">ID</code> 唯一</li>
+        <li>上传编辑好的Excel文件进行导入</li>
         <li>查看导入结果，如有失败可查看失败详情</li>
       </ol>
       
