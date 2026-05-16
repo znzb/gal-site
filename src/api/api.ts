@@ -1,3 +1,5 @@
+import { dataCache } from '../utils/cache';
+
 const RENDER_URL = 'https://game-api-p1zc.onrender.com';
 
 const BASE_URL = RENDER_URL + '/api';
@@ -131,15 +133,33 @@ const fetchApi = async <T>(url: string, options?: RequestInit, retryCount: numbe
 
 export const gameApi = {
   getAllGames: async (): Promise<Game[]> => {
-    return fetchApi(`${BASE_URL}/games`);
+    const cacheKey = 'games_all';
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<Game[]>(cacheKey)!;
+    }
+    const data = await fetchApi(`${BASE_URL}/games`);
+    dataCache.set(cacheKey, data);
+    return data;
   },
 
   getGameById: async (id: string): Promise<Game> => {
-    return fetchApi(`${BASE_URL}/games/${id}`);
+    const cacheKey = `game_${id}`;
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<Game>(cacheKey)!;
+    }
+    const data = await fetchApi(`${BASE_URL}/games/${id}`);
+    dataCache.set(cacheKey, data);
+    return data;
   },
 
   getGamesByCategory: async (category: string): Promise<Game[]> => {
-    return fetchApi(`${BASE_URL}/games/category/${category}`);
+    const cacheKey = `games_category_${category}`;
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<Game[]>(cacheKey)!;
+    }
+    const data = await fetchApi(`${BASE_URL}/games/category/${category}`);
+    dataCache.set(cacheKey, data);
+    return data;
   },
 
   createGame: async (game: Game): Promise<Game> => {
@@ -167,11 +187,23 @@ export const gameApi = {
 
 export const categoryApi = {
   getAllCategories: async (): Promise<CategoryItem[]> => {
-    return fetchApi(`${BASE_URL}/categories`);
+    const cacheKey = 'categories_all';
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<CategoryItem[]>(cacheKey)!;
+    }
+    const data = await fetchApi(`${BASE_URL}/categories`);
+    dataCache.set(cacheKey, data);
+    return data;
   },
 
   getCategoryById: async (id: string): Promise<CategoryItem> => {
-    return fetchApi(`${BASE_URL}/categories/${id}`);
+    const cacheKey = `category_${id}`;
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<CategoryItem>(cacheKey)!;
+    }
+    const data = await fetchApi(`${BASE_URL}/categories/${id}`);
+    dataCache.set(cacheKey, data);
+    return data;
   },
 
   createCategory: async (category: CategoryItem): Promise<CategoryItem> => {
@@ -190,13 +222,25 @@ export const featureApi = {
 
 export const bannerApi = {
   getAllBanners: async (): Promise<Banner[]> => {
-    return fetchApi(`${BASE_URL}/banners`);
+    const cacheKey = 'banners_all';
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<Banner[]>(cacheKey)!;
+    }
+    const data = await fetchApi(`${BASE_URL}/banners`);
+    dataCache.set(cacheKey, data);
+    return data;
   }
 };
 
 export const announcementApi = {
   getAllAnnouncements: async (): Promise<Announcement[]> => {
-    return fetchApi(`${BASE_URL}/announcements`);
+    const cacheKey = 'announcements_all';
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<Announcement[]>(cacheKey)!;
+    }
+    const data = await fetchApi(`${BASE_URL}/announcements`);
+    dataCache.set(cacheKey, data);
+    return data;
   }
 };
 

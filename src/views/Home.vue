@@ -6,6 +6,7 @@ import Header from '@/components/Header.vue'
 import FeatureGrid from '@/components/FeatureGrid.vue'
 import GameCard from '@/components/GameCard.vue'
 import { gameApi, bannerApi, announcementApi, categoryApi, type Game, type Banner, type Announcement, type CategoryItem } from '@/api/api'
+import { dataCache } from '@/utils/cache'
 
 const router = useRouter()
 const route = useRoute()
@@ -124,6 +125,12 @@ onMounted(() => {
 })
 
 const loadGroupInfo = async () => {
+  const cacheKey = 'group_info'
+  if (dataCache.has(cacheKey)) {
+    groupInfo.value = dataCache.get(cacheKey)!
+    return
+  }
+  
   try {
     const response = await fetch('https://game-api-p1zc.onrender.com/api/group-info')
     const data = await response.json()
@@ -134,6 +141,7 @@ const loadGroupInfo = async () => {
         qrCode: data.qrCode || '',
         description: data.description || ''
       }
+      dataCache.set(cacheKey, groupInfo.value)
     }
   } catch (error) {
     console.error('加载Q群信息失败:', error)

@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { ArrowLeft, HelpCircle, MessageCircle, FileQuestion, ChevronDown, ChevronUp } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { faqApi, FAQ } from '../api/api'
+import { dataCache } from '../utils/cache'
 
 const router = useRouter()
 
@@ -51,6 +52,16 @@ onMounted(async () => {
     console.error('加载FAQ失败:', error)
   }
 
+  const cacheKey = 'group_info'
+  if (dataCache.has(cacheKey)) {
+    const cached = dataCache.get(cacheKey)!
+    groupInfo.value = {
+      groupNumber: cached.groupNumber || '123456789',
+      groupName: cached.groupName || ''
+    }
+    return
+  }
+  
   try {
     const response = await fetch('https://game-api-p1zc.onrender.com/api/group-info')
     const data = await response.json()
@@ -59,6 +70,7 @@ onMounted(async () => {
         groupNumber: data.groupNumber || '123456789',
         groupName: data.groupName || ''
       }
+      dataCache.set(cacheKey, groupInfo.value)
     }
   } catch (error) {
     console.error('加载Q群信息失败:', error)

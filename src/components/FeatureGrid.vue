@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Megaphone, MessageCircle, Music, Download } from 'lucide-vue-next'
 import { featureApi, type Feature } from '@/api/api'
+import { dataCache } from '../utils/cache'
 
 const router = useRouter()
 
@@ -49,6 +50,12 @@ const loadAnnouncements = async () => {
 }
 
 const loadGroupInfo = async () => {
+  const cacheKey = 'group_info'
+  if (dataCache.has(cacheKey)) {
+    groupInfo.value = dataCache.get(cacheKey)!
+    return
+  }
+  
   try {
     const response = await fetch('https://game-api-p1zc.onrender.com/api/group-info')
     const data = await response.json()
@@ -59,6 +66,7 @@ const loadGroupInfo = async () => {
         qrCode: data.qrCode || '',
         description: data.description || ''
       }
+      dataCache.set(cacheKey, groupInfo.value)
     }
   } catch (error) {
     console.error('Failed to load group info:', error)
