@@ -8,6 +8,9 @@
     { "src": "/admin(.*)", "dest": "/admin.html" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
     { "src": "/banners/(.*)", "dest": "/banners/$1" },
+    { "src": "/game/(.*)", "dest": "/index.html" },
+    { "src": "/category/(.*)", "dest": "/index.html" },
+    { "src": "/tutorial/(.*)", "dest": "/index.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
