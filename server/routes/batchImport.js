@@ -53,15 +53,17 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           
           if (row['资源名称'] || row['资源链接']) {
             resources.push({
-              id: `res-${Date.now()}-${i}`,
-              name: String(row['资源名称'] || row['资源链接'] || '主资源'),
-              url: String(row['资源链接'] || row['资源名称'] || ''),
-              type: 'main',
-              size: String(row['资源大小'] || row['size'] || ''),
-              date: String(row['更新日期'] || row['date'] || ''),
-              language: String(row['语言'] || row['language'] || '简体中文'),
-              platform: String(row['平台'] || row['platform'] || 'PC'),
-              dateDisplay: String(row['更新日期'] || row['date'] || '')
+              id: `res-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              name: String(row['资源名称'] || '主资源'),
+              type: String(row['资源类型'] || 'main'),
+              url: String(row['资源链接'] || ''),
+              size: String(row['资源大小'] || row['大小'] || ''),
+              dateDisplay: String(row['发布日期（显示格式）'] || row['更新日期'] || ''),
+              language: String(row['支持语言'] || row['语言'] || '简体中文'),
+              author: String(row['发布者用户名'] || '愚者'),
+              authorAvatar: String(row['发布者头像'] || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square'),
+              authorCount: Number(row['已发布资源数量'] || 198),
+              platform: String(row['资源平台'] || row['平台'] || '')
             });
           }
           
@@ -188,8 +190,8 @@ router.get('/template', (req, res) => {
       '游戏名称': '示例游戏',
       '封面图': 'https://example.com/cover.jpg',
       '游戏描述': '这是一个精彩的游戏',
-      '主分类': 'PC资源',
-      '分类': 'PC资源',
+      '主分类': '',
+      '分类': '',
       '支持平台': 'PC,安卓',
       '柚子社': false,
       '大小': '2GB',
@@ -197,19 +199,23 @@ router.get('/template', (req, res) => {
       '下载量': 0,
       '标签': 'RPG,汉化,恋爱',
       '资源名称': '百度网盘',
+      '资源类型': 'main',
+      '支持语言': '简体中文',
       '资源链接': 'https://pan.baidu.com/xxx',
       '资源大小': '2GB',
-      '更新日期': '2024-01-01',
-      '语言': '简体中文',
-      '平台': 'PC'
+      '发布日期（显示格式）': '3天前',
+      '发布者用户名': '愚者',
+      '发布者头像': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
+      '已发布资源数量': 198,
+      '资源平台': 'PC'
     },
     {
       'ID': 'game-002',
       '游戏名称': '另一款示例',
       '封面图': 'https://example.com/cover2.jpg',
       '游戏描述': '游戏描述内容',
-      '主分类': '安卓资源',
-      '分类': '安卓资源',
+      '主分类': '',
+      '分类': '',
       '支持平台': '安卓',
       '柚子社': false,
       '大小': '500MB',
@@ -217,11 +223,15 @@ router.get('/template', (req, res) => {
       '下载量': 0,
       '标签': '动作',
       '资源名称': '阿里云盘',
+      '资源类型': 'patch',
+      '支持语言': '繁体中文',
       '资源链接': 'https://www.aliyundrive.com/xxx',
       '资源大小': '500MB',
-      '更新日期': '2024-02-01',
-      '语言': '繁体中文',
-      '平台': '安卓'
+      '发布日期（显示格式）': '2天前',
+      '发布者用户名': '愚者',
+      '发布者头像': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
+      '已发布资源数量': 198,
+      '资源平台': '安卓'
     }
   ];
 
@@ -242,11 +252,15 @@ router.get('/template', (req, res) => {
     { wch: 8 },  // 下载量
     { wch: 20 },  // 标签
     { wch: 15 },  // 资源名称
+    { wch: 12 },  // 资源类型
+    { wch: 12 },  // 支持语言
     { wch: 35 },  // 资源链接
     { wch: 10 },  // 资源大小
-    { wch: 12 },  // 更新日期
-    { wch: 10 },  // 语言
-    { wch: 10 },  // 平台
+    { wch: 18 },  // 发布日期（显示格式）
+    { wch: 15 },  // 发布者用户名
+    { wch: 40 },  // 发布者头像
+    { wch: 12 },  // 已发布资源数量
+    { wch: 10 },  // 资源平台
   ];
   ws['!cols'] = columnWidths;
 
