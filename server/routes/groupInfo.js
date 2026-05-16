@@ -11,6 +11,9 @@ router.get('/', async (req, res) => {
       groupInfo = new GroupInfo();
       await groupInfo.save();
     }
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.json(groupInfo);
   } catch (error) {
     res.status(500).json({ error: error.message });
