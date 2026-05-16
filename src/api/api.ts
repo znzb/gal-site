@@ -104,19 +104,29 @@ const createTimeoutSignal = (ms: number): AbortSignal => {
   return controller.signal;
 };
 
-const fetchApi = async <T>(url: string, options?: RequestInit): Promise<T> => {
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      ...options?.headers
-    },
-    signal: createTimeoutSignal(10000)
-  });
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+// 前端自动重试2次，模拟CDN重试
+const fetchApi = async <T>(url: string, options?: RequestInit, retryCount: number = 0): Promise<T> => {
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        ...options?.headers
+      },
+      signal: createTimeoutSignal(25000)
+    });
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  } catch (error) {
+    if (retryCount < 2) {
+      console.log(`请求失败，${800}ms后重试（第${retryCount + 1}次）`);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      return fetchApi(url, options, retryCount + 1);
+    }
+    throw error;
   }
-  return response.json();
 };
 
 export const gameApi = {

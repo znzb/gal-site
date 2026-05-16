@@ -67,6 +67,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// 所有请求强制关闭TCP长连接，避免弱网卡死
+app.use((req, res, next) => {
+  res.setHeader('Connection', 'close');
+  next();
+});
+
+app.set('keepAliveTimeout', 1000);
+
 app.use('/api/games', gamesRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/features', featuresRouter);
@@ -160,8 +168,9 @@ const initData = async () => {
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 30000,
+      connectTimeoutMS: 30000,
     });
     console.log('Connected to MongoDB');
     await initData();
