@@ -7,6 +7,10 @@ import { faqApi, FAQ } from '../api/api'
 const router = useRouter()
 
 const faqs = ref<FAQ[]>([])
+const groupInfo = ref({
+  groupNumber: '123456789',
+  groupName: ''
+})
 
 onMounted(async () => {
   try {
@@ -45,6 +49,19 @@ onMounted(async () => {
     ]
   } catch (error) {
     console.error('加载FAQ失败:', error)
+  }
+
+  try {
+    const response = await fetch('https://game-api-p1zc.onrender.com/api/group-info')
+    const data = await response.json()
+    if (data) {
+      groupInfo.value = {
+        groupNumber: data.groupNumber || '123456789',
+        groupName: data.groupName || ''
+      }
+    }
+  } catch (error) {
+    console.error('加载Q群信息失败:', error)
   }
 })
 
@@ -148,16 +165,7 @@ const isExpanded = (id: string) => {
             </span>
             <div>
               <p class="font-medium text-gray-800">QQ群</p>
-              <p class="text-pink-400">123456789（点击加入）</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
-              <MessageCircle class="w-4 h-4 text-pink-600" />
-            </span>
-            <div>
-              <p class="font-medium text-gray-800">邮箱</p>
-              <p class="text-pink-400">support@example.com</p>
+              <p class="text-pink-400">{{ groupInfo.groupNumber }}（点击加入）</p>
             </div>
           </div>
         </div>
