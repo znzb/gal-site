@@ -1,24 +1,13 @@
 <script setup lang="ts">
 import SideMenu from '@/components/SideMenu.vue'
 import BottomNav from '@/components/BottomNav.vue'
-import { RouterView, useRoute } from 'vue-router'
+import { RouterView } from 'vue-router'
 import { appState } from '@/store/appStore'
-import { computed } from 'vue'
-
-const route = useRoute()
-const keepAlive = computed(() => route.meta?.keepAlive !== false)
 </script>
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50/30">
-    <RouterView v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <keep-alive v-if="keepAlive">
-          <component :is="Component" :key="route.fullPath" />
-        </keep-alive>
-        <component :is="Component" v-else :key="route.fullPath" />
-      </transition>
-    </RouterView>
+    <RouterView :key="($route as any)?.fullPath" />
     
     <BottomNav class="md:hidden" />
     
@@ -35,15 +24,3 @@ const keepAlive = computed(() => route.meta?.keepAlive !== false)
     ></div>
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
