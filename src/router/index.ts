@@ -25,62 +25,74 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { keepAlive: false }
   },
   {
     path: '/game/:id',
     name: 'GameDetail',
-    component: GameDetail
+    component: GameDetail,
+    meta: { keepAlive: false }
   },
   {
     path: '/category/:type',
     name: 'Category',
-    component: Category
+    component: Category,
+    meta: { keepAlive: false }
   },
   {
     path: '/announcements',
     name: 'Announcements',
-    component: AnnouncementsPage
+    component: AnnouncementsPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/join-group',
     name: 'JoinGroup',
-    component: JoinGroupPage
+    component: JoinGroupPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/yuzusoft',
     name: 'Yuzusoft',
-    component: YuzusoftPage
+    component: YuzusoftPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/patch-records',
     name: 'PatchRecords',
-    component: PatchRecordsPage
+    component: PatchRecordsPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/search',
     name: 'Search',
-    component: SearchPage
+    component: SearchPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/tools',
     name: 'Tools',
-    component: ToolDownloadPage
+    component: ToolDownloadPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/pc-resources',
     name: 'PCResources',
-    component: PCResourcePage
+    component: PCResourcePage,
+    meta: { keepAlive: false }
   },
   {
     path: '/help',
     name: 'HelpCenter',
-    component: HelpCenterPage
+    component: HelpCenterPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/tutorial/:id',
     name: 'tutorial-detail',
-    component: TutorialDetailPage
+    component: TutorialDetailPage,
+    meta: { keepAlive: false }
   },
   {
     path: '/admin/login',

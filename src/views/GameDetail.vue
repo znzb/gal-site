@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
+import { ref, onMounted, onUnmounted, onActivated, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar, MessageSquare, Link2, User, ChevronDown, ChevronUp, Home, BookOpen, Eye } from 'lucide-vue-next'
 import { gameApi, type Game, type ResourceLink, type Comment } from '@/api/api'
@@ -184,13 +184,21 @@ const loadData = async () => {
   }
 }
 
-onMounted(() => {
+const initData = () => {
   loadData()
   const tab = route.query.tab as string
   if (tab === 'resources') {
     activeTab.value = 'resources'
   }
+}
+
+onMounted(() => {
+  initData()
   window.addEventListener('resize', handleResize)
+})
+
+onActivated(() => {
+  initData()
 })
 
 watch(
