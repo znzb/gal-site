@@ -74,7 +74,7 @@
 
     <div v-else class="categories-grid">
       <div 
-        v-for="(cat, index) in filteredCategoriesList" 
+        v-for="(cat, index) in categories" 
         :key="cat._id" 
         class="category-card" 
         @click="viewCategory(cat)"
@@ -666,7 +666,7 @@ async function onDrop(event, targetIndex) {
     return;
   }
   
-  const categoriesList = [...filteredCategoriesList.value];
+  const categoriesList = [...categories.value];
   const [draggedItem] = categoriesList.splice(draggedIndex, 1);
   categoriesList.splice(targetIndex, 0, draggedItem);
   
