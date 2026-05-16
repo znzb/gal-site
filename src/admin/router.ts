@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { dataCache } from '@/utils/cache';
 import AdminLayout from './AdminLayout.vue';
 import Login from './views/Login.vue';
 import Dashboard from './views/Dashboard.vue';
@@ -91,6 +92,12 @@ router.beforeEach((to, from, next) => {
     next('/admin/login');
   } else {
     next();
+  }
+});
+
+router.afterEach((to, from) => {
+  if (to.name !== from.name) {
+    dataCache.clear();
   }
 });
 

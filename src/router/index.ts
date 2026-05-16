@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { dataCache } from '@/utils/cache'
 import Home from '@/views/Home.vue'
 import GameDetail from '@/views/GameDetail.vue'
 import Category from '@/views/Category.vue'
@@ -172,6 +173,10 @@ const router = createRouter({
   }
 })
 
-
+router.afterEach((to, from) => {
+  if (to.name !== from.name) {
+    dataCache.clear()
+  }
+})
 
 export default router
