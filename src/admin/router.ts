@@ -9,6 +9,7 @@ import AnnouncementsManage from './views/AnnouncementsManage.vue';
 import PatchRequestsManage from './views/PatchRequestsManage.vue';
 import SearchLogsManage from './views/SearchLogsManage.vue';
 import ToolsManage from './views/ToolsManage.vue';
+import BatchImport from './views/BatchImport.vue';
 
 const routes = [
   {
@@ -63,6 +64,11 @@ const routes = [
         path: 'tools',
         name: 'ToolsManage',
         component: ToolsManage
+      },
+      {
+        path: 'batch-import',
+        name: 'BatchImport',
+        component: BatchImport
       }
     ]
   }
