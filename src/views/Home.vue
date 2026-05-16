@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe, MessageCircle } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
 import FeatureGrid from '@/components/FeatureGrid.vue'
@@ -9,6 +9,7 @@ import { gameApi, bannerApi, announcementApi, categoryApi, type Game, type Banne
 import { dataCache } from '@/utils/cache'
 
 const router = useRouter()
+const route = useRoute()
 
 const games = ref<Game[]>([])
 const banners = ref<Banner[]>([])
@@ -16,6 +17,8 @@ const announcements = ref<Announcement[]>([])
 const categories = ref<CategoryItem[]>([])
 const isLoading = ref(true)
 const showJoinGroupModal = ref(false)
+const scrollPosition = ref(0)
+const isFirstLoad = ref(true)
 
 const groupInfo = ref({
   groupNumber: '123456789',
@@ -35,8 +38,22 @@ const copyGroupNumber = async () => {
 }
 
 const handleGameClick = (id: string) => {
+  // 保存当前滚动位置
+  scrollPosition.value = window.scrollY
   router.push(`/game/${id}`)
 }
+
+// 监听路由变化：从游戏详情返回时恢复滚动位置
+watch(() => route.name, (newName, oldName) => {
+  if (oldName === 'GameDetail' && newName === 'Home') {
+    // 页面重新渲染后恢复滚动位置
+    nextTick(() => {
+      if (scrollPosition.value > 0) {
+        window.scrollTo({ top: scrollPosition.value, behavior: 'instant' })
+      }
+    })
+  }
+})
 
 const currentBanner = ref(0)
 const bannersLoaded = ref<boolean[]>([])
@@ -83,7 +100,9 @@ const preloadBannerImages = async () => {
 }
 
 const loadData = async () => {
-  isLoading.value = true
+  if (isFirstLoad.value) {
+    isLoading.value = true
+  }
   try {
     const [gamesData, bannersData, announcementsData, categoriesData] = await Promise.all([
       gameApi.getAllGames(),
@@ -105,6 +124,13 @@ const loadData = async () => {
     categories.value = []
   } finally {
     isLoading.value = false
+    isFirstLoad.value = false
+    
+    // 加载完成后恢复滚动位置
+    if (scrollPosition.value > 0) {
+      await nextTick()
+      window.scrollTo({ top: scrollPosition.value, behavior: 'instant' })
+    }
   }
 }
 

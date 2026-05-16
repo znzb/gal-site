@@ -178,7 +178,10 @@ const router = createRouter({
 })
 
 router.afterEach((to, from) => {
-  if (to.name !== from.name && from.name !== 'GameDetail' && to.name !== 'GameDetail') {
+  // 只在首页和游戏详情页之外的页面切换时清除缓存
+  if (to.name !== from.name && 
+      !(from.name === 'Home' && to.name === 'GameDetail') && 
+      !(from.name === 'GameDetail' && to.name === 'Home')) {
     dataCache.clear()
   }
 })
