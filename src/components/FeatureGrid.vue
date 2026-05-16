@@ -159,13 +159,13 @@ onMounted(() => {
   </div>
 
   <!-- 加群弹窗 -->
-  <div v-if="showJoinGroupModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @click="showJoinGroupModal = false">
-    <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl" @click.stop>
+  <div v-if="showJoinGroupModal" class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 pt-[15%] pb-24" @click="showJoinGroupModal = false">
+    <div class="bg-white rounded-2xl w-full max-w-md max-h-[75vh] overflow-hidden shadow-xl" @click.stop>
       <div class="bg-gradient-to-r from-pink-500 to-pink-600 p-6 text-white text-center">
         <h2 class="text-2xl font-bold">💬 加入Q群</h2>
       </div>
       
-      <div class="p-6 text-center">
+      <div class="p-6 text-center overflow-y-auto max-h-[calc(75vh-80px)]">
         <div class="w-40 h-40 bg-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-100">
           <img v-if="groupInfo.qrCode" :src="groupInfo.qrCode" alt="群二维码" class="w-full h-full object-cover rounded-2xl" onerror="this.style.display='none'" />
           <span v-else class="text-6xl">🐧</span>
