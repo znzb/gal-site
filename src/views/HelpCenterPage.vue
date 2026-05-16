@@ -165,7 +165,7 @@ const isExpanded = (id: string) => {
             </span>
             <div>
               <p class="font-medium text-gray-800">QQ群</p>
-              <p class="text-pink-400">{{ groupInfo.groupNumber }}（点击加入）</p>
+              <p class="text-pink-400">{{ groupInfo.groupNumber }}</p>
             </div>
           </div>
         </div>
