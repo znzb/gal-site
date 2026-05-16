@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, onActivated, watch } from 'vue'
+import { ref, onMounted, onUnmounted, onActivated, onDeactivated, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe, MessageCircle } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
@@ -18,6 +18,7 @@ const categories = ref<CategoryItem[]>([])
 const isLoading = ref(true)
 const isDataLoaded = ref(false)
 const showJoinGroupModal = ref(false)
+const scrollPosition = ref(0)
 
 const groupInfo = ref({
   groupNumber: '123456789',
@@ -37,6 +38,7 @@ const copyGroupNumber = async () => {
 }
 
 const handleGameClick = (id: string) => {
+  scrollPosition.value = window.scrollY
   router.push(`/game/${id}`)
 }
 
@@ -85,8 +87,10 @@ const preloadBannerImages = async () => {
 }
 
 const loadData = async () => {
-  // 每次开始加载前重置状态
-  isLoading.value = true
+  // 只有第一次加载时才重置状态
+  if (!isDataLoaded.value) {
+    isLoading.value = true
+  }
   try {
     const [gamesData, bannersData, announcementsData, categoriesData] = await Promise.all([
       gameApi.getAllGames(),
@@ -148,14 +152,18 @@ const loadGroupInfo = async () => {
   }
 }
 
-// 每次组件被激活时重新加载数据（适用于 keep-alive 缓存场景）
+// 组件被激活时恢复滚动位置
 onActivated(() => {
-  loadData()
+  nextTick(() => {
+    if (scrollPosition.value > 0) {
+      window.scrollTo({ top: scrollPosition.value, behavior: 'instant' })
+    }
+  })
 })
 
-// 监听路由变化，确保进入首页时重新加载数据
-watch(() => route.path, () => {
-  loadData()
+// 组件被停用时保存滚动位置
+onDeactivated(() => {
+  scrollPosition.value = window.scrollY
 })
 
 onUnmounted(() => {
@@ -165,6 +173,10 @@ onUnmounted(() => {
   if (dataRefreshTimer) {
     clearInterval(dataRefreshTimer)
   }
+})
+
+defineOptions({
+  name: 'Home'
 })
 </script>
 

@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import SideMenu from '@/components/SideMenu.vue'
 import BottomNav from '@/components/BottomNav.vue'
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 import { appState } from '@/store/appStore'
+import { KeepAlive } from 'vue'
+
+const route = useRoute()
 </script>
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50/30">
-    <RouterView :key="($route as any)?.fullPath" />
+    <KeepAlive include="Home">
+      <RouterView v-slot="{ Component }">
+        <component :is="Component" />
+      </RouterView>
+    </KeepAlive>
     
     <BottomNav class="md:hidden" />
     
