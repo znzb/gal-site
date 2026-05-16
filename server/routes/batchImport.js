@@ -75,7 +75,16 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
         const parsePlatforms = (row) => {
           const platformsStr = String(row['支持平台'] || row['platforms'] || 'PC');
-          return platformsStr.split(/[,，;；|]/).map(p => p.trim()).filter(p => p);
+          const platforms = platformsStr.split(/[,，;；|]/).map(p => p.trim()).filter(p => p);
+          // 标准化平台名称（英文和中文都保留，确保查询都能匹配）
+          const normalized = [];
+          platforms.forEach(p => {
+            normalized.push(p);
+            if (p.toLowerCase() === 'android') normalized.push('安卓');
+            if (p === '安卓') normalized.push('Android');
+          });
+          // 去重
+          return [...new Set(normalized)];
         };
 
         const parseCategories = (row) => {

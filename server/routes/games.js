@@ -30,9 +30,31 @@ router.get('/category/:category', async (req, res) => {
     const category = req.params.category;
     let query;
     
-    // 根据分类名称直接通过platforms字段查询
+    // 判断是否包含特定平台（支持中英文）
+    const hasPlatform = (gamePlatforms, platformNames) => {
+      if (!gamePlatforms) return false;
+      if (typeof gamePlatforms === 'string') {
+        return platformNames.some(p => gamePlatforms.includes(p));
+      }
+      if (Array.isArray(gamePlatforms)) {
+        return gamePlatforms.some(gp => platformNames.some(p => gp.includes(p)));
+      }
+      return false;
+    };
+    
+    // 判断是否是柚子社游戏
+    const isYuzusoftGame = (game) => {
+      return game.isYuzusoft || 
+             (game.platforms && (
+               (typeof game.platforms === 'string' && game.platforms.includes('柚子社')) ||
+               (Array.isArray(game.platforms) && game.platforms.some(p => p.includes('柚子社')))
+             )) ||
+             game.category === '柚子社' ||
+             (game.categories && game.categories.includes('柚子社'));
+    };
+    
     if (category === 'PC资源') {
-      // PC资源：只包含PC平台的游戏，且不包含柚子社，或者兼容旧数据
+      // PC资源：包含PC平台，且不是柚子社
       query = {
         $and: [
           {
@@ -40,43 +62,34 @@ router.get('/category/:category', async (req, res) => {
               { platforms: 'PC' },
               { platforms: { $in: ['PC'] } },
               { platforms: { $exists: false }, category: 'PC资源' },
-              { platforms: { $exists: false }, category: 'pc资源' }
+              { platforms: { $exists: false }, category: 'pc资源' },
+              // 支持字符串包含PC
+              { platforms: { $regex: 'PC', $options: 'i' } }
             ]
           },
-          {
-            $nor: [
-              { platforms: '柚子社' },
-              { platforms: { $in: ['柚子社'] } },
-              { isYuzusoft: true }
-            ]
-          }
+          { isYuzusoft: { $ne: true } }
         ]
       };
     } else if (category === 'Gal游戏') {
-      // Gal游戏包含非PC平台，或者同时包含PC和其他平台，且不包含柚子社
+      // Gal游戏：包含非PC平台（Android/安卓/KR），且不是柚子社
+      // 同时支持PC+Android的游戏也会显示在这里
       query = {
         $and: [
           {
             $or: [
-              { platforms: { $in: ['Android', 'KR'] } },
-              { platforms: { $all: ['PC', 'Android'] } },
-              { platforms: { $all: ['PC', 'KR'] } },
-              { platforms: { $size: 3 } },
+              // 包含安卓/Android
+              { platforms: 'Android' },
+              { platforms: { $in: ['Android', '安卓', 'KR'] } },
+              { platforms: { $regex: 'Android|安卓|KR', $options: 'i' } },
               { platforms: { $exists: false }, category: 'Gal游戏' },
               { platforms: { $exists: false }, category: 'gal游戏' }
             ]
           },
-          {
-            $nor: [
-              { platforms: '柚子社' },
-              { platforms: { $in: ['柚子社'] } },
-              { isYuzusoft: true }
-            ]
-          }
+          { isYuzusoft: { $ne: true } }
         ]
       };
     } else if (category === '柚子社') {
-      // 柚子社分类：只要平台包含柚子社，或者isYuzusoft为true，就只显示在这里
+      // 柚子社分类
       query = {
         $or: [
           { platforms: '柚子社' },
@@ -97,7 +110,17 @@ router.get('/category/:category', async (req, res) => {
     }
     
     const games = await Game.find(query);
-    res.json(games);
+    
+    // 后处理过滤，确保柚子社游戏只在柚子社分类
+    const filteredGames = games.filter(game => {
+      if (category === '柚子社') {
+        return true; // 柚子社分类不过滤
+      }
+      // 其他分类过滤掉柚子社游戏
+      return !isYuzusoftGame(game);
+    });
+    
+    res.json(filteredGames);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
