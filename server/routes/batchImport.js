@@ -52,10 +52,20 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           const resources = [];
           
           if (row['资源名称'] || row['资源链接']) {
+            // 解析资源类型，支持中英文
+            let resourceType = String(row['资源类型'] || 'main');
+            if (resourceType.includes('游戏') || resourceType.includes('本体')) {
+              resourceType = 'main';
+            } else if (resourceType.includes('补丁') || resourceType.includes('汉化')) {
+              resourceType = 'patch';
+            } else if (resourceType.includes('更新')) {
+              resourceType = 'update';
+            }
+            
             resources.push({
               id: `res-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
               name: String(row['资源名称'] || '主资源'),
-              type: String(row['资源类型'] || 'main'),
+              type: resourceType,
               url: String(row['资源链接'] || ''),
               size: String(row['资源大小'] || row['大小'] || ''),
               dateDisplay: String(row['发布日期（显示格式）'] || row['更新日期'] || ''),
@@ -199,7 +209,7 @@ router.get('/template', (req, res) => {
       '下载量': 0,
       '标签': 'RPG,汉化,恋爱',
       '资源名称': '百度网盘',
-      '资源类型': 'main',
+      '资源类型': '游戏本体',
       '支持语言': '简体中文',
       '资源链接': 'https://pan.baidu.com/xxx',
       '资源大小': '2GB',
@@ -223,7 +233,7 @@ router.get('/template', (req, res) => {
       '下载量': 0,
       '标签': '动作',
       '资源名称': '阿里云盘',
-      '资源类型': 'patch',
+      '资源类型': '汉化补丁',
       '支持语言': '繁体中文',
       '资源链接': 'https://www.aliyundrive.com/xxx',
       '资源大小': '500MB',
