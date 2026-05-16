@@ -10,6 +10,7 @@ import PatchRequestsManage from './views/PatchRequestsManage.vue';
 import SearchLogsManage from './views/SearchLogsManage.vue';
 import ToolsManage from './views/ToolsManage.vue';
 import BatchImport from './views/BatchImport.vue';
+import GroupInfoManage from './views/GroupInfoManage.vue';
 
 const routes = [
   {
@@ -69,6 +70,11 @@ const routes = [
         path: 'batch-import',
         name: 'BatchImport',
         component: BatchImport
+      },
+      {
+        path: 'group-info',
+        name: 'GroupInfoManage',
+        component: GroupInfoManage
       }
     ]
   }
