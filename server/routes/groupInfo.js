@@ -1,5 +1,6 @@
 import express from 'express';
 import GroupInfo from '../models/GroupInfo.js';
+import { authMiddleware } from './adminAuth.js';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.put('/', async (req, res) => {
+router.put('/', authMiddleware, async (req, res) => {
   try {
     const { groupNumber, groupName, qrCode, description } = req.body;
     let groupInfo = await GroupInfo.findOne({ id: 'group-info' });
