@@ -1065,7 +1065,6 @@ th, td {
   gap: 8px;
   align-items: center;
   justify-content: flex-start;
-  height: 100%;
 }
 
 .modal-overlay {
