@@ -169,11 +169,18 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // 只有从 GameDetail 回到 Home 时才保留滚动位置
-    if (savedPosition && from.name === 'GameDetail' && to.name === 'Home') {
+    // 如果从游戏详情页返回，保留滚动位置
+    if (savedPosition && from.name === 'GameDetail') {
       return savedPosition
     }
-    // 其他情况都回到顶部
+    // 如果返回首页但不是从游戏详情页回来，回到顶部（历史修复）
+    if (to.name === 'Home' && from.name !== 'GameDetail') {
+      return { top: 0 }
+    }
+    // 其他情况默认行为
+    if (savedPosition) {
+      return savedPosition
+    }
     return { top: 0 }
   }
 })
