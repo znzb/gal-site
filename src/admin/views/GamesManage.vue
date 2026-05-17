@@ -617,6 +617,8 @@ th, td {
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
   vertical-align: middle;
+  min-height: 94px;
+  display: table-cell;
 }
 
 .game-cover-small {
