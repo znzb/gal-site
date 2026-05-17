@@ -165,13 +165,34 @@ const routes = [
   }
 ]
 
+function restoreScrollPosition(savedPosition: any) {
+  if (!savedPosition) return
+
+  const targetHeight = savedPosition.top + window.innerHeight
+
+  const tryRestore = () => {
+    if (document.body.scrollHeight >= targetHeight) {
+      window.scrollTo({
+        top: savedPosition.top,
+        left: savedPosition.left || 0,
+        behavior: 'instant'
+      })
+    } else {
+      requestAnimationFrame(tryRestore)
+    }
+  }
+
+  tryRestore()
+}
+
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
     // 如果从游戏详情页返回，保留滚动位置
     if (savedPosition && from.name === 'GameDetail') {
-      return savedPosition
+      restoreScrollPosition(savedPosition)
+      return
     }
     // 如果返回首页但不是从游戏详情页回来，回到顶部（历史修复）
     if (to.name === 'Home' && from.name !== 'GameDetail') {
