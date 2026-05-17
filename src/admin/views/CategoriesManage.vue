@@ -1062,6 +1062,9 @@ th, td {
 .actions {
   display: flex;
   gap: 8px;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .modal-overlay {
