@@ -168,21 +168,29 @@ const routes = [
 function restoreScrollPosition(savedPosition: any) {
   if (!savedPosition) return
 
-  const targetHeight = savedPosition.top + window.innerHeight
+  let retryCount = 0
+  const maxRetries = 20
 
   const tryRestore = () => {
-    if (document.body.scrollHeight >= targetHeight) {
+    if (document.body.scrollHeight > savedPosition.top) {
       window.scrollTo({
         top: savedPosition.top,
         left: savedPosition.left || 0,
         behavior: 'instant'
       })
-    } else {
+    } else if (retryCount < maxRetries) {
+      retryCount++
       requestAnimationFrame(tryRestore)
+    } else {
+      window.scrollTo({
+        top: savedPosition.top,
+        left: savedPosition.left || 0,
+        behavior: 'instant'
+      })
     }
   }
 
-  tryRestore()
+  setTimeout(() => tryRestore(), 50)
 }
 
 const router = createRouter({
