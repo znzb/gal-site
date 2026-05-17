@@ -1064,7 +1064,7 @@ th, td {
   display: flex;
   gap: 8px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   height: 100%;
 }
 
