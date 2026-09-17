@@ -137,22 +137,22 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-4 mx-4 mt-4 shadow-lg border border-pink-100/50">
-    <div v-if="isLoading" class="flex items-center justify-center h-20">
+  <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-3 mx-4 mt-4 shadow-lg border border-pink-100/50">
+    <div v-if="isLoading" class="flex items-center justify-center h-16">
       <div class="w-6 h-6 border-2 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
     </div>
-    <div v-else class="grid grid-cols-4 gap-2">
+    <div v-else class="grid grid-cols-4 gap-1">
       <button 
         v-for="feature in features" 
         :key="feature.id"
         @click="handleFeatureClick(feature.id)"
-        class="flex flex-col items-center py-3 rounded-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-pink-100 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
+        class="flex flex-col items-center py-2 rounded-xl hover:bg-gradient-to-br hover:from-pink-50 hover:to-pink-100 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
       >
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-2 shadow-md transition-shadow hover:shadow-lg bg-gradient-to-br from-pink-100 to-pink-200">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-1 shadow-md transition-shadow hover:shadow-lg bg-gradient-to-br from-pink-100 to-pink-200">
           <component :is="iconMap[feature.icon]" 
-                     class="w-6 h-6 transition-transform group-hover:scale-110 text-pink-600" />
+                     class="w-5 h-5 transition-transform group-hover:scale-110 text-pink-600" />
         </div>
-        <span class="text-xs text-gray-700 font-medium">{{ feature.name }}</span>
+        <span class="text-[11px] text-gray-700 font-medium">{{ feature.name }}</span>
       </button>
     </div>
   </div>

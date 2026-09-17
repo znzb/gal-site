@@ -241,9 +241,7 @@ onUnmounted(() => {
           </div>
         </div>
         
-        <FeatureGrid />
-        
-        <div id="announcements" v-if="announcements.length > 0" class="px-4 mt-6">
+        <div id="announcements" v-if="announcements.length > 0" class="px-4 mt-4">
           <div class="bg-white rounded-xl border border-pink-100 p-4 shadow-lg shadow-pink-50/50">
             <div class="flex items-center gap-2 mb-3">
               <span class="text-xl">📢</span>
@@ -269,6 +267,8 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+        
+        <FeatureGrid />
         
         <div class="px-4 mt-6">
           <div class="flex items-center justify-between mb-3">
