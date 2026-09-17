@@ -10,48 +10,68 @@
     
     <aside class="sidebar" :class="{ 'show': showSidebar, 'mobile': isMobile }" v-if="isLoggedIn">
       <div class="sidebar-header">
-        <h2>后台管理</h2>
+        <div class="brand">
+          <div class="brand-icon">🎮</div>
+          <div class="brand-text">
+            <h2>后台管理</h2>
+            <span>三菜鱼小站</span>
+          </div>
+        </div>
         <button @click="showSidebar = false" class="close-btn" v-if="isMobile">×</button>
       </div>
       <nav class="sidebar-nav">
         <router-link to="/admin" exact class="nav-item" @click.native="showSidebar = false">
-          <span>📊</span> 控制台
+          <span class="nav-icon">📊</span>
+          <span>控制台</span>
         </router-link>
         <router-link to="/admin/games" class="nav-item" @click.native="showSidebar = false">
-          <span>🎮</span> 游戏管理
+          <span class="nav-icon">🎮</span>
+          <span>游戏管理</span>
         </router-link>
         <router-link to="/admin/categories" class="nav-item" @click.native="showSidebar = false">
-          <span>📁</span> 分类管理
+          <span class="nav-icon">📁</span>
+          <span>分类管理</span>
         </router-link>
         <router-link to="/admin/banners" class="nav-item" @click.native="showSidebar = false">
-          <span>🎠</span> 轮播图管理
+          <span class="nav-icon">🎠</span>
+          <span>轮播图管理</span>
         </router-link>
         <router-link to="/admin/announcements" class="nav-item" @click.native="showSidebar = false">
-          <span>📢</span> 公告管理
+          <span class="nav-icon">📢</span>
+          <span>公告管理</span>
         </router-link>
         <router-link to="/admin/patch-requests" class="nav-item" @click.native="showSidebar = false">
-          <span>🔧</span> 补档管理
+          <span class="nav-icon">🔧</span>
+          <span>补档管理</span>
         </router-link>
         <router-link to="/admin/search-logs" class="nav-item" @click.native="showSidebar = false">
-          <span>🔍</span> 搜索统计
+          <span class="nav-icon">🔍</span>
+          <span>搜索统计</span>
         </router-link>
         <router-link to="/admin/tools" class="nav-item" @click.native="showSidebar = false">
-          <span>🛠️</span> 工具下载管理
+          <span class="nav-icon">🛠️</span>
+          <span>工具下载</span>
         </router-link>
         <router-link to="/admin/batch-import" class="nav-item" @click.native="showSidebar = false">
-          <span>📥</span> 批量导入
+          <span class="nav-icon">📥</span>
+          <span>批量导入</span>
         </router-link>
         <router-link to="/admin/group-info" class="nav-item" @click.native="showSidebar = false">
-          <span>🐧</span> Q群管理
+          <span class="nav-icon">🐧</span>
+          <span>Q群管理</span>
         </router-link>
       </nav>
-      <button @click="logout" class="logout-btn">退出登录</button>
+      <button @click="logout" class="logout-btn">
+        <span>🚪</span> 退出登录
+      </button>
     </aside>
     
     <div class="overlay" v-if="showSidebar && isMobile" @click="showSidebar = false"></div>
     
     <main class="main-content">
-      <router-view />
+      <div class="content-wrapper">
+        <router-view />
+      </div>
     </main>
   </div>
 </template>
@@ -93,99 +113,164 @@ onUnmounted(() => {
 .admin-layout {
   display: flex;
   min-height: 100vh;
+  background: #f8f5fb;
 }
 
 .mobile-menu-btn {
   position: fixed;
-  top: 10px;
-  left: 10px;
+  top: 14px;
+  left: 14px;
   z-index: 100;
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 20px;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 14px rgba(196, 79, 255, 0.4);
   display: none;
 }
 
 .sidebar {
-  width: 250px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  width: 240px;
+  background: linear-gradient(180deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 50;
+  box-shadow: 4px 0 24px rgba(196, 79, 255, 0.15);
 }
 
 .sidebar-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.sidebar-header h2 {
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.brand-text h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.brand-text span {
+  font-size: 11px;
+  opacity: 0.75;
+  display: block;
+  margin-top: 2px;
 }
 
 .close-btn {
   display: none;
-  background: none;
+  background: rgba(255,255,255,0.15);
   border: none;
   color: white;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   padding: 0;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  line-height: 1;
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 20px 0;
+  padding: 16px 12px;
+  overflow-y: auto;
 }
 
 .nav-item {
-  display: block;
-  padding: 15px 20px;
-  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  color: rgba(255,255,255,0.85);
   text-decoration: none;
-  transition: background 0.2s;
+  transition: all 0.25s ease;
   font-size: 14px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+  font-weight: 500;
 }
 
-.nav-item:hover, .nav-item.router-link-active {
-  background: rgba(255,255,255,0.1);
+.nav-item:hover {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  transform: translateX(2px);
+}
+
+.nav-item.router-link-active {
+  background: rgba(255,255,255,0.22);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.nav-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
 }
 
 .logout-btn {
-  margin: 20px;
-  padding: 10px;
-  background: rgba(255,255,255,0.2);
-  border: none;
+  margin: 16px 12px 20px;
+  padding: 12px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.25);
   color: white;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,0.28);
 }
 
 .main-content {
   flex: 1;
-  padding: 20px;
-  background: #f5f7fa;
   overflow-y: auto;
+}
+
+.content-wrapper {
+  padding: 28px 32px;
 }
 
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
   z-index: 40;
 }
 
@@ -198,11 +283,10 @@ onUnmounted(() => {
   
   .sidebar {
     position: fixed;
-    left: -250px;
+    left: -260px;
     top: 0;
     bottom: 0;
-    transition: left 0.3s ease;
-    z-index: 100;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .sidebar.mobile.show {
@@ -210,16 +294,18 @@ onUnmounted(() => {
   }
   
   .close-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  .main-content {
-    padding: 60px 10px 10px;
+  .content-wrapper {
+    padding: 68px 14px 14px;
   }
   
   .nav-item {
-    padding: 14px 20px;
-    font-size: 16px;
+    padding: 14px;
+    font-size: 15px;
   }
 }
 </style>

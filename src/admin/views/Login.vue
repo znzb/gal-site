@@ -1,17 +1,20 @@
 <template>
   <div class="login-container">
+    <div class="bg-bubbles">
+      <div v-for="n in 6" :key="n" class="bubble" :class="`bubble-${n}`"></div>
+    </div>
     <div class="login-box">
       <div class="logo-section">
         <div class="logo-icon">🎮</div>
         <h1>后台管理</h1>
-        <p class="subtitle">三菜鱼小站管理系统</p>
+        <p class="subtitle">三菜鱼小站 · 管理系统</p>
       </div>
       <form @submit.prevent="login">
         <div class="form-group">
           <label>用户名</label>
           <div class="input-wrapper">
             <span class="input-icon">👤</span>
-            <input v-model="username" type="text" placeholder="请输入用户名" required />
+            <input v-model="username" type="text" placeholder="请输入用户名" required autofocus />
           </div>
         </div>
         <div class="form-group">
@@ -67,34 +70,65 @@ async function login() {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 50%, #ffecd2 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   background-attachment: fixed;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  animation: float 8s ease-in-out infinite;
+}
+
+.bubble-1 { width: 80px; height: 80px; top: 10%; left: 8%; animation-delay: 0s; }
+.bubble-2 { width: 40px; height: 40px; top: 20%; right: 12%; animation-delay: 1s; animation-duration: 6s; }
+.bubble-3 { width: 60px; height: 60px; bottom: 18%; left: 15%; animation-delay: 2s; animation-duration: 9s; }
+.bubble-4 { width: 30px; height: 30px; bottom: 25%; right: 20%; animation-delay: 0.5s; }
+.bubble-5 { width: 100px; height: 100px; top: 55%; left: 5%; animation-delay: 3s; animation-duration: 10s; }
+.bubble-6 { width: 50px; height: 50px; top: 40%; right: 6%; animation-delay: 1.5s; animation-duration: 7s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(10deg); }
 }
 
 .login-box {
-  background: white;
-  padding: 40px;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(255, 107, 157, 0.3);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  padding: 44px 40px;
+  border-radius: 28px;
+  box-shadow: 0 25px 80px rgba(196, 79, 255, 0.35), 0 0 0 1px rgba(255,255,255,0.5) inset;
   width: 100%;
   max-width: 400px;
-  border: 1px solid rgba(255, 107, 157, 0.2);
+  position: relative;
+  z-index: 1;
 }
 
 .logo-section {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 .logo-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  font-size: 56px;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 18px;
+  background: linear-gradient(135deg, #ffe0ec 0%, #f3e0ff 100%);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(196, 79, 255, 0.2);
 }
 
 .login-box h1 {
@@ -110,6 +144,7 @@ async function login() {
 .subtitle {
   color: #9ca3af;
   font-size: 0.875rem;
+  letter-spacing: 0.5px;
 }
 
 .form-group {
@@ -126,7 +161,6 @@ async function login() {
 
 .input-wrapper {
   position: relative;
-  padding: 0 8px;
 }
 
 .input-icon {
@@ -135,33 +169,29 @@ async function login() {
   top: 50%;
   transform: translateY(-50%);
   font-size: 16px;
-  color: #9ca3af;
+  color: #c44fff;
 }
 
 .form-group input {
   width: 100%;
-  padding: 10px 10px 10px 36px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 12px 12px 12px 40px;
+  border: 1.5px solid #f0e6f6;
+  border-radius: 12px;
   font-size: 14px;
   transition: all 0.3s ease;
-  background: #f9fafb;
+  background: #faf7fc;
   box-sizing: border-box;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #ff6b9d;
-  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+  border-color: #c44fff;
+  box-shadow: 0 0 0 4px rgba(196, 79, 255, 0.1);
   background: white;
 }
 
 .form-group input::placeholder {
-  color: #9ca3af;
-}
-
-form {
-  padding: 0 8px;
+  color: #c0b8cc;
 }
 
 .login-btn {
@@ -170,20 +200,23 @@ form {
   background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 600;
+  letter-spacing: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-shadow: 0 8px 20px rgba(196, 79, 255, 0.35);
+  margin-top: 8px;
 }
 
 .login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+  box-shadow: 0 12px 28px rgba(196, 79, 255, 0.45);
 }
 
 .login-btn:active:not(:disabled) {
@@ -212,69 +245,31 @@ form {
   color: #ef4444;
   text-align: center;
   margin-top: 16px;
-  font-size: 0.875rem;
-  padding: 12px;
+  font-size: 0.85rem;
+  padding: 10px 14px;
   background: #fef2f2;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #fee2e2;
 }
 
 @media (max-width: 768px) {
   .login-container {
     padding: 20px;
-    min-height: 100vh;
   }
   
   .login-box {
-    padding: 32px 16px;
-    margin: 10px;
-    max-width: none;
-    width: calc(100% - 20px);
-    border-radius: 20px;
+    padding: 32px 20px;
+    border-radius: 22px;
   }
   
   .logo-icon {
-    font-size: 40px;
+    width: 72px;
+    height: 72px;
+    font-size: 44px;
   }
   
   .login-box h1 {
     font-size: 1.5rem;
-    margin-bottom: 6px;
-  }
-  
-  .subtitle {
-    font-size: 0.8125rem;
-  }
-  
-  .form-group {
-    margin-bottom: 16px;
-  }
-  
-  .input-wrapper {
-    padding: 0 4px;
-  }
-  
-  form {
-    padding: 0 4px;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px 10px 10px 36px;
-    font-size: 14px;
-    border-radius: 8px;
-  }
-  
-  .login-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 15px;
-    border-radius: 8px;
-  }
-  
-  .error {
-    padding: 10px;
-    font-size: 0.8125rem;
   }
 }
 </style>

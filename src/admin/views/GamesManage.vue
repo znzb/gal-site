@@ -1,7 +1,10 @@
 <template>
   <div class="games-manage">
     <div class="header">
-      <h1>🎮 游戏管理</h1>
+      <div>
+        <h1>🎮 游戏管理</h1>
+        <p class="page-subtitle">管理站点游戏资源，支持添加、编辑、删除</p>
+      </div>
       <button @click="showAddModal = true" class="add-btn">+ 添加游戏</button>
     </div>
 
@@ -569,42 +572,83 @@ function resetForm() {
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  align-items: flex-end;
+  margin-bottom: 22px;
+}
+
+.header h1 {
+  margin: 0 0 4px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f1f36;
+}
+
+.page-subtitle {
+  margin: 0;
+  color: #8a86a0;
+  font-size: 13px;
 }
 
 .add-btn {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 14px rgba(196, 79, 255, 0.35);
+  transition: all 0.25s;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(196, 79, 255, 0.45);
 }
 
 .filters {
   display: flex;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .search-input {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 11px 14px;
+  border: 1.5px solid #f0ecf4;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.2s;
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #c44fff;
+  box-shadow: 0 0 0 4px rgba(196, 79, 255, 0.08);
 }
 
 .filters select {
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 11px 14px;
+  border: 1.5px solid #f0ecf4;
+  border-radius: 12px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s;
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: #c44fff;
 }
 
 .games-table {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.03);
 }
 
 table {
@@ -612,49 +656,77 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
-  padding: 8px 12px;
+thead {
+  background: #faf7fc;
+}
+
+th {
+  padding: 14px 14px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  font-weight: 600;
+  font-size: 13px;
+  color: #6b6680;
+  border-bottom: 1px solid #f0ecf4;
+}
+
+td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #f5f3f8;
   vertical-align: middle;
-  height: 80px;
+  height: auto;
   display: table-cell;
+  font-size: 14px;
+  color: #1f1f36;
+}
+
+tbody tr {
+  transition: background 0.2s;
+}
+
+tbody tr:hover {
+  background: #faf7fc;
 }
 
 .game-cover-small {
-  width: 50px;
-  height: 70px;
+  width: 46px;
+  height: 64px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .category-tag {
-  background: #667eea;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .subcategory-tag {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .subcategory-tag.raw {
-  background: #e74c3c;
-  color: white;
+  background: #fff0f0;
+  color: #e74c3c;
+  border: 1px solid #ffd4d4;
 }
 
 .subcategory-tag.cooked {
-  background: #27ae60;
-  color: white;
+  background: #f0fff7;
+  color: #27ae60;
+  border: 1px solid #c8f0d8;
 }
 
 .subcategory-tag.none {
-  background: #e0e0e0;
-  color: #666;
+  background: #f5f3f8;
+  color: #8a86a0;
+  border: 1px solid #e0dff0;
 }
 
 .actions {
@@ -665,55 +737,88 @@ th, td {
 }
 
 .edit-btn {
-  padding: 6px 12px;
-  background: #3498db;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #5b7cfa 0%, #8a5bfa 100%);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(91, 124, 250, 0.3);
 }
 
 .delete-btn {
-  padding: 6px 12px;
-  background: #e74c3c;
+  padding: 6px 14px;
+  background: #ff5a6b;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 90, 107, 0.3);
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  gap: 6px;
+  margin-bottom: 22px;
+  border-bottom: 2px solid #f0ecf4;
+  padding-bottom: 0;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: none;
   background: none;
   cursor: pointer;
-  border-radius: 6px 6px 0 0;
+  border-radius: 10px 10px 0 0;
   transition: all 0.2s;
   font-weight: 500;
+  font-size: 14px;
+  color: #8a86a0;
+  position: relative;
 }
 
 .tab-btn:hover {
-  background: #f5f5f5;
+  color: #c44fff;
+  background: #faf7fc;
 }
 
 .tab-btn.active {
-  background: #667eea;
-  color: white;
+  color: #c44fff;
+  font-weight: 600;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, #ff6b9d, #c44fff);
+  border-radius: 2px;
 }
 
 .resource-item, .comment-item {
   margin-bottom: 16px;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 8px;
+  padding: 14px;
+  background: #faf7fc;
+  border-radius: 12px;
+  border: 1px solid #f0ecf4;
 }
 
 .resource-header, .comment-header {
@@ -721,55 +826,74 @@ th, td {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f1f36;
 }
 
 .remove-btn {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: none;
-  background: #e74c3c;
+  background: #ff5a6b;
   color: white;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
+  transition: all 0.2s;
+}
+
+.remove-btn:hover {
+  transform: scale(1.1);
 }
 
 .add-resource-btn, .add-comment-btn {
   width: 100%;
-  padding: 10px;
-  border: 2px dashed #e0e0e0;
+  padding: 12px;
+  border: 2px dashed #e0d5f0;
   background: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
-  color: #667eea;
+  color: #c44fff;
   margin-top: 12px;
-  transition: all 0.2s;
+  transition: all 0.25s;
+  font-weight: 500;
 }
 
 .add-resource-btn:hover, .add-comment-btn:hover {
-  border-color: #667eea;
+  border-color: #c44fff;
+  background: rgba(196, 79, 255, 0.05);
 }
 
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(30, 20, 50, 0.55);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
 }
 
 .modal {
   background: white;
-  padding: 30px;
-  border-radius: 12px;
+  padding: 28px;
+  border-radius: 20px;
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(30, 20, 50, 0.25);
+}
+
+.modal h2 {
+  margin: 0 0 22px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f1f36;
 }
 
 .form-group {
@@ -780,19 +904,32 @@ th, td {
   display: block;
   margin-bottom: 6px;
   font-weight: 500;
+  font-size: 13px;
+  color: #6b6680;
 }
 
 .form-group input, .form-group select, .form-group textarea {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  padding: 10px 14px;
+  border: 1.5px solid #f0ecf4;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #faf7fc;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: #c44fff;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(196, 79, 255, 0.08);
 }
 
 .platform-checkboxes {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .platform-checkbox {
@@ -800,43 +937,80 @@ th, td {
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .platform-checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
+  accent-color: #c44fff;
 }
 
 .modal-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #f0ecf4;
 }
 
 .modal-actions button {
-  padding: 10px 20px;
+  padding: 10px 22px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.modal-actions button:first-child {
+  background: #f5f3f8;
+  color: #6b6680;
+}
+
+.modal-actions button:first-child:hover {
+  background: #e8e5f0;
 }
 
 .modal-actions button[type="submit"] {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44fff 100%);
   color: white;
+  box-shadow: 0 4px 14px rgba(196, 79, 255, 0.35);
+}
+
+.modal-actions button[type="submit"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(196, 79, 255, 0.45);
 }
 
 @media (max-width: 768px) {
-  .search-bar {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  
+  .header h1 {
+    font-size: 20px;
+  }
+  
+  .page-subtitle {
+    font-size: 12px;
+  }
+  
+  .add-btn {
+    width: 100%;
+  }
+  
+  .filters {
     flex-direction: column;
     gap: 10px;
   }
   
-  .search-bar input,
-  .search-bar select,
-  .add-btn {
+  .filters select {
     width: 100%;
   }
   
@@ -852,49 +1026,45 @@ th, td {
   
   .games-table th,
   .games-table td {
-    padding: 10px 8px;
+    padding: 10px 10px;
     font-size: 12px;
   }
   
   .subcategory-tag {
     padding: 2px 8px;
-    font-size: 10px;
+    font-size: 11px;
   }
   
   .actions {
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
   }
   
   .edit-btn,
   .delete-btn {
-    padding: 4px 8px;
+    width: 100%;
+    padding: 6px 10px;
     font-size: 12px;
   }
   
   .modal {
     padding: 20px;
-    margin: 10px;
-    max-width: none;
-    width: calc(100% - 20px);
-    max-height: 95vh;
+    border-radius: 16px;
   }
   
   .form-group input,
   .form-group select,
   .form-group textarea {
     padding: 12px;
-    font-size: 16px;
   }
   
   .modal-actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
   
   .modal-actions button {
     width: 100%;
-    padding: 14px;
-    font-size: 16px;
+    padding: 12px;
   }
 }
 </style>
