@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Megaphone, MessageCircle, Music, Download } from 'lucide-vue-next'
+import { Megaphone, MessageCircle, Music, Download, Gamepad2, Monitor, Images, BookOpen } from 'lucide-vue-next'
 import { featureApi, type Feature } from '@/api/api'
 import { dataCache } from '../utils/cache'
 
@@ -20,17 +20,25 @@ const groupInfo = ref({
 })
 
 const fixedFeatures: Feature[] = [
-  { id: '1', name: '网站公告', icon: 'megaphone' },
-  { id: '2', name: '柚子社', icon: 'music' },
-  { id: '3', name: '工具下载', icon: 'download' },
-  { id: '4', name: '加入Q群', icon: 'message-circle' }
+  { id: '1', name: 'Gal游戏', icon: 'gamepad2' },
+  { id: '2', name: 'PC资源', icon: 'monitor' },
+  { id: '3', name: '柚子社', icon: 'music' },
+  { id: '4', name: '图集资源', icon: 'images' },
+  { id: '5', name: '新人必读', icon: 'book-open' },
+  { id: '6', name: '网站公告', icon: 'megaphone' },
+  { id: '7', name: '工具下载', icon: 'download' },
+  { id: '8', name: '加入Q群', icon: 'message-circle' }
 ]
 
 const iconMap: Record<string, typeof Megaphone> = {
   megaphone: Megaphone,
   'message-circle': MessageCircle,
   music: Music,
-  download: Download
+  download: Download,
+  gamepad2: Gamepad2,
+  monitor: Monitor,
+  images: Images,
+  'book-open': BookOpen
 }
 
 const loadFeatures = async () => {
@@ -76,16 +84,28 @@ const loadGroupInfo = async () => {
 const handleFeatureClick = (featureId: string) => {
   switch (featureId) {
     case '1':
+      router.push('/category/Gal游戏')
+      break
+    case '2':
+      router.push('/pc-resources')
+      break
+    case '3':
+      router.push('/category/柚子社')
+      break
+    case '4':
+      router.push('/category/图集资源')
+      break
+    case '5':
+      router.push('/help')
+      break
+    case '6':
       loadAnnouncements()
       showAnnouncementModal.value = true
       break
-    case '2':
-      router.push('/yuzusoft')
-      break
-    case '3':
+    case '7':
       router.push('/tools')
       break
-    case '4':
+    case '8':
       loadGroupInfo()
       showJoinGroupModal.value = true
       break
