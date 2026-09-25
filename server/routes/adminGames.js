@@ -85,15 +85,27 @@ router.get('/', async (req, res) => {
   }
 });
 
+// 清理资源对象：移除前端 UI 专用字段（如 _touched）
+function cleanResources(resources) {
+  if (!Array.isArray(resources)) return [];
+  return resources.map(r => {
+    const { _touched, ...rest } = r;
+    return rest;
+  });
+}
+
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const maxGame = await Game.findOne().sort({ id: -1 });
     const newId = maxGame ? String(parseInt(maxGame.id) + 1) : '1';
     
-    const game = new Game({
+    const gameData = {
       ...req.body,
-      id: newId
-    });
+      id: newId,
+      resources: cleanResources(req.body.resources)
+    };
+    
+    const game = new Game(gameData);
     await game.save();
     res.status(201).json(game);
   } catch (error) {
@@ -103,14 +115,20 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const game = await Game.findOneAndUpdate(
-      { id: req.params.id },
-      req.body,
-      { new: true }
-    );
+    const game = await Game.findOne({ id: req.params.id });
     if (!game) {
       return res.status(404).json({ error: '游戏不存在' });
     }
+    
+    // 使用 set + save 确保子文档（resources/comments）字段正确保存
+    const updateData = { ...req.body };
+    if (updateData.resources) {
+      updateData.resources = cleanResources(updateData.resources);
+    }
+    
+    game.set(updateData);
+    await game.save();
+    
     res.json(game);
   } catch (error) {
     res.status(500).json({ error: error.message });
