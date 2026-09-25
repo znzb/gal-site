@@ -48,7 +48,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           continue;
         }
 
-        // 解析多个资源：用 | 分隔同一字段的多个值，按位置对应
+        // 解析多个资源：用 | 分隔同一字段的多个值，按位置对应，最多4个
         const parseResources = (row) => {
           const resources = [];
           
@@ -60,8 +60,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             return resources;
           }
           
-          // 以数量最多的为准
-          const maxCount = Math.max(names.length, urls.length);
+          // 以数量最多的为准，最多4个资源
+          const maxCount = Math.min(Math.max(names.length, urls.length), 4);
           
           const types = String(row['资源类型'] || '游戏本体').split('|').map(s => s.trim());
           const sizes = String(row['资源大小'] || row['大小'] || '').split('|').map(s => s.trim());
@@ -241,16 +241,16 @@ router.get('/template', (req, res) => {
       '发布日期': '2024-01-01',
       '下载量': 0,
       '标签': 'RPG,汉化,恋爱',
-      '资源名称': '百度网盘|阿里云盘',
-      '资源类型': '游戏本体|汉化补丁',
-      '支持语言': '简体中文|简体中文',
-      '资源链接': 'https://pan.baidu.com/xxx|https://www.aliyundrive.com/xxx',
-      '资源大小': '2GB|100MB',
-      '发布日期（显示格式）': '3天前|2天前',
-      '发布者用户名': '愚者|愚者',
+      '资源名称': '百度网盘|阿里云盘|夸克网盘|迅雷云盘',
+      '资源类型': '游戏本体|汉化补丁|游戏本体|更新包',
+      '支持语言': '简体中文|简体中文|简体中文|简体中文',
+      '资源链接': 'https://pan.baidu.com/xxx|https://www.aliyundrive.com/xxx|https://pan.quark.cn/xxx|https://pan.xunlei.com/xxx',
+      '资源大小': '2GB|100MB|2GB|50MB',
+      '发布日期（显示格式）': '3天前|2天前|1天前|刚刚',
+      '发布者用户名': '愚者',
       '发布者头像': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
       '已发布资源数量': 198,
-      '资源平台': 'PC|安卓'
+      '资源平台': 'PC|安卓|PC|PC'
     },
     {
       'ID': 'game-002',

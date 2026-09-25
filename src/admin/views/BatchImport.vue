@@ -179,9 +179,10 @@ const clearResults = () => {
           <strong>🖼️ 多张游戏截图：</strong>在「游戏截图」列填写多个图片URL，用 <code class="bg-blue-100 px-1 rounded">|</code> 或逗号分隔，例如：<code class="bg-blue-100 px-1 rounded">url1|url2|url3</code>
         </p>
         <p class="text-sm text-blue-800">
-          <strong>🔗 多个资源链接：</strong>在资源相关列（资源名称、资源链接、资源类型等）填写多个值，用 <code class="bg-blue-100 px-1 rounded">|</code> 分隔，按位置一一对应，例如：<br>
-          资源名称：<code class="bg-blue-100 px-1 rounded">百度网盘|阿里云盘</code><br>
-          资源链接：<code class="bg-blue-100 px-1 rounded">https://pan.baidu.com/xxx|https://www.aliyundrive.com/xxx</code>
+          <strong>🔗 多个资源链接（最多4个）：</strong>在资源相关列（资源名称、资源链接、资源类型等）填写多个值，用 <code class="bg-blue-100 px-1 rounded">|</code> 分隔，按位置一一对应，例如：<br>
+          资源名称：<code class="bg-blue-100 px-1 rounded">百度网盘|阿里云盘|夸克网盘|迅雷云盘</code><br>
+          资源链接：<code class="bg-blue-100 px-1 rounded">url1|url2|url3|url4</code><br>
+          <span class="text-xs text-blue-600">注：某列只填一个值时会自动复用到所有资源，超过4个的部分会被忽略</span>
         </p>
       </div>
     </div>
