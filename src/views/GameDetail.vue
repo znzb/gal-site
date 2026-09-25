@@ -42,6 +42,13 @@ const expandedComments = ref<string[]>([])
 const windowWidth = ref(window.innerWidth)
 const isDesktop = computed(() => windowWidth.value >= 640)
 
+// 游戏大小：优先显示游戏自身大小，若为 0MB/空 则兜底取第一个资源的大小
+const displaySize = computed(() => {
+  const s = game.value?.size
+  if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s
+  return resources.value[0]?.size || s || '0MB'
+})
+
 const handleResize = () => {
   windowWidth.value = window.innerWidth
 }
@@ -340,7 +347,7 @@ onUnmounted(() => {
             <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl py-3 px-2 text-center border border-pink-100">
               <HardDrive class="w-6 h-6 mx-auto text-pink-600 mb-1" />
               <span class="text-xs text-pink-600">大小</span>
-              <p class="text-sm font-bold text-pink-900">{{ game.size }}</p>
+              <p class="text-sm font-bold text-pink-900">{{ displaySize }}</p>
             </div>
             <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl py-3 px-2 text-center border border-pink-100">
               <Calendar class="w-6 h-6 mx-auto text-pink-600 mb-1" />
@@ -780,7 +787,7 @@ onUnmounted(() => {
               </div>
               <div class="flex items-center justify-between py-3 border-b border-pink-100">
                 <span class="text-pink-500">资源大小</span>
-                <span class="text-gray-800 font-medium">{{ game.size }}</span>
+                <span class="text-gray-800 font-medium">{{ displaySize }}</span>
               </div>
               <div class="flex items-center justify-between py-3 border-b border-pink-100">
                 <span class="text-pink-500">发布日期</span>

@@ -156,6 +156,18 @@ const initAdmin = async () => {
         console.log('   ⚠️ 请立即修改为强密码！');
       }
     }
+
+    // 确保 lianlian 账号存在
+    const lianlian = await Admin.findOne({ username: 'lianlian' });
+    if (!lianlian) {
+      const hashed = await bcrypt.hash('lianliandawang1', 12);
+      await Admin.create({
+        username: 'lianlian',
+        password: hashed,
+        role: 'admin'
+      });
+      console.log('✅ 已创建管理员账号: lianlian');
+    }
   } catch (error) {
     console.error('❌ 初始化管理员失败:', error.message);
   }

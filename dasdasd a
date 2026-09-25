@@ -1,0 +1,279 @@
+[33mdf22e6c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix: 修复 v-else 语法错误，所有组件都被 keep-alive 包裹
+[33m4820dfb[m fix: 使用 keep-alive 缓存列表页面，解决返回时滚动位置丢失问题
+[33m8eaf646[m fix: 从 GameDetail 返回时使用 requestAnimationFrame 多次重试，确保页面高度足够后再滚动
+[33maa2a5d3[m fix: 从 GameDetail 返回任何页面都保留滚动位置，仅返回首页且非从 GameDetail 回来时才回到顶部
+[33m85a5120[m fix: 只有从 GameDetail 返回 Home 时保留滚动位置，其他情况回到顶部
+[33m1494a16[m fix: isLoading 初始值用 hasLoadedOnce，避免返回时内容被 v-if 隐藏
+[33m28d83b4[m fix: 使用模块级变量保存滚动位置，解决组件重建后丢失问题
+[33m37f60de[m fix: 手动保存恢复首页滚动位置
+[33m8ba6940[m fix: 移除额外代码让首页滚动位置恢复正常
+[33m7b812a1[m fix: 使用 keep-alive 缓存首页并保存滚动位置
+[33m8d1d5dc[m fix: 修复从游戏详情页返回时滚动位置丢失问题
+[33m35e2599[m feat: 添加页面切换时自动刷新缓存机制
+[33m7a7f5ae[m performance: add data caching to improve loading speed
+[33m7cd6cfc[m fix: desktop home page join group modal fetch from API
+[33m75bd180[m remove (点击加入) text from help center
+[33m363536d[m fix: help center qq group number from API and remove email
+[33m5972a17[m fix: mobile group modal layout - prevent overlap with bottom nav
+[33m8dc2f94[m fix: show both description and join methods in group modal
+[33m15d61c2[m add cache control headers to group info API
+[33mf2034d3[m add group info route to admin router
+[33m1bb8c6c[m add auth middleware to group info route
+[33mc38af60[m rebuild frontend for group info page
+[33md4b2961[m Add QQ group info management feature: backend model/routes, admin UI, and update frontend to use API data
+[33m98dfe5a[m support Chinese resource type names in batch import
+[33m2e24ecd[m add all resource fields to excel template
+[33m4c75cb3[m support empty category and primaryCategory in batch import
+[33m06c43de[m restore category list in CategoriesManage
+[33m9c22c5a[m hide PC资源 Gal游戏 新人必读 from admin edit screens
+[33m125a2d1[m fix: 优化分类筛选逻辑，支持中英文平台名称，多平台游戏多分类显示
+[33ma2ac8fa[m feat: 优化Excel模板格式和列宽
+[33m2c67b7c[m feat: 批量导入功能改为Excel xlsx格式
+[33m770d21d[m 添加批量导入游戏功能
+[33m52baaf4[m 添加性能优化：关闭TCP长连接、增加MongoDB超时、前端自动重试
+[33m749f4f0[m 修复Category.vue：添加categoryApi导入，修复模板中ref.value的使用
+[33m30b5561[m 简化App.vue，移除keep-alive和transition
+[33mcf0ebf2[m 简化Vercel路由配置
+[33md002dd7[m 使用Hash模式路由修复页面空白问题
+[33ma9baafd[m 修复页面空白问题：禁用keep-alive缓存，添加onActivated生命周期
+[33m0726a52[m 修复Vercel路由配置，支持所有子路由
+[33m026317f[m 修复所有页面空白问题：移除有问题的路由守卫和keep-alive
+[33mc041740[m 修复游戏详情页空白问题
+[33m2ddd7da[m 优化自动刷新频率，统一调整为60秒
+[33m5d7f029[m 电脑端加入Q群改为弹窗形式
+[33m92b98bd[m 修复公告页面API调用方法名错误
+[33mde5b50e[m 快速导航将工具下载改为加入Q群
+[33m78a68b7[m 修复教程内容换行显示问题
+[33mb11802c[m 添加分类主图和描述管理功能
+[33mfd4c547[m 统一柚子社链接指向分类页面确保界面一致
+[33mce058a1[m 修复侧边菜单柚子社链接与快速导航一致
+[33m455f3d6[m 修复从游戏详情页返回分类页面空白问题
+[33m8121c4e[m 修复侧边菜单点击首页不跳转问题
+[33ma6fa086[m 将电脑端游戏详情页地址路径替换为标签功能
+[33m8aeeff8[m 添加路由守卫强制刷新首页
+[33mdc7d1ff[m 添加keep-alive和onActivated确保返回首页时重新加载
+[33m8aa9693[m 修复从游戏详情页返回首页空白问题v2
+[33m7fa893f[m 修复从游戏详情页返回首页空白问题
+[33m2878256[m 修复电脑端游戏详情页空白问题
+[33mad4007c[m 添加柚子社分类到后台管理，更新分类列表
+[33m4f28f03[m 修复手机端快捷按钮顺序和点击事件
+[33m5be6c87[m 移除安卓直装和kr资源专区的相关引用
+[33m508f93b[m 修复后台管理界面分类游戏显示问题
+[33m2ba5f65[m 修复Vercel部署失败：移除TypeScript类型注解
+[33m2586040[m 修复后台分类管理页面使用与前端相同的API获取分类游戏列表，确保数据完全一致
+[33m4dd1eae[m 修复后台分类管理页面PC资源过滤逻辑，当platforms存在但不包含PC时正确排除
+[33mee0d881[m 修复后台管理API分类查询逻辑，与前台保持一致
+[33m1fdfbcd[m 修复后端API分类查询逻辑，支持platforms字段为数组的情况
+[33m11d70c7[m 修复后台分类管理页面游戏过滤逻辑，处理platforms字段可能不是数组的情况
+[33m98c59d3[m 修复后台分类管理页面游戏过滤逻辑，与后端API保持一致
+[33m0ddd140[m 修复Header导航栏中Gal游戏链接跳转到PC资源的问题
+[33m4cbfa66[m 修复快速导航中Gal游戏链接跳转到安卓直装的问题
+[33me556207[m 修复游戏详情页空白问题：确保游戏ID查询时转换为字符串
+[33m7467e8f[m 修复分类管理页面编辑游戏时引用未定义变量的问题
+[33mcdaedb6[m 将分类管理页面的编辑游戏界面改为与游戏管理页面一致
+[33m279dff5[m 调整工具下载页面布局：移除工具说明标题，将教程移到使用说明上方
+[33m8d83b0f[m 实现教程卡片详情页功能：添加章节内容编辑和详情页展示
+[33mbd6e2c8[m 修复教程卡片保存后不显示的问题：添加tutorials字段支持
+[33m71931f2[m 添加教程卡片功能
+[33mfaa6638[m 修复工具说明页面标签闭合问题
+[33m58d1526[m 添加工具说明大标题
+[33m6991bb3[m 缩小工具下载页面卡片高度
+[33mf278098[m 修复前台工具页面不显示URL图片的问题
+[33m762848b[m 工具管理图标字段改为支持URL图片链接
+[33m5db7315[m 前端强制使用正确的mock数据覆盖后端返回的旧数据
+[33m64ce76f[m 添加init路由以便更新数据库数据
+[33m81dd925[m 修复FeatureGrid组件导入错误，FileText改为Download
+[33mf77e7d9[m 修复轮播图下方按钮消失问题，同步更新后端数据
+[33mb1a0f9b[m 将轮播图下方按钮'补档记录'改为'工具下载'
+[33mbd565cb[m 优化公告区域布局，改为横向占满显示
+[33m70eb25e[m 快速导航6个图标改为一排显示
+[33m5e22f71[m 修复分类匹配大小写问题：后台pc资源改为不区分大小写匹配
+[33m1c0e3e0[m 修复后端分类管理页面过滤逻辑：根据platforms字段正确显示游戏
+[33mea2794a[m 修复后端游戏分类逻辑：根据platforms字段正确显示在对应分类页面
+[33mffb7ffe[m 修复分类管理游戏保存逻辑，使用表单选择的分类并保存游戏详细信息
+[33me2eca25[m 分类管理编辑界面分类下拉框允许选择空选项
+[33m72a54b2[m 游戏管理编辑界面分类下拉框允许选择空选项
+[33m3a336b7[m 修复分类管理游戏编辑界面：添加柚子社选项、分类下拉框、统一资源链接字段
+[33m7386996[m 优化分类管理游戏编辑界面，与游戏管理编辑界面保持一致
+[33md676c03[m Update CategoriesManage game edit modal to match GameEdit
+[33meed4232[m Add box-sizing to prevent input overflow
+[33m35f545d[m Reduce login form padding to prevent overflow
+[33m4e6d114[m Fix login form input overflow issue
+[33m5d7aba2[m Fix carousel image position and login form padding
+[33m3dc5f0f[m Fix carousel image position and login input size
+[33mbbbc24b[m Optimize carousel image position and admin login page
+[33m32fdaa5[m Fix sidebar menu button to use appState.toggleSideMenu
+[33m486bdc2[m Fix sidebar menu button to emit openMenu event
+[33m5221216[m Make mobile PC resource page consistent with Gal game page
+[33m09a0057[m Remove database initialization data
+[33m1c74e45[m Fix download button alignment
+[33md532bc0[m Fix Gal game link to correct category
+[33m622fdae[m Use inline style for banner image positioning
+[33mb40bc3d[m Set '千恋*万花' banner image to show from top
+[33m25e9481[m Update quick navigation: add announcements at front, remove game CG
+[33meb83b8b[m Change banner height from 400px to 350px
+[33m1f75e09[m Change banner height from 500px to 400px
+[33m941c4c8[m Adjust banner image position to show character head
+[33m490a609[m Fix banner image position - show character head
+[33m79d0739[m Update PCResourcePage - align desktop layout with Gal game page
+[33m57012f0[m Fix new Image() constructor error - use fetch HEAD request instead
+[33m9c59e5f[m 修复数据库初始化重复键错误 - 使用upsert替代insertMany
+[33m7ac9a53[m Fix Image constructor error in Home.vue - add null checks and try/catch
+[33m5f743a5[m Fix AbortSignal.timeout compatibility issue - add fallback for older browsers
+[33m975ea88[m Fix SearchLogsManage error handling - add loading state and data validation
+[33mdd771b6[m Update Category and GameDetail pages with responsive design - mobile keeps original style, desktop uses new design
+[33mf1545e6[m Update Category and GameDetail pages with new design
+[33m6525be5[m Complete theme optimization for all remaining pages
+[33mad72e2b[m Optimize remaining pages with white and pink theme
+[33m5f4f972[m Fix duplicate keys in FeatureGrid
+[33mff4852c[m Optimize UI with white and pink theme
+[33m967ba43[m Restore carousel banner for mobile and desktop
+[33md823f82[m Beautify mobile UI to match desktop style
+[33mda6577d[m Show bottom nav only on mobile
+[33m2880d2d[m Remove bottom navigation
+[33mfb4915e[m Change to white background theme
+[33m5735ebf[m update style
+[33m9504b3b[m 优化电脑端布局
+[33m83c880d[m 优化电脑端布局
+[33m5917330[m rename site to 三菜鱼小站
+[33mbbefa03[m feat: 使用初始化标志确保数据只初始化一次
+[33mdc47fd9[m fix: 修复分类在服务器重启后重新出现的问题
+[33m6fd9c4d[m feat: 为前端页面添加实时自动刷新功能
+[33mf688314[m fix: enable editing tool guide usage instructions from admin panel
+[33m9ba84b2[m 添加工具管理示例数据和初始化功能
+[33m3ea584e[m 修复MongoDB
+[33mc439e0f[m 修复查询逻辑，兼容没有platforms字段的旧数据
+[33m48389e3[m 修复MongoDB查询语法错误
+[33m23817fd[m 优化认证处理：token过期自动跳转登录页
+[33m8fed61d[m 修改后端查询逻辑，直接根据platforms字段判断分类
+[33m3ecf11e[m 修复PC资源页面分类名称大小写问题
+[33m5b2a092[m 修复柚子社页面API调用错误
+[33m37af4b4[m 修复分类名称大小写问题
+[33mde3051f[m 修改柚子社管理方式，添加专门的柚子社分区选项
+[33mf8bb931[m 添加工具下载管理功能和柚子社专区管理
+[33mdb25be5[m 修改新人必读功能：1.添加FAQ数据模型和后端接口 2.后台分类管理中新人必读改为FAQ管理界面 3.前端帮助中心页面改为从后端获取FAQ
+[33mff3e3f0[m 调整生肉熟肉筛选显示逻辑：图集资源、游戏CG、新人必读不显示筛选按钮
+[33md45516e[m 修复生肉熟肉问题：1.后端模型添加subCategory字段 2.Gal游戏分类页也显示生肉熟肉筛选
+[33m0e6cb52[m 重构分类逻辑：1.过滤掉PC资源和Gal游戏分类选项 2.完全根据平台标签自动设置分类 3.用户仍可选择其他分类
+[33m32a519f[m 修复保存逻辑和样式：1.保留用户选择的分类，只在未选择时自动设置 2.添加平台多选框对齐样式 3.确保platforms正确保存
+[33ma4bc14f[m 修复分类查询逻辑：支持同时查询category和categories数组
+[33m1431e6c[m 修复平台多选和分类问题：1.后端模型添加platforms和categories字段；2.前端移除分类required属性，添加请选择选项；3.更新Game接口
+[33m7694f19[m 修复编辑游戏时platforms未初始化导致的错误
+[33m22e43a2[m 实现平台多选功能：1.后台添加平台多选框(安卓/PC/KR)；2.根据平台选择自动分配分类(PC+其他→PC资源+Gal游戏，仅PC→PC资源，无PC→Gal游戏)；3.前端显示所有选中的平台标签
+[33m071ded1[m 修复线上后台平台选择：1.修改GamesManage.vue支持平台选项为安卓/PC/KR；2.前端游戏详情页从资源获取平台标签
+[33m65f5af3[m 优化后台游戏编辑：1.添加平台选择功能(Android/PC/KR)；2.修复游戏详情页标签显示逻辑；3.完善保存逻辑确保平台信息正确保存
+[33mc9759a7[m 修复游戏详情页标签显示逻辑：只有设置了分类和类型才显示PC/安卓、生肉/熟肉标签
+[33m1081599[m 取消主页和新人必读的特殊效果，所有菜单项样式保持一致
+[33me3a167d[m 修复前端分类排序同步问题：1.移除mock数据fallback，前端完全使用后端数据；2.添加定时刷新机制（每5秒）；3.修复类型不匹配问题
+[33me2e27aa[m 修复ESM模块与CommonJS冲突：移除require改用import
+[33m6e94f01[m 修复编辑分类时缺少order字段
+[33m1f43e2c[m 修复分类更新：排除id字段，禁用验证
+[33maa1d884[m 简化后端分类更新路由，使用try-catch处理ObjectId
+[33mf4ab7d9[m 简化分类排序功能，只保留拖动排序
+[33ma7cb212[m 修复分类排序功能：添加order字段，修复_id转换
+[33mcc3bbe3[m 修复后端分类路由，正确处理ObjectId
+[33md2aa7c0[m 修复分类编辑保存功能，支持_id
+[33mb98501f[m 修复后端分类更新/删除路由，支持_id和id两种格式
+[33m600bc84[m 修复分类排序功能，支持id和_id两种格式
+[33m0fbf7e8[m 添加分类管理拖拽排序功能
+[33mab71f4b[m 移除后台管理API的mock数据后备逻辑
+[33m3a4ff9e[m 修复PC游戏导入API的分类名大小写问题
+[33md867040[m 修复merge-to-gal端点缺少Game模型导入
+[33m74ccc08[m 移除MongoDB驱动已弃用的配置选项
+[33m340ed01[m 移除前端所有mock数据后备逻辑，完全使用后端API数据
+[33m575dc2f[m 修复PC资源页面查询分类名大小写问题
+[33mcd0fecd[m 删除Header中硬编码的PC资源按钮
+[33mc1e337b[m 删除硬编码PC资源按钮，保留后端获取的分类
+[33m6056b46[m 修改侧边菜单动态获取后端分类数据
+[33m249b2e4[m 添加分类合并API
+[33m76b1019[m 添加PC游戏批量导入API
+[33mcb8cf41[m 添加PC资源分类到数据库初始化脚本
+[33m48a084f[m 修复后台管理CRUD操作：统一使用自定义id字段，修复资源链接和评论保存
+[33mf4d7fa3[m 修复前端固定数据问题：1. PCResourcePage添加API调用 2. Home.vue调整加载逻辑优先API
+[33me9a8a88[m 修复游戏详情页资源链接显示问题：优先使用API数据，模板使用实际数据
+[33m0b19a0b[m 修复前端更新游戏请求：使用id字段而非_id
+[33mb4ac84a[m 修复后端管理更新游戏失败的问题：使用id字段而非_id
+[33me22e808[m 修复中文乱码问题：前端请求添加charset=utf-8
+[33m4fbd0a1[m 修复MongoDB连接错误：移除不支持的charset参数
+[33mf028572[m 修复线上后端中文乱码问题：添加UTF-8编码配置
+[33ma8a6bdd[m 添加资源链接和评论功能到后端数据库模型
+[33m0513116[m 更新游戏详情页样式和后台管理功能
+[33m925ee74[m 优化游戏详情页主图尺寸
+[33mdff55ab[m 调整布局顺序：游戏名字在上，标签在下
+[33m723cf9e[m 调整下载按钮位置到爱心旁边，添加游戏类型和生熟肉标签
+[33me171529[m 修复卡片遮住图片问题，添加图片上的下载按钮
+[33mcb7a165[m 优化游戏详情页面，添加标签页切换和美化界面
+[33m6159da9[m 优化移动端使用体验 - 添加响应式布局
+[33mb435e05[m fix: 修复标题不更新问题 - 将categoryType改为computed属性
+[33m0b68452[m fix: 修复侧边栏跳转问题 - 添加路由变化监听
+[33ma763dac[m feat: 安卓直装和KR资源页面添加生肉/熟肉分类功能，后台管理界面支持分类管理
+[33m3fd904d[m feat: PC资源页面添加生肉/熟肉分类功能
+[33m4b9740e[m feat: 修改导航链接并创建三个新页面 - 工具下载、PC资源、帮助中心
+[33m28ef1e7[m fix: 修复游戏详情页面相关推荐跳转问题 - 添加:key强制组件重新渲染
+[33m7a12e44[m Add route change watcher - reload data when gameId changes
+[33mfa79673[m Back to simple div for related games - remove button complexity
+[33mb400220[m Fix button default behavior - add preventDefault and stopPropagation
+[33m136463a[m Fix related games click - change div to button for better click handling
+[33mfd0623a[m Fix related games click not working - add goToGame function and handle both id and _id
+[33m1bbf12f[m Optimize GameDetail page loading speed - add caching, parallel API requests, and image preloading
+[33m2a64c17[m Security improvements - add CORS restrictions, rate limiting, security headers, input validation, and JWT secret enforcement
+[33md31563c[m Fix scroll behavior - page scrolls to top on navigation
+[33m66f5fb8[m Swap menu and back button positions - menu on left, back on right
+[33m1cddb92[m Add side menu button and beautify all page headers
+[33md4f886a[m Improve search functionality - header search with auto-search on redirect
+[33mc5d7daa[m Fix home page header search - redirect to search page on click
+[33m7afb08e[m Add search functionality - create SearchPage and update bottom nav
+[33m5ca719c[m Add banner images preload - all images load automatically without switching
+[33m85f53aa[m Optimize home page loading speed - use mock data first, API data in background
+[33m5bce61b[m Rewrite patch records page using Yuzusoft page structure
+[33m906451e[m Fix patch records page layout - match Yuzusoft page structure exactly
+[33m1e97ffd[m Fix patch records page header z-index issue - header was being covered by bottom nav
+[33m0161b40[m Fix patch records page display issue - ensure header is visible and content layout is correct
+[33ma672a0d[m Remove patch records section from home page, fix bottom nav patch records navigation
+[33m9dc69a0[m Update: Change announcements and join group to modal, fix yuzusoft and patch records pages style
+[33m7a1d17b[m Add dedicated pages for announcements, join group, yuzusoft, and patch records
+[33m31d151d[m Fix feature icons click events - add router navigation and section IDs
+[33me5092ff[m Fix FeatureGrid icons click events
+[33mb6c1c39[m Enhance category management - add game management within category
+[33mb417efc[m Fix admin games API - auto generate id
+[33mc9800b4[m Fix sidebar duplication - create proper root App component
+[33me361e3c[m Fix sidebar duplication issue - remove redirect
+[33m6a0a145[m Add password reset API for admin
+[33m07d2210[m Remove default credentials hint from login page
+[33m54cc64b[m Fix Vercel routing - add banners route
+[33m25611d5[m Fix Vercel routing - add static assets route before catch-all
+[33m109f370[m Fix Vite config for Vercel deployment - add base path and resolve absolute paths
+[33mc05f5ae[m Fix build command permission issue
+[33m8c69000[m Fix Vercel deployment issues - update vercel.json and admin router
+[33m69aab32[m 添加完整的后台管理系统： - 新增7个管理模块（控制台、游戏、分类、轮播图、公告、补档、搜索统计） - 新增管理员认证系统 - 新增前端公告显示 - 更新Vite配置支持多页面 - 添加后台管理API接口
+[33m86707b4[m 配置后端API、添加MongoDB连接、添加自动初始化数据功能
+[33m49f293a[m fix
+[33mcc17bf6[m 完成前后端分离架构实现
+[33maa3d10a[m 移除安卓直装和图集资源右边的下拉按钮
+[33mbd08303[m 将PC游戏改为安卓直装，并添加kr资源选项
+[33m86b3914[m 修复历史公告下划线常驻问题，改为仅悬停时显示
+[33mf9a60d5[m 移除负边距，确保白色卡片不再遮挡图片
+[33m5d05d0d[m 修复游戏详情页白色卡片遮挡上方内容问题，减少负边距
+[33me00a8cc[m 修复下载按钮样式不一致问题，添加whitespace-nowrap防止换行
+[33m7657526[m 将秒传脚本改为加入Q群，图标改为消息图标并使用QQ蓝色风格
+[33m0676702[m 去掉底部导航栏加号图标下方的小加号文字
+[33maa85070[m 全面UI美化：优化整体视觉设计、增强交互体验
+[33maceb236[m 移除轮播图整体的渐变遮罩层
+[33m63992a3[m 移除轮播图标题阴影效果
+[33m9b817f9[m 移除轮播图标题区域的渐变背景
+[33mbc5d90e[m 添加轮播图游戏标题：夏空彼方、千恋*万花、魔女的夜宴、天使☆嚣嚣
+[33m2fd2f49[m 将轮播图迁移到本地：下载4张图片并更新代码引用
+[33md580c46[m 修复轮播图加载状态检查逻辑
+[33md913306[m 更新轮播图：替换为新的B站图片URL
+[33m6921404[m 修复轮播图片加载失败问题：修正百度图片URL、改进加载状态追踪、添加错误处理
+[33m7ac221f[m 更新轮播图图片和样式
+[33mac35c13[m 优化轮播图：图片顶部对齐，圆点移到图片下方
+[33m7aedc3a[m 优化图片显示效果：添加加载动画、淡入效果
+[33m193ad36[m 更新轮播图配置
+[33mc36f646[m fix: 彻底解决Vercel权限问题
+[33mc91744b[m fix: 关闭类型检查，解决vue-tsc版本冲突
+[33m00b3825[m 修复Vercel权限报错
+[33m6a7a95b[m 上传完整源代码和Vercel配置
+[33m0352325[m 修复Vercel构建错误：移除vue-tsc
+[33m937bd26[m 更新轮播图：添加自动播放和标题
+[33m959ac18[m first commit

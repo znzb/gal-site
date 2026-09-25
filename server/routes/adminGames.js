@@ -99,10 +99,14 @@ router.post('/', authMiddleware, async (req, res) => {
     const maxGame = await Game.findOne().sort({ id: -1 });
     const newId = maxGame ? String(parseInt(maxGame.id) + 1) : '1';
     
+    const cleanedResources = cleanResources(req.body.resources);
+    
     const gameData = {
       ...req.body,
       id: newId,
-      resources: cleanResources(req.body.resources)
+      resources: cleanedResources,
+      // 游戏大小自动同步为第一个资源的大小
+      size: cleanedResources[0]?.size || req.body.size || '0MB'
     };
     
     const game = new Game(gameData);
@@ -124,6 +128,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const updateData = { ...req.body };
     if (updateData.resources) {
       updateData.resources = cleanResources(updateData.resources);
+      // 游戏大小自动同步为第一个资源的大小
+      updateData.size = updateData.resources[0]?.size || updateData.size || '0MB';
     }
     
     game.set(updateData);
