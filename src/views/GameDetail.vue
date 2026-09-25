@@ -689,16 +689,17 @@ onUnmounted(() => {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
               <img 
-                src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20male%20purple%20hair&image_size=square" 
+                :src="resources[0]?.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20male%20purple%20hair&image_size=square'" 
                 alt="作者头像"
                 class="w-14 h-14 rounded-full object-cover border-2 border-pink-200"
+                @error="handleAvatarError($event, resources[0]?.authorName || '愚者')"
               />
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="font-bold text-gray-800 text-lg">skdy</span>
+                  <span class="font-bold text-gray-800 text-lg">{{ resources[0]?.authorName || '愚者' }}</span>
                   <span class="px-2 py-0.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs rounded-full">LV.11</span>
                 </div>
-                <p class="text-sm text-pink-400">前天更新</p>
+                <p class="text-sm text-pink-400">{{ resources[0]?.dateDisplay || '前天更新' }}</p>
               </div>
             </div>
             <div class="flex gap-2">
@@ -752,7 +753,7 @@ onUnmounted(() => {
                 :key="idx"
                 :src="img" 
                 :alt="`${game.name} 截图${idx + 1}`"
-                class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100 cursor-pointer"
+                class="w-full h-44 sm:h-60 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100 cursor-pointer"
                 @click="previewImage(img)"
               />
             </div>
@@ -760,7 +761,7 @@ onUnmounted(() => {
               <img 
                 :src="game.cover" 
                 :alt="game.name"
-                class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
+                class="w-full h-44 sm:h-60 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
               />
             </div>
           </div>
