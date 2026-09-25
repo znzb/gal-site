@@ -279,6 +279,8 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+    top: max(14px, env(safe-area-inset-top));
+    left: max(14px, env(safe-area-inset-left));
   }
   
   .sidebar {
@@ -287,6 +289,8 @@ onUnmounted(() => {
     top: 0;
     bottom: 0;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   
   .sidebar.mobile.show {
@@ -300,7 +304,7 @@ onUnmounted(() => {
   }
   
   .content-wrapper {
-    padding: 68px 14px 14px;
+    padding: calc(68px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
   }
   
   .nav-item {

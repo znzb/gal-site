@@ -23,7 +23,7 @@
       </select>
     </div>
 
-    <div class="games-table">
+    <div class="games-table desktop-only">
       <table>
         <thead>
           <tr>
@@ -55,6 +55,34 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="games-cards mobile-only">
+      <div v-for="game in filteredGames" :key="game._id" class="game-card">
+        <div class="game-card-main">
+          <img :src="game.cover" class="game-card-cover" />
+          <div class="game-card-info">
+            <h3 class="game-card-name">{{ game.name }}</h3>
+            <div class="game-card-tags">
+              <span class="category-tag">{{ game.category }}</span>
+              <span v-if="game.subCategory === 'raw'" class="subcategory-tag raw">🍖 生肉</span>
+              <span v-else-if="game.subCategory === 'cooked'" class="subcategory-tag cooked">🍳 熟肉</span>
+            </div>
+            <div class="game-card-meta">
+              <span>📦 {{ game.size }}</span>
+              <span>⬇️ {{ game.downloads }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="game-card-actions">
+          <button @click="editGame(game)" class="edit-btn">编辑</button>
+          <button @click="deleteGame(game)" class="delete-btn">删除</button>
+        </div>
+      </div>
+      <div v-if="filteredGames.length === 0" class="empty-state">
+        <span class="empty-emoji">🎮</span>
+        <p>暂无游戏数据</p>
+      </div>
     </div>
 
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
@@ -723,6 +751,78 @@ function resetForm() {
   border: 1px solid rgba(0,0,0,0.03);
 }
 
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+.games-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.game-card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+.game-card-main {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.game-card-cover {
+  width: 60px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.game-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.game-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f1f36;
+  line-height: 1.3;
+}
+
+.game-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.game-card-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #8a86a0;
+}
+
+.game-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.game-card-actions .edit-btn,
+.game-card-actions .delete-btn {
+  flex: 1;
+  padding: 9px;
+  font-size: 14px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -1155,6 +1255,9 @@ tbody tr:hover {
 }
 
 @media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+  
   .header {
     flex-direction: column;
     align-items: stretch;
@@ -1180,39 +1283,6 @@ tbody tr:hover {
   
   .filters select {
     width: 100%;
-  }
-  
-  .games-table {
-    overflow-x: auto;
-    display: block;
-  }
-  
-  .games-table table {
-    width: 100%;
-    min-width: 600px;
-  }
-  
-  .games-table th,
-  .games-table td {
-    padding: 10px 10px;
-    font-size: 12px;
-  }
-  
-  .subcategory-tag {
-    padding: 2px 8px;
-    font-size: 11px;
-  }
-  
-  .actions {
-    flex-direction: column;
-    gap: 6px;
-  }
-  
-  .edit-btn,
-  .delete-btn {
-    width: 100%;
-    padding: 6px 10px;
-    font-size: 12px;
   }
   
   .modal {

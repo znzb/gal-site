@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <div class="tools-table">
+    <div class="tools-table desktop-only">
       <table>
         <thead>
           <tr>
@@ -49,6 +49,35 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="tools-cards mobile-only">
+      <div v-for="tool in tools" :key="tool._id" class="tool-card">
+        <div class="tool-card-header">
+          <span v-if="isValidUrl(tool.icon)" class="tool-card-icon">
+            <img :src="tool.icon" alt="图标" class="icon-img" />
+          </span>
+          <span v-else class="tool-card-icon emoji">{{ getIconEmoji(tool.icon) }}</span>
+          <h3 class="tool-card-name">{{ tool.name }}</h3>
+        </div>
+        <p class="tool-card-desc">{{ tool.description }}</p>
+        <div class="tool-card-meta">
+          <span>📦 {{ tool.size }}</span>
+          <span>⬇️ {{ tool.downloads }}</span>
+          <span>🔢 {{ tool.order }}</span>
+        </div>
+        <div v-if="tool.tags && tool.tags.length > 0" class="tool-card-tags">
+          <span v-for="tag in tool.tags" :key="tag" class="tag">{{ tag }}</span>
+        </div>
+        <div class="tool-card-actions">
+          <button @click="editTool(tool)" class="edit-btn">编辑</button>
+          <button @click="deleteTool(tool)" class="delete-btn">删除</button>
+        </div>
+      </div>
+      <div v-if="tools.length === 0" class="empty-state">
+        <span class="empty-emoji">🛠️</span>
+        <p>暂无工具数据</p>
+      </div>
     </div>
 
     <div v-if="showGuideModal" class="modal-overlay" @click.self="showGuideModal = false">
@@ -507,6 +536,98 @@ function closeGuideModal() {
   overflow: hidden;
 }
 
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+.tools-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tool-card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.tool-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tool-card-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f5f3f8;
+  flex-shrink: 0;
+  font-size: 22px;
+}
+
+.tool-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f1f36;
+  flex: 1;
+  min-width: 0;
+}
+
+.tool-card-desc {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #6b6680;
+  line-height: 1.5;
+}
+
+.tool-card-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: #8a86a0;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.tool-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tool-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tool-card-actions .edit-btn,
+.tool-card-actions .delete-btn {
+  flex: 1;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8a86a0;
+  background: white;
+  border-radius: 12px;
+}
+
+.empty-emoji {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 8px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -782,5 +903,74 @@ th, td {
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .guide-btn {
+    margin-right: 0;
+  }
+
+  .add-btn, .guide-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .modal {
+    padding: 20px;
+    margin: 10px;
+    max-width: none;
+    width: calc(100% - 20px);
+    max-height: 95vh;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-col.full {
+    flex: 1;
+  }
+
+  .form-col.order-col {
+    flex: 1;
+  }
+
+  .subsections-section {
+    padding-left: 10px;
+  }
 }
 </style>

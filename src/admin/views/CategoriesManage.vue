@@ -21,55 +21,106 @@
         >+ 添加常见问题</button>
       </div>
 
-      <div v-if="selectedCategory.name !== '新人必读'" class="games-table">
-        <table>
-          <thead>
-            <tr>
-              <th>封面</th>
-              <th>游戏名称</th>
-              <th>大小</th>
-              <th>下载量</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="game in filteredGames" :key="game._id">
-              <td><img :src="game.cover" class="game-cover-small" /></td>
-              <td>{{ game.name }}</td>
-              <td>{{ game.size }}</td>
-              <td>{{ game.downloads }}</td>
-              <td class="actions">
-                <button @click="editGame(game)" class="edit-btn">编辑</button>
-                <button @click="deleteGame(game)" class="delete-btn">删除</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <template v-if="selectedCategory.name !== '新人必读'">
+        <div class="games-table desktop-only">
+          <table>
+            <thead>
+              <tr>
+                <th>封面</th>
+                <th>游戏名称</th>
+                <th>大小</th>
+                <th>下载量</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="game in filteredGames" :key="game._id">
+                <td><img :src="game.cover" class="game-cover-small" /></td>
+                <td>{{ game.name }}</td>
+                <td>{{ game.size }}</td>
+                <td>{{ game.downloads }}</td>
+                <td class="actions">
+                  <button @click="editGame(game)" class="edit-btn">编辑</button>
+                  <button @click="deleteGame(game)" class="delete-btn">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <div v-else class="faq-table">
-        <table>
-          <thead>
-            <tr>
-              <th>问题</th>
-              <th>答案</th>
-              <th>排序</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="faq in faqs" :key="faq._id">
-              <td>{{ faq.question }}</td>
-              <td class="answer-cell">{{ faq.answer }}</td>
-              <td>{{ faq.order }}</td>
-              <td class="actions">
+        <div class="games-cards mobile-only">
+          <div v-for="game in filteredGames" :key="game._id" class="game-card">
+            <div class="game-card-main">
+              <img :src="game.cover" class="game-card-cover" />
+              <div class="game-card-info">
+                <h3 class="game-card-name">{{ game.name }}</h3>
+                <div class="game-card-meta">
+                  <span>📦 {{ game.size }}</span>
+                  <span>⬇️ {{ game.downloads }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="game-card-actions">
+              <button @click="editGame(game)" class="edit-btn">编辑</button>
+              <button @click="deleteGame(game)" class="delete-btn">删除</button>
+            </div>
+          </div>
+          <div v-if="filteredGames.length === 0" class="empty-state">
+            <span class="empty-emoji">🎮</span>
+            <p>该分类下暂无游戏</p>
+          </div>
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="faq-table desktop-only">
+          <table>
+            <thead>
+              <tr>
+                <th>问题</th>
+                <th>答案</th>
+                <th>排序</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="faq in faqs" :key="faq._id">
+                <td>{{ faq.question }}</td>
+                <td class="answer-cell">{{ faq.answer }}</td>
+                <td>{{ faq.order }}</td>
+                <td class="actions">
+                  <button @click="editFaq(faq)" class="edit-btn">编辑</button>
+                  <button @click="deleteFaq(faq)" class="delete-btn">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="faq-cards mobile-only">
+          <div v-for="faq in faqs" :key="faq._id" class="faq-card">
+            <div class="faq-card-q">
+              <span class="faq-q-label">Q</span>
+              <span>{{ faq.question }}</span>
+            </div>
+            <div class="faq-card-a">
+              <span class="faq-a-label">A</span>
+              <span>{{ faq.answer }}</span>
+            </div>
+            <div class="faq-card-footer">
+              <span class="faq-order">排序: {{ faq.order }}</span>
+              <div class="faq-card-actions">
                 <button @click="editFaq(faq)" class="edit-btn">编辑</button>
                 <button @click="deleteFaq(faq)" class="delete-btn">删除</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="faqs.length === 0" class="empty-state">
+            <span class="empty-emoji">📢</span>
+            <p>暂无常见问题</p>
+          </div>
+        </div>
+      </template>
     </div>
 
     <div v-else class="categories-grid">
@@ -1041,6 +1092,143 @@ function resetGameForm() {
   overflow: hidden;
 }
 
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+.games-cards, .faq-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.game-card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.game-card-main {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.game-card-cover {
+  width: 56px;
+  height: 78px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.game-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.game-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f1f36;
+  line-height: 1.3;
+}
+
+.game-card-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: #8a86a0;
+}
+
+.game-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.game-card-actions .edit-btn,
+.game-card-actions .delete-btn {
+  flex: 1;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.faq-card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.faq-card-q, .faq-card-a {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.faq-card-a {
+  color: #6b6680;
+  margin-bottom: 12px;
+}
+
+.faq-q-label, .faq-a-label {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+}
+
+.faq-q-label { background: #ff6b9d; }
+.faq-a-label { background: #27ae60; }
+
+.faq-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #f0ecf4;
+}
+
+.faq-order {
+  font-size: 12px;
+  color: #8a86a0;
+}
+
+.faq-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.faq-card-actions .edit-btn,
+.faq-card-actions .delete-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8a86a0;
+  background: white;
+  border-radius: 12px;
+}
+
+.empty-emoji {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 8px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -1051,7 +1239,6 @@ th, td {
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
   vertical-align: middle;
-  height: 80px;
   display: table-cell;
 }
 
@@ -1223,6 +1410,9 @@ th, td {
 }
 
 @media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+  
   .header {
     flex-direction: column;
     align-items: flex-start;
@@ -1237,7 +1427,7 @@ th, td {
   .detail-header {
     flex-direction: column;
     gap: 12px;
-    align-items: flex-start;
+    align-items: stretch;
   }
   
   .back-btn,
@@ -1278,30 +1468,6 @@ th, td {
     font-size: 12px;
   }
   
-  .games-table {
-    overflow-x: auto;
-  }
-  
-  .games-table table {
-    min-width: 500px;
-  }
-  
-  .games-table th,
-  .games-table td {
-    padding: 8px 6px;
-    font-size: 12px;
-  }
-  
-  .game-cover-small {
-    width: 40px;
-    height: 55px;
-  }
-  
-  .actions {
-    flex-direction: column;
-    gap: 4px;
-  }
-  
   .modal {
     padding: 20px;
     margin: 10px;
@@ -1327,22 +1493,13 @@ th, td {
     font-size: 16px;
   }
 
-  /* 游戏编辑模态框响应式 */
-  .modal-header {
-    padding: 12px 16px;
-  }
-
   .tabs {
-    padding: 0 16px;
+    padding: 0;
   }
 
   .tab-btn {
     padding: 10px 12px;
     font-size: 14px;
-  }
-
-  .tab-content {
-    padding: 20px 16px;
   }
 
   .grid-cols-2,
