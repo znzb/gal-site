@@ -176,13 +176,10 @@ const clearResults = () => {
           <strong>提示：</strong>已存在的游戏（ID相同）不会被导入，可以使用此功能进行增量更新。
         </p>
         <p class="text-sm text-blue-800">
-          <strong>🖼️ 多张游戏截图：</strong>在「游戏截图」列填写多个图片URL，用 <code class="bg-blue-100 px-1 rounded">|</code> 或逗号分隔，例如：<code class="bg-blue-100 px-1 rounded">url1|url2|url3</code>
+          <strong>🖼️ 游戏截图（最多3张）：</strong>分别在「游戏截图1」「游戏截图2」「游戏截图3」列填入图片URL，不需要的列留空即可
         </p>
         <p class="text-sm text-blue-800">
-          <strong>🔗 多个资源链接（最多4个）：</strong>在资源相关列（资源名称、资源链接、资源类型等）填写多个值，用 <code class="bg-blue-100 px-1 rounded">|</code> 分隔，按位置一一对应，例如：<br>
-          资源名称：<code class="bg-blue-100 px-1 rounded">百度网盘|阿里云盘|夸克网盘|迅雷云盘</code><br>
-          资源链接：<code class="bg-blue-100 px-1 rounded">url1|url2|url3|url4</code><br>
-          <span class="text-xs text-blue-600">注：某列只填一个值时会自动复用到所有资源，超过4个的部分会被忽略</span>
+          <strong>🔗 资源链接（最多3个）：</strong>每个资源的所有字段在同一列组合在一起，资源1的字段为「资源名称1」「资源链接1」「资源类型1」等，资源2为「资源名称2」「资源链接2」等，以此类推。只需填写「资源链接N」即可导入该资源，其他字段不填会使用默认值
         </p>
       </div>
     </div>
