@@ -196,7 +196,8 @@
             </div>
             <div class="form-group">
               <label>大小</label>
-              <input v-model="gameForm.size" required />
+              <input v-model="gameForm.size" readonly placeholder="将自动同步为资源1的大小" />
+              <p class="field-hint">自动同步资源链接中第一个资源的大小</p>
             </div>
             <div class="form-group">
               <label>发布日期</label>
@@ -409,6 +410,12 @@ function parseImages(input) {
 watch(() => gameForm.value.imagesInput, (val) => {
   gameForm.value.images = parseImages(val);
 });
+
+// 游戏大小自动同步为第一个资源的大小
+const firstResourceSize = computed(() => gameForm.value.resources[0]?.size || '');
+watch(firstResourceSize, (val) => {
+  gameForm.value.size = val;
+}, { immediate: true });
 
 // 移除单个截图
 function removeImage(index) {
@@ -1192,6 +1199,12 @@ tbody tr:hover {
   border-color: #c44fff;
   background: white;
   box-shadow: 0 0 0 4px rgba(196, 79, 255, 0.08);
+}
+
+.form-group input[readonly] {
+  background: #f5f0fa;
+  cursor: default;
+  color: #6b6680;
 }
 
 .platform-checkboxes {
