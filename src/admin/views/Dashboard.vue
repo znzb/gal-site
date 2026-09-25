@@ -215,6 +215,7 @@ onMounted(async () => {
   border-radius: 12px;
   border: 1px solid #f0ecf4;
   transition: all 0.25s;
+  min-width: 0;
 }
 
 .game-item:hover {
@@ -234,6 +235,7 @@ onMounted(async () => {
 
 .game-info {
   min-width: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;

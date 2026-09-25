@@ -212,6 +212,7 @@ function resetForm() {
   padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .modal-actions {

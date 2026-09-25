@@ -248,11 +248,23 @@ function resetForm() {
   font-weight: 500;
 }
 
+.form-group label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
 .form-group input, .form-group textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.form-group input[type="checkbox"] {
+  width: auto;
 }
 
 .modal-actions {
