@@ -191,6 +191,26 @@ const previewImage = (src: string) => {
   document.body.appendChild(overlay)
 }
 
+const avatarFallbackColors = [
+  ['#ff6b9d', '#c44fff'],
+  ['#f093fb', '#f5576c'],
+  ['#4facfe', '#00f2fe'],
+  ['#43e97b', '#38f9d7'],
+  ['#fa709a', '#fee140'],
+  ['#a18cd1', '#fbc2eb'],
+]
+
+const handleAvatarError = (e: Event, name: string) => {
+  const img = e.target as HTMLImageElement
+  if (img.dataset.fallback === '1') return
+  img.dataset.fallback = '1'
+  const char = (name || '?').trim().charAt(0).toUpperCase()
+  const colorIdx = char.charCodeAt(0) % avatarFallbackColors.length
+  const [c1, c2] = avatarFallbackColors[colorIdx]
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><rect width="80" height="80" rx="40" fill="url(#g)"/><text x="40" y="40" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="central">${char}</text></svg>`
+  img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`
+}
+
 onMounted(() => {
   initData()
   window.addEventListener('resize', handleResize)
@@ -467,6 +487,7 @@ onUnmounted(() => {
                       :src="resource.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square'" 
                       alt="用户头像"
                       class="w-10 h-10 rounded-full object-cover border-2 border-pink-200"
+                      @error="handleAvatarError($event, resource.authorName || '愚者')"
                     />
                     <div>
                       <p class="font-medium text-gray-800 text-sm">{{ resource.authorName || '愚者' }}</p>
