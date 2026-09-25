@@ -166,15 +166,19 @@
           </div>
 
           <div v-show="activeTab === 'resources'">
-            <div v-for="(resource, index) in gameForm.resources" :key="index" class="resource-item">
+            <div v-if="gameForm.resources.length > 0" class="resource-count-info">
+              已添加 <span class="count-num">{{ gameForm.resources.length }}</span> 个资源
+            </div>
+            <div v-for="(resource, index) in gameForm.resources" :key="resource.id || index" class="resource-item">
               <div class="resource-header">
-                <span>资源 {{ index + 1 }}</span>
+                <span>资源 {{ index + 1 }}<span v-if="resource.name" class="resource-name-inline"> · {{ resource.name }}</span></span>
                 <button v-if="gameForm.resources.length > 1" @click="removeResource(index)" class="remove-btn">×</button>
               </div>
               <div class="resource-fields">
                 <div class="form-group">
-                  <label>资源名称</label>
+                  <label>资源名称 <span class="required">*</span></label>
                   <input v-model="resource.name" placeholder="例如: 完整版游戏本体" />
+                  <p v-if="!resource.name && resource._touched" class="field-error">请输入资源名称</p>
                 </div>
                 <div class="form-group">
                   <label>资源类型</label>
@@ -194,8 +198,9 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label>下载链接</label>
+                  <label>下载链接 <span class="required">*</span></label>
                   <input v-model="resource.url" placeholder="请输入下载链接" />
+                  <p v-if="!resource.url && resource._touched" class="field-error">请输入下载链接</p>
                 </div>
                 <div class="form-group">
                   <label>大小</label>
@@ -220,6 +225,9 @@
               </div>
             </div>
             <button type="button" @click="addResource" class="add-resource-btn">+ 添加资源</button>
+            <p v-if="invalidResources.length > 0" class="validation-hint">
+              ⚠️ 有 {{ invalidResources.length }} 个资源缺少名称或链接，保存时会被跳过
+            </p>
           </div>
 
           <div v-show="activeTab === 'comments'">
@@ -304,6 +312,8 @@ const gameForm = ref({
   tagsInput: '',
   platforms: ['Android'],
   resources: [{
+    id: genResourceId(),
+    _touched: false,
     name: '',
     type: 'main',
     language: '简体中文',
@@ -334,6 +344,16 @@ const filteredGames = computed(() => {
   });
 });
 
+// 统计无效资源（缺少名称或链接）
+const invalidResources = computed(() => {
+  return gameForm.value.resources.filter(r => !r.name || !r.url);
+});
+
+// 为每个资源生成唯一 id
+function genResourceId() {
+  return 'res_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+}
+
 onMounted(async () => {
   await loadGames();
   await loadCategories();
@@ -362,7 +382,8 @@ function editGame(game) {
     tagsInput: game.tags?.join(', ') || '',
     platforms: game.platforms || ['Android'],
     resources: game.resources && game.resources.length > 0 ? game.resources.map(r => ({
-      id: r.id,
+      id: r.id || genResourceId(),
+      _touched: true,
       name: r.name || '',
       type: r.type || 'main',
       language: r.language || '简体中文',
@@ -375,6 +396,8 @@ function editGame(game) {
       authorAvatar: r.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
       authorResources: r.authorResources || 198
     })) : [{
+      id: genResourceId(),
+      _touched: false,
       name: '',
       type: 'main',
       language: '简体中文',
@@ -488,6 +511,8 @@ async function deleteGame(game) {
 
 function addResource() {
   gameForm.value.resources.push({
+    id: genResourceId(),
+    _touched: false,
     name: '',
     type: 'main',
     language: '简体中文',
@@ -544,6 +569,8 @@ function resetForm() {
     tagsInput: '',
     platforms: ['Android'],
     resources: [{
+      id: genResourceId(),
+      _touched: false,
       name: '',
       type: 'main',
       language: '简体中文',
@@ -821,6 +848,50 @@ tbody tr:hover {
   border: 1px solid #f0ecf4;
 }
 
+.resource-count-info {
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #fff0f7 0%, #f5eaff 100%);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #6b6680;
+  margin-bottom: 14px;
+  border: 1px solid #f0e0f0;
+}
+
+.count-num {
+  font-weight: 700;
+  font-size: 16px;
+  color: #c44fff;
+  margin: 0 2px;
+}
+
+.resource-name-inline {
+  color: #c44fff;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.required {
+  color: #ff5a6b;
+  font-weight: 700;
+}
+
+.field-error {
+  color: #ff5a6b;
+  font-size: 12px;
+  margin: 4px 0 0 0;
+}
+
+.validation-hint {
+  margin: 12px 0 0 0;
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  color: #f57f17;
+  font-size: 13px;
+}
+
 .resource-header, .comment-header {
   display: flex;
   justify-content: space-between;
@@ -850,20 +921,23 @@ tbody tr:hover {
 
 .add-resource-btn, .add-comment-btn {
   width: 100%;
-  padding: 12px;
-  border: 2px dashed #e0d5f0;
-  background: none;
-  border-radius: 10px;
+  padding: 14px;
+  border: 2px dashed #c44fff;
+  background: linear-gradient(135deg, rgba(255,107,157,0.04) 0%, rgba(196,79,255,0.04) 100%);
+  border-radius: 12px;
   cursor: pointer;
   color: #c44fff;
   margin-top: 12px;
   transition: all 0.25s;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .add-resource-btn:hover, .add-comment-btn:hover {
   border-color: #c44fff;
-  background: rgba(196, 79, 255, 0.05);
+  background: linear-gradient(135deg, rgba(255,107,157,0.08) 0%, rgba(196,79,255,0.08) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(196, 79, 255, 0.15);
 }
 
 .modal-overlay {

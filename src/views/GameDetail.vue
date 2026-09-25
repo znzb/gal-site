@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, onActivated, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar, MessageSquare, Link2, User, ChevronDown, ChevronUp, Home, BookOpen, Eye } from 'lucide-vue-next'
+import { ArrowLeft, Download, Star, Share2, Heart, Clock, HardDrive, Calendar, MessageSquare, Link2, User, Home, BookOpen, Eye } from 'lucide-vue-next'
 import { gameApi, type Game, type ResourceLink, type Comment } from '@/api/api'
 import { useGameStore } from '@/store/gameStore'
 
@@ -38,7 +38,6 @@ const isDownloading = ref(false)
 const downloadProgress = ref(0)
 const relatedGames = ref<Game[]>([])
 const expandedComments = ref<string[]>([])
-const expandedResources = ref<string[]>([])
 
 // 检测是否为桌面端
 const windowWidth = ref(window.innerWidth)
@@ -72,15 +71,6 @@ const toggleComment = (commentId: string) => {
     expandedComments.value.splice(index, 1)
   } else {
     expandedComments.value.push(commentId)
-  }
-}
-
-const toggleResourceExpand = (resourceId: string) => {
-  const index = expandedResources.value.indexOf(resourceId)
-  if (index > -1) {
-    expandedResources.value.splice(index, 1)
-  } else {
-    expandedResources.value.push(resourceId)
   }
 }
 
@@ -436,81 +426,77 @@ onUnmounted(() => {
           </div>
           
           <div v-if="activeTab === 'resources'" id="resources-section" class="space-y-4">
-            <div v-for="resource in resources" :key="resource.id" class="bg-white rounded-2xl shadow-sm overflow-hidden border border-pink-100">
+            <div v-if="resources.length === 0" class="text-center py-10">
+              <div class="text-4xl mb-3">📦</div>
+              <p class="text-pink-400">暂无资源链接</p>
+            </div>
+            <div v-if="resources.length > 0" class="resource-count-badge">
+              共 <span class="count-num">{{ resources.length }}</span> 个下载资源
+            </div>
+            <div v-for="(resource, idx) in resources" :key="resource.id || idx" class="bg-white rounded-2xl shadow-sm overflow-hidden border border-pink-100">
               <div class="p-4">
                 <div class="flex flex-wrap gap-2 mb-4">
-                  <span class="px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-sm font-medium border border-pink-200">
-                    {{ resource.type === 'main' ? '游戏本体' : resource.type === 'patch' ? '汉化资源' : '更新资源' }}
+                  <span class="px-3 py-1 bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-full text-xs font-medium">
+                    {{ resource.type === 'main' ? '🎮 游戏本体' : resource.type === 'patch' ? '📦 汉化补丁' : '🔄 更新包' }}
                   </span>
-                  <span class="px-4 py-1.5 bg-pink-50 text-pink-600 rounded-full text-sm font-medium border border-pink-200">
+                  <span class="px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-xs font-medium border border-pink-200">
                     {{ resource.language || '简体中文' }}
                   </span>
-                  <span class="px-4 py-1.5 bg-pink-50 text-pink-600 rounded-full text-sm font-medium border border-pink-200">
+                  <span class="px-3 py-1 bg-pink-50 text-pink-600 rounded-full text-xs font-medium border border-pink-200">
                     {{ resource.platform || 'Android' }}
                   </span>
-                  <button class="ml-auto p-2 text-pink-400 hover:text-pink-600 transition-colors">
-                    <ChevronDown class="w-5 h-5" />
-                  </button>
+                  <span v-if="resource.size" class="px-3 py-1 bg-gray-50 text-gray-500 rounded-full text-xs font-medium border border-gray-100">
+                    {{ resource.size }}
+                  </span>
                 </div>
                 
-                <h4 class="text-lg font-bold text-gray-800 mb-4">{{ resource.name }}</h4>
+                <h4 class="text-base font-bold text-gray-800 mb-3">{{ resource.name }}</h4>
                 
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
                     <img 
                       :src="resource.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square'" 
                       alt="用户头像"
-                      class="w-12 h-12 rounded-full object-cover border-2 border-pink-200"
+                      class="w-10 h-10 rounded-full object-cover border-2 border-pink-200"
                     />
                     <div>
-                      <p class="font-medium text-gray-800">{{ resource.authorName || '愚者' }}</p>
-                      <p class="text-sm text-pink-400">{{ resource.dateDisplay || '3天前' }} · 已发布资源 {{ resource.authorResources || 198 }} 个</p>
+                      <p class="font-medium text-gray-800 text-sm">{{ resource.authorName || '愚者' }}</p>
+                      <p class="text-xs text-pink-400">{{ resource.dateDisplay || '3天前' }} · 已发布 {{ resource.authorResources || 198 }} 个资源</p>
                     </div>
                   </div>
                   
                   <div class="flex items-center gap-3">
                     <button class="flex items-center gap-1 text-pink-400 hover:text-pink-500 transition-colors">
-                      <Heart class="w-6 h-6" />
+                      <Heart class="w-5 h-5" />
                       <span class="text-sm">0</span>
                     </button>
-                    <button 
-                      @click="toggleResourceExpand(resource.id)"
-                      class="w-12 h-12 bg-pink-400 rounded-xl flex items-center justify-center text-white hover:bg-pink-500 transition-colors shadow-md"
-                    >
-                      <Download class="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-                
-                <div 
-                  v-if="expandedResources.includes(resource.id)" 
-                  class="mt-4 pt-4 border-t border-pink-100"
-                >
-                  <div class="flex flex-wrap gap-2 mb-4">
-                    <span class="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium border border-pink-200">kisuacg 资源盘</span>
-                    <span class="px-3 py-1 bg-pink-50 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1 border border-pink-100">
-                      <HardDrive class="w-3 h-3 text-pink-500" />
-                      {{ resource.size }}
-                    </span>
-                  </div>
-                  <p class="text-sm text-gray-500 mb-3">点击下面的链接以下载</p>
-                  <div class="flex items-center gap-2 bg-gradient-to-r from-pink-50 to-pink-100 rounded-xl p-3 border border-pink-100">
-                    <Link2 class="w-4 h-4 text-pink-500 flex-shrink-0" />
                     <a 
                       :href="resource.url" 
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="flex-1 text-pink-500 text-sm font-medium truncate hover:text-pink-600 transition-colors"
+                      class="w-11 h-11 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white hover:shadow-lg transition-all"
                     >
-                      {{ resource.url }}
+                      <Download class="w-5 h-5" />
                     </a>
-                    <button 
-                      @click="copyLink(resource.url)"
-                      class="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all border border-pink-100"
-                    >
-                      <Share2 class="w-4 h-4 text-pink-500" />
-                    </button>
                   </div>
+                </div>
+                
+                <div class="mt-3 flex items-center gap-2 bg-gradient-to-r from-pink-50 to-pink-100 rounded-xl p-2.5 border border-pink-100">
+                  <Link2 class="w-4 h-4 text-pink-500 flex-shrink-0" />
+                  <a 
+                    :href="resource.url" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex-1 text-pink-500 text-xs font-medium truncate hover:text-pink-600 transition-colors"
+                  >
+                    {{ resource.url }}
+                  </a>
+                  <button 
+                    @click="copyLink(resource.url)"
+                    class="p-1.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all border border-pink-100 flex-shrink-0"
+                  >
+                    <Share2 class="w-3.5 h-3.5 text-pink-500" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -520,7 +506,7 @@ onUnmounted(() => {
                 <span class="text-xl">⚠️</span>
               </div>
               <div>
-                <p class="text-yellow-800 font-medium">使用资源前请认真阅读资源的备注（如果有），以免产生问题</p>
+                <p class="text-yellow-800 font-medium text-sm">使用资源前请认真阅读资源的备注（如果有），以免产生问题</p>
               </div>
             </div>
           </div>
@@ -798,18 +784,28 @@ onUnmounted(() => {
             <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 pb-3 border-b border-pink-100">
               <span class="w-1 h-6 bg-gradient-to-b from-pink-500 to-pink-400 rounded-full"></span>
               资源链接
+              <span v-if="resources.length > 0" class="resource-count-badge-desktop">
+                共 {{ resources.length }} 个
+              </span>
             </h3>
+            <div v-if="resources.length === 0" class="text-center py-10">
+              <div class="text-4xl mb-3">📦</div>
+              <p class="text-pink-400">暂无资源链接</p>
+            </div>
             <div v-if="resources.length > 0" class="space-y-4">
-              <div v-for="resource in resources" :key="resource.id" class="bg-gradient-to-br from-pink-50 to-white rounded-2xl p-4 border border-pink-100">
+              <div v-for="(resource, idx) in resources" :key="resource.id || idx" class="bg-gradient-to-br from-pink-50 to-white rounded-2xl p-4 border border-pink-100">
                 <div class="flex flex-wrap gap-2 mb-4">
-                  <span class="px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-sm font-medium border border-pink-200">
-                    {{ resource.type === 'main' ? '游戏本体' : resource.type === 'patch' ? '汉化资源' : '更新资源' }}
+                  <span class="px-4 py-1.5 bg-gradient-to-r from-pink-500 to-pink-400 text-white rounded-full text-sm font-medium">
+                    {{ resource.type === 'main' ? '🎮 游戏本体' : resource.type === 'patch' ? '📦 汉化补丁' : '🔄 更新包' }}
                   </span>
                   <span class="px-4 py-1.5 bg-pink-50 text-pink-600 rounded-full text-sm font-medium border border-pink-200">
                     {{ resource.language || '简体中文' }}
                   </span>
                   <span class="px-4 py-1.5 bg-pink-50 text-pink-600 rounded-full text-sm font-medium border border-pink-200">
                     {{ resource.platform || 'PC' }}
+                  </span>
+                  <span v-if="resource.size" class="px-4 py-1.5 bg-gray-50 text-gray-500 rounded-full text-sm font-medium border border-gray-100">
+                    {{ resource.size }}
                   </span>
                 </div>
                 
@@ -831,6 +827,15 @@ onUnmounted(() => {
                   >
                     <Share2 class="w-4 h-4 text-pink-500" />
                   </button>
+                  <a 
+                    :href="resource.url" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-lg hover:shadow-md transition-all flex items-center gap-1"
+                  >
+                    <Download class="w-4 h-4" />
+                    下载
+                  </a>
                 </div>
               </div>
             </div>
@@ -935,6 +940,33 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* 资源数量提示 */
+.resource-count-badge {
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #fff0f7 0%, #f5eaff 100%);
+  border-radius: 12px;
+  font-size: 13px;
+  color: #6b6680;
+  border: 1px solid #f0e0f0;
+}
+
+.resource-count-badge .count-num {
+  font-weight: 700;
+  font-size: 16px;
+  color: #c44fff;
+  margin: 0 2px;
+}
+
+.resource-count-badge-desktop {
+  font-size: 13px;
+  font-weight: 500;
+  color: #c44fff;
+  background: linear-gradient(135deg, #fff0f7 0%, #f5eaff 100%);
+  padding: 2px 10px;
+  border-radius: 12px;
+  margin-left: auto;
+}
+
 /* 自定义滚动条 */
 ::-webkit-scrollbar {
   width: 6px;
