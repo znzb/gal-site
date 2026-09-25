@@ -182,6 +182,15 @@ const initData = () => {
   }
 }
 
+// 图片预览
+const previewImage = (src: string) => {
+  const overlay = document.createElement('div')
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;'
+  overlay.innerHTML = `<img src="${src}" alt="preview" style="max-width:95%;max-height:90%;object-fit:contain;border-radius:12px;" /><span style="position:absolute;top:20px;right:30px;color:white;font-size:40px;cursor:pointer;line-height:1;">×</span>`
+  overlay.addEventListener('click', () => document.body.removeChild(overlay))
+  document.body.appendChild(overlay)
+}
+
 onMounted(() => {
   initData()
   window.addEventListener('resize', handleResize)
@@ -368,20 +377,20 @@ onUnmounted(() => {
                 <span class="w-1 h-6 bg-gradient-to-b from-pink-500 to-pink-400 rounded-full"></span>
                 游戏截图
               </h3>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div v-if="(game.images && game.images.length > 0)" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <img 
+                  v-for="(img, idx) in game.images" 
+                  :key="idx"
+                  :src="img" 
+                  :alt="`${game.name} 截图${idx + 1}`"
+                  class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100 cursor-pointer"
+                  @click="previewImage(img)"
+                />
+              </div>
+              <div v-else class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <img 
                   :src="game.cover" 
                   :alt="game.name"
-                  class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
-                />
-                <img 
-                  src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20visual%20novel%20game%20screenshot%20beach%20romance&image_size=landscape_16_9" 
-                  alt="游戏截图2"
-                  class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
-                />
-                <img 
-                  src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20visual%20novel%20game%20screenshot%20sunset%20scene&image_size=landscape_16_9" 
-                  alt="游戏截图3"
                   class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
                 />
               </div>
@@ -716,20 +725,20 @@ onUnmounted(() => {
               <span class="w-1 h-6 bg-gradient-to-b from-pink-500 to-pink-400 rounded-full"></span>
               游戏截图
             </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div v-if="game.images && game.images.length > 0" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <img 
+                v-for="(img, idx) in game.images" 
+                :key="idx"
+                :src="img" 
+                :alt="`${game.name} 截图${idx + 1}`"
+                class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100 cursor-pointer"
+                @click="previewImage(img)"
+              />
+            </div>
+            <div v-else class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <img 
                 :src="game.cover" 
                 :alt="game.name"
-                class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
-              />
-              <img 
-                src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20visual%20novel%20game%20screenshot%20beach%20romance&image_size=landscape_16_9" 
-                alt="游戏截图2"
-                class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
-              />
-              <img 
-                src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20visual%20novel%20game%20screenshot%20sunset%20scene&image_size=landscape_16_9" 
-                alt="游戏截图3"
                 class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
               />
             </div>

@@ -48,12 +48,36 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           continue;
         }
 
+        // 解析多个资源：用 | 分隔同一字段的多个值，按位置对应
         const parseResources = (row) => {
           const resources = [];
           
-          if (row['资源名称'] || row['资源链接']) {
-            // 解析资源类型，支持中英文
-            let resourceType = String(row['资源类型'] || 'main');
+          // 取所有资源相关字段
+          const names = String(row['资源名称'] || '').split('|').map(s => s.trim()).filter(s => s);
+          const urls = String(row['资源链接'] || '').split('|').map(s => s.trim()).filter(s => s);
+          
+          if (names.length === 0 && urls.length === 0) {
+            return resources;
+          }
+          
+          // 以数量最多的为准
+          const maxCount = Math.max(names.length, urls.length);
+          
+          const types = String(row['资源类型'] || '游戏本体').split('|').map(s => s.trim());
+          const sizes = String(row['资源大小'] || row['大小'] || '').split('|').map(s => s.trim());
+          const dateDisplays = String(row['发布日期（显示格式）'] || row['更新日期'] || '').split('|').map(s => s.trim());
+          const languages = String(row['支持语言'] || row['语言'] || '简体中文').split('|').map(s => s.trim());
+          const authors = String(row['发布者用户名'] || '愚者').split('|').map(s => s.trim());
+          const authorAvatars = String(row['发布者头像'] || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square').split('|').map(s => s.trim());
+          const authorCounts = String(row['已发布资源数量'] || 198).split('|').map(s => s.trim());
+          const platforms = String(row['资源平台'] || row['平台'] || '').split('|').map(s => s.trim());
+          
+          for (let i = 0; i < maxCount; i++) {
+            const name = names[i] || names[0] || `资源${i + 1}`;
+            const url = urls[i] || urls[0] || '';
+            if (!url) continue; // 没有链接的跳过
+            
+            let resourceType = types[i] || types[0] || '游戏本体';
             if (resourceType.includes('游戏') || resourceType.includes('本体')) {
               resourceType = 'main';
             } else if (resourceType.includes('补丁') || resourceType.includes('汉化')) {
@@ -63,21 +87,28 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             }
             
             resources.push({
-              id: `res-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              name: String(row['资源名称'] || '主资源'),
+              id: `res-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
+              name,
               type: resourceType,
-              url: String(row['资源链接'] || ''),
-              size: String(row['资源大小'] || row['大小'] || ''),
-              dateDisplay: String(row['发布日期（显示格式）'] || row['更新日期'] || ''),
-              language: String(row['支持语言'] || row['语言'] || '简体中文'),
-              author: String(row['发布者用户名'] || '愚者'),
-              authorAvatar: String(row['发布者头像'] || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square'),
-              authorCount: Number(row['已发布资源数量'] || 198),
-              platform: String(row['资源平台'] || row['平台'] || '')
+              url,
+              size: sizes[i] || sizes[0] || '',
+              dateDisplay: dateDisplays[i] || dateDisplays[0] || '',
+              language: languages[i] || languages[0] || '简体中文',
+              authorName: authors[i] || authors[0] || '愚者',
+              authorAvatar: authorAvatars[i] || authorAvatars[0] || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
+              authorResources: Number(authorCounts[i] || authorCounts[0] || 198),
+              platform: platforms[i] || platforms[0] || ''
             });
           }
           
           return resources;
+        };
+
+        // 解析多张游戏截图：用 | 或逗号分隔
+        const parseImages = (row) => {
+          const imagesStr = String(row['游戏截图'] || row['截图'] || row['images'] || '');
+          if (!imagesStr) return [];
+          return imagesStr.split(/[,，|;；]/).map(s => s.trim()).filter(s => s);
         };
 
         const parseTags = (row) => {
@@ -167,6 +198,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           releaseDate: String(row['发布日期'] || row['releaseDate'] || new Date().toISOString().split('T')[0]),
           downloads: Number(row['下载量'] || row['downloads'] || 0),
           tags,
+          images: parseImages(row),
           resources: parseResources(row),
           comments: []
         });
@@ -199,6 +231,7 @@ router.get('/template', (req, res) => {
       'ID': 'game-001',
       '游戏名称': '示例游戏',
       '封面图': 'https://example.com/cover.jpg',
+      '游戏截图': 'https://example.com/screen1.jpg|https://example.com/screen2.jpg|https://example.com/screen3.jpg',
       '游戏描述': '这是一个精彩的游戏',
       '主分类': '',
       '分类': '',
@@ -208,21 +241,22 @@ router.get('/template', (req, res) => {
       '发布日期': '2024-01-01',
       '下载量': 0,
       '标签': 'RPG,汉化,恋爱',
-      '资源名称': '百度网盘',
-      '资源类型': '游戏本体',
-      '支持语言': '简体中文',
-      '资源链接': 'https://pan.baidu.com/xxx',
-      '资源大小': '2GB',
-      '发布日期（显示格式）': '3天前',
-      '发布者用户名': '愚者',
+      '资源名称': '百度网盘|阿里云盘',
+      '资源类型': '游戏本体|汉化补丁',
+      '支持语言': '简体中文|简体中文',
+      '资源链接': 'https://pan.baidu.com/xxx|https://www.aliyundrive.com/xxx',
+      '资源大小': '2GB|100MB',
+      '发布日期（显示格式）': '3天前|2天前',
+      '发布者用户名': '愚者|愚者',
       '发布者头像': 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square',
       '已发布资源数量': 198,
-      '资源平台': 'PC'
+      '资源平台': 'PC|安卓'
     },
     {
       'ID': 'game-002',
       '游戏名称': '另一款示例',
       '封面图': 'https://example.com/cover2.jpg',
+      '游戏截图': 'https://example.com/s2-1.jpg',
       '游戏描述': '游戏描述内容',
       '主分类': '',
       '分类': '',
@@ -252,6 +286,7 @@ router.get('/template', (req, res) => {
     { wch: 10 },  // ID
     { wch: 20 },  // 游戏名称
     { wch: 30 },  // 封面图
+    { wch: 60 },  // 游戏截图
     { wch: 40 },  // 游戏描述
     { wch: 12 },  // 主分类
     { wch: 12 },  // 分类
@@ -261,16 +296,16 @@ router.get('/template', (req, res) => {
     { wch: 12 },  // 发布日期
     { wch: 8 },  // 下载量
     { wch: 20 },  // 标签
-    { wch: 15 },  // 资源名称
-    { wch: 12 },  // 资源类型
-    { wch: 12 },  // 支持语言
-    { wch: 35 },  // 资源链接
-    { wch: 10 },  // 资源大小
-    { wch: 18 },  // 发布日期（显示格式）
+    { wch: 25 },  // 资源名称
+    { wch: 20 },  // 资源类型
+    { wch: 18 },  // 支持语言
+    { wch: 50 },  // 资源链接
+    { wch: 15 },  // 资源大小
+    { wch: 20 },  // 发布日期（显示格式）
     { wch: 15 },  // 发布者用户名
     { wch: 40 },  // 发布者头像
     { wch: 12 },  // 已发布资源数量
-    { wch: 10 },  // 资源平台
+    { wch: 15 },  // 资源平台
   ];
   ws['!cols'] = columnWidths;
 

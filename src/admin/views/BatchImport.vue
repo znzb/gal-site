@@ -171,9 +171,17 @@ const clearResults = () => {
         <li>查看导入结果，如有失败可查看失败详情</li>
       </ol>
       
-      <div class="mt-4 p-3 bg-blue-100 rounded-lg">
+      <div class="mt-4 p-3 bg-blue-100 rounded-lg space-y-2">
         <p class="text-sm text-blue-800">
           <strong>提示：</strong>已存在的游戏（ID相同）不会被导入，可以使用此功能进行增量更新。
+        </p>
+        <p class="text-sm text-blue-800">
+          <strong>🖼️ 多张游戏截图：</strong>在「游戏截图」列填写多个图片URL，用 <code class="bg-blue-100 px-1 rounded">|</code> 或逗号分隔，例如：<code class="bg-blue-100 px-1 rounded">url1|url2|url3</code>
+        </p>
+        <p class="text-sm text-blue-800">
+          <strong>🔗 多个资源链接：</strong>在资源相关列（资源名称、资源链接、资源类型等）填写多个值，用 <code class="bg-blue-100 px-1 rounded">|</code> 分隔，按位置一一对应，例如：<br>
+          资源名称：<code class="bg-blue-100 px-1 rounded">百度网盘|阿里云盘</code><br>
+          资源链接：<code class="bg-blue-100 px-1 rounded">https://pan.baidu.com/xxx|https://www.aliyundrive.com/xxx</code>
         </p>
       </div>
     </div>

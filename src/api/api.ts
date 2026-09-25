@@ -44,6 +44,7 @@ export interface Game {
   releaseDate: string;
   downloads: number;
   tags: string[];
+  images?: string[];
   resources?: ResourceLink[];
   comments?: Comment[];
 }

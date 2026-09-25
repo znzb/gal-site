@@ -148,6 +148,21 @@
               <input v-model="gameForm.cover" required />
             </div>
             <div class="form-group">
+              <label>游戏截图URL（每行一个，或用逗号/竖线分隔）</label>
+              <textarea 
+                v-model="gameForm.imagesInput" 
+                rows="3" 
+                placeholder="https://example.com/screen1.jpg&#10;https://example.com/screen2.jpg"
+              ></textarea>
+              <p class="field-hint">将在游戏详情页的"游戏截图"区域展示</p>
+              <div v-if="gameForm.images.length > 0" class="image-preview-grid">
+                <div v-for="(img, idx) in gameForm.images" :key="idx" class="image-preview-item">
+                  <img :src="img" :alt="`截图${idx+1}`" />
+                  <button type="button" @click="removeImage(idx)" class="remove-image-btn">×</button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
               <label>描述</label>
               <textarea v-model="gameForm.description" rows="4" required></textarea>
             </div>
@@ -277,7 +292,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { request } from '../api';
 import { useGameStore } from '@/store/gameStore';
 
@@ -306,6 +321,8 @@ const gameForm = ref({
   subCategory: '',
   isYuzusoft: false,
   cover: '',
+  imagesInput: '',
+  images: [],
   description: '',
   size: '',
   releaseDate: '',
@@ -354,6 +371,23 @@ function genResourceId() {
   return 'res_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
 }
 
+// 解析截图URL
+function parseImages(input) {
+  if (!input) return [];
+  return input.split(/[\n,，|;；]/).map(s => s.trim()).filter(s => s);
+}
+
+// 监听截图输入变化，实时更新预览
+watch(() => gameForm.value.imagesInput, (val) => {
+  gameForm.value.images = parseImages(val);
+});
+
+// 移除单个截图
+function removeImage(index) {
+  gameForm.value.images.splice(index, 1);
+  gameForm.value.imagesInput = gameForm.value.images.join('\n');
+}
+
 onMounted(async () => {
   await loadGames();
   await loadCategories();
@@ -376,6 +410,8 @@ function editGame(game) {
     subCategory: game.subCategory || '',
     isYuzusoft: game.isYuzusoft || false,
     cover: game.cover,
+    imagesInput: (game.images || []).join('\n'),
+    images: game.images || [],
     description: game.description,
     size: game.size,
     releaseDate: game.releaseDate,
@@ -465,11 +501,17 @@ async function saveGame() {
   primaryCategory = primaryCategory.replace(/^pc资源$/, 'PC资源').replace(/^gal游戏$/, 'Gal游戏');
   
   const gameData = {
-    ...gameForm.value,
+    name: gameForm.value.name,
     category: primaryCategory,
     categories,
     platforms,
     isYuzusoft: gameForm.value.isYuzusoft,
+    subCategory: gameForm.value.subCategory,
+    cover: gameForm.value.cover,
+    images: parseImages(gameForm.value.imagesInput),
+    description: gameForm.value.description,
+    size: gameForm.value.size,
+    releaseDate: gameForm.value.releaseDate,
     tags: gameForm.value.tagsInput.split(',').map(t => t.trim()).filter(t => t),
     downloads: editingGame.value ? editingGame.value.downloads : 0,
     resources: resources.map(r => ({
@@ -562,7 +604,10 @@ function resetForm() {
     name: '',
     category: '',
     subCategory: '',
+    isYuzusoft: false,
     cover: '',
+    imagesInput: '',
+    images: [],
     description: '',
     size: '',
     releaseDate: '',
@@ -880,6 +925,55 @@ tbody tr:hover {
   color: #ff5a6b;
   font-size: 12px;
   margin: 4px 0 0 0;
+}
+
+.field-hint {
+  color: #8a86a0;
+  font-size: 12px;
+  margin: 4px 0 0 0;
+}
+
+.image-preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #f0ecf4;
+}
+
+.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-image-btn:hover {
+  background: #ff5a6b;
+  transform: scale(1.1);
 }
 
 .validation-hint {

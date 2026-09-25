@@ -39,6 +39,7 @@ const gameSchema = new mongoose.Schema({
   releaseDate: { type: String, required: true },
   downloads: { type: Number, default: 0 },
   tags: { type: [String], default: [] },
+  images: { type: [String], default: [] },
   resources: { type: [resourceSchema], default: [] },
   comments: { type: [commentSchema], default: [] }
 });
