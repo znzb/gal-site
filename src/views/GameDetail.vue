@@ -13,7 +13,6 @@ const gameId = ref(route.params.id as string)
 const game = ref<Game | null>(null)
 const isLoading = ref(true)
 const activeTab = ref('info')
-const activeSort = ref('update')
 const stats = ref({ comments: 24, views: 6088, likes: 28 })
 
 interface GameInfo {
@@ -618,12 +617,20 @@ onUnmounted(() => {
   <div v-else-if="isDesktop" :key="gameId" class="min-h-screen bg-gradient-to-br from-pink-50/50 to-white hidden sm:block">
     <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 shadow-sm border-b border-pink-100">
       <div class="flex items-center justify-between px-4 py-3">
-        <button 
-          @click="router.back()"
-          class="p-2 rounded-xl bg-pink-50 hover:bg-pink-100 transition-colors"
-        >
-          <ArrowLeft class="w-6 h-6 text-pink-600" />
-        </button>
+        <div class="flex items-center gap-2">
+          <button 
+            @click="router.back()"
+            class="p-2 rounded-xl bg-pink-50 hover:bg-pink-100 transition-colors"
+          >
+            <ArrowLeft class="w-6 h-6 text-pink-600" />
+          </button>
+          <button 
+            @click="router.push('/')"
+            class="p-2 rounded-xl bg-pink-50 hover:bg-pink-100 transition-colors"
+          >
+            <Home class="w-6 h-6 text-pink-600" />
+          </button>
+        </div>
         <h1 class="text-lg font-bold bg-gradient-to-r from-pink-600 to-pink-500 bg-clip-text text-transparent">游戏详情</h1>
         <button class="p-2 rounded-xl bg-pink-50 hover:bg-pink-100 transition-colors">
           <Share2 class="w-6 h-6 text-pink-600" />
@@ -715,19 +722,6 @@ onUnmounted(() => {
         </div>
         
         <div class="p-5">
-          <div class="flex items-center gap-1 text-sm border-b border-pink-100 pb-2 mb-6">
-            <span class="text-pink-400 mr-2">排序</span>
-            <button 
-              v-for="sort in [{key: 'update', label: '更新'}, {key: 'view', label: '浏览'}, {key: 'like', label: '点赞'}, {key: 'comment', label: '评论'}]"
-              :key="sort.key"
-              @click="activeSort = sort.key"
-              class="px-4 py-1 rounded-full font-medium transition-all"
-              :class="sort.key === 'update' ? 'bg-pink-100 text-pink-600' : 'text-gray-400 hover:text-pink-500'"
-            >
-              {{ sort.label }}
-            </button>
-          </div>
-          
           <div>
             <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 pb-3 border-b border-pink-100">
               <span class="w-1 h-6 bg-gradient-to-b from-pink-500 to-pink-400 rounded-full"></span>
