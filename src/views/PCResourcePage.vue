@@ -10,8 +10,10 @@ const activeCategory = ref<'all' | 'raw' | 'cooked'>('all')
 const pcGames = ref<Game[]>([])
 const isLoading = ref(true)
 const activeSort = ref('update')
-const visibleCount = ref(30)
 const PAGE_SIZE = 30
+const currentPage = ref(1)
+const totalGames = ref(0)
+const loadingMore = ref(false)
 
 // 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
 const getDisplaySize = (game: Game) => {
@@ -27,20 +29,35 @@ const filteredGames = computed(() => {
   return pcGames.value.filter(game => game.subCategory === activeCategory.value)
 })
 
-const visibleGames = computed(() => filteredGames.value.slice(0, visibleCount.value))
-const hasMore = computed(() => visibleCount.value < filteredGames.value.length)
-const loadMore = () => { visibleCount.value += PAGE_SIZE }
+const visibleGames = computed(() => filteredGames.value)
+const hasMore = computed(() => currentPage.value * PAGE_SIZE < totalGames.value)
 
 const loadGames = async () => {
   try {
-    const data = await gameApi.getGamesByCategory('PC资源')
-    if (data) {
-      pcGames.value = data
-    }
+    const data = await gameApi.getGamesByCategoryPage('PC资源', 1, PAGE_SIZE)
+    pcGames.value = Array.isArray(data) ? data : (data.games || [])
+    totalGames.value = data.total || pcGames.value.length
+    currentPage.value = 1
   } catch (error) {
     console.error('Failed to load games:', error)
   } finally {
     isLoading.value = false
+  }
+}
+
+const loadMore = async () => {
+  if (loadingMore.value) return
+  loadingMore.value = true
+  try {
+    const nextPage = currentPage.value + 1
+    const data = await gameApi.getGamesByCategoryPage('PC资源', nextPage, PAGE_SIZE)
+    const newGames = Array.isArray(data) ? data : (data.games || [])
+    pcGames.value = [...pcGames.value, ...newGames]
+    currentPage.value = nextPage
+  } catch (error) {
+    console.error('Failed to load more:', error)
+  } finally {
+    loadingMore.value = false
   }
 }
 
@@ -50,7 +67,6 @@ const goToGame = (gameId: string) => {
 
 const setCategory = (category: 'all' | 'raw' | 'cooked') => {
   activeCategory.value = category
-  visibleCount.value = PAGE_SIZE
 }
 
 let dataRefreshTimer: number | null = null
@@ -176,7 +192,7 @@ onUnmounted(() => {
             @click="loadMore"
             class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
           >
-            加载更多（还剩 {{ filteredGames.length - visibleCount }} 个）
+            加载更多（还剩 {{ totalGames - visibleGames.length }} 个）
           </button>
         </div>
         
@@ -331,7 +347,7 @@ onUnmounted(() => {
             @click="loadMore"
             class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
           >
-            加载更多（还剩 {{ filteredGames.length - visibleCount }} 个）
+            加载更多（还剩 {{ totalGames - visibleGames.length }} 个）
           </button>
         </div>
         

@@ -9,8 +9,8 @@ const isLoading = ref(true);
 const loadGames = async () => {
  isLoading.value = true;
  try {
- const data = await gameApi.getAllGames();
- games.value = data;
+ const data = await gameApi.getGamesPage(1, 50);
+ games.value = Array.isArray(data) ? data : (data.games || []);
  }
  catch (error) {
  console.error('Failed to load games:', error);

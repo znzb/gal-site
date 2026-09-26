@@ -151,10 +151,11 @@ const loadData = async () => {
       
       await preloadImage(gameData.cover)
       
-      // 用分类接口获取相关游戏，避免加载全部游戏
+      // 用分类接口获取相关游戏，只取一页避免加载过多
       try {
-        const categoryGames = await gameApi.getGamesByCategory(gameData.category)
-        if (Array.isArray(categoryGames) && categoryGames.length > 0) {
+        const data = await gameApi.getGamesByCategoryPage(gameData.category, 1, 10)
+        const categoryGames = Array.isArray(data) ? data : (data.games || [])
+        if (categoryGames.length > 0) {
           const filtered = categoryGames.filter(g => (g.id || g._id) !== gameId.value).slice(0, 3)
           relatedGames.value = filtered
           relatedCache.value.set(gameId.value, filtered)

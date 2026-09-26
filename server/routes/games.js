@@ -27,9 +27,9 @@ router.get('/', async (req, res) => {
     const { page, limit, search } = req.query;
     const searchQuery = buildSearchQuery(search);
 
-    // 无分页参数时保持兼容，但裁剪大字段
+    // 无分页参数时保持兼容，但裁剪大字段并限制返回数量（避免4000+条超时）
     if (!page && !limit) {
-      const games = await Game.find(searchQuery).select(LIST_FIELDS).lean();
+      const games = await Game.find(searchQuery).select(LIST_FIELDS).limit(100).lean();
       return res.json(games);
     }
 
@@ -145,13 +145,13 @@ router.get('/category/:category', async (req, res) => {
       };
     }
     
-    // 无分页时保持兼容，但裁剪大字段
+    // 无分页时保持兼容，但裁剪大字段并限制返回数量
     if (!page && !limit) {
       const games = await Game.find(query).select(LIST_FIELDS).lean();
       const filteredGames = games.filter(game => {
         if (category === '柚子社') return true;
         return !isYuzusoftGame(game);
-      });
+      }).slice(0, 100);
       return res.json(filteredGames);
     }
 

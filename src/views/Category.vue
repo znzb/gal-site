@@ -14,8 +14,10 @@ const filteredGames = ref<Game[]>([])
 const isLoading = ref(true)
 const activeSubCategory = ref<'all' | 'raw' | 'cooked'>('all')
 const activeSort = ref('update')
-const visibleCount = ref(30)
 const PAGE_SIZE = 30
+const currentPage = ref(1)
+const totalGames = ref(0)
+const loadingMore = ref(false)
 
 // 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
 const getDisplaySize = (game: Game) => {
@@ -36,10 +38,9 @@ const displayGames = computed(() => {
   return games
 })
 
-// 首屏只渲染 visibleCount 个，避免大量卡片卡顿
-const visibleGames = computed(() => displayGames.value.slice(0, visibleCount.value))
-const hasMore = computed(() => visibleCount.value < displayGames.value.length)
-const loadMore = () => { visibleCount.value += PAGE_SIZE }
+// 分页模式：直接展示已加载的所有页数据
+const visibleGames = computed(() => displayGames.value)
+const hasMore = computed(() => currentPage.value * PAGE_SIZE < totalGames.value)
 
 const categoryInfo = ref({ desc: '游戏资源专区', bgImg: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20game%20collection%20colorful%20background&image_size=landscape_16_9' })
 
@@ -60,7 +61,10 @@ const loadCategoryInfo = async () => {
 
 const loadGames = async () => {
   try {
-    filteredGames.value = await gameApi.getGamesByCategory(categoryType.value)
+    const data = await gameApi.getGamesByCategoryPage(categoryType.value, 1, PAGE_SIZE)
+    filteredGames.value = Array.isArray(data) ? data : (data.games || [])
+    totalGames.value = data.total || filteredGames.value.length
+    currentPage.value = 1
   } catch (error) {
     console.error('Failed to load games:', error)
   } finally {
@@ -70,18 +74,37 @@ const loadGames = async () => {
 
 const setSubCategory = (sub: 'all' | 'raw' | 'cooked') => {
   activeSubCategory.value = sub
-  visibleCount.value = PAGE_SIZE
 }
 
 const loadGamesForCategory = async (type: string) => {
   isLoading.value = true
   activeSubCategory.value = 'all'
   try {
-    filteredGames.value = await gameApi.getGamesByCategory(type)
+    const data = await gameApi.getGamesByCategoryPage(type, 1, PAGE_SIZE)
+    filteredGames.value = Array.isArray(data) ? data : (data.games || [])
+    totalGames.value = data.total || filteredGames.value.length
+    currentPage.value = 1
   } catch (error) {
     console.error('Failed to load games:', error)
   } finally {
     isLoading.value = false
+  }
+}
+
+// 加载更多：取下一页追加
+const loadMore = async () => {
+  if (loadingMore.value) return
+  loadingMore.value = true
+  try {
+    const nextPage = currentPage.value + 1
+    const data = await gameApi.getGamesByCategoryPage(categoryType.value, nextPage, PAGE_SIZE)
+    const newGames = Array.isArray(data) ? data : (data.games || [])
+    filteredGames.value = [...filteredGames.value, ...newGames]
+    currentPage.value = nextPage
+  } catch (error) {
+    console.error('Failed to load more:', error)
+  } finally {
+    loadingMore.value = false
   }
 }
 
@@ -214,7 +237,7 @@ onUnmounted(() => {
             @click="loadMore"
             class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
           >
-            加载更多（还剩 {{ displayGames.length - visibleCount }} 个）
+            加载更多（还剩 {{ totalGames - visibleGames.length }} 个）
           </button>
         </div>
       </div>
@@ -358,7 +381,7 @@ onUnmounted(() => {
             @click="loadMore"
             class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
           >
-            加载更多（还剩 {{ displayGames.length - visibleCount }} 个）
+            加载更多（还剩 {{ totalGames - visibleGames.length }} 个）
           </button>
         </div>
       </div>

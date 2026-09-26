@@ -82,9 +82,9 @@ router.get('/', async (req, res) => {
     // 列表裁剪大字段：去掉 comments/images，保留 resources 供编辑使用
     const listFields = '-comments -images';
 
-    // 无分页参数时返回全部（兼容），但仍裁剪大字段
+    // 无分页参数时返回全部（兼容），但仍裁剪大字段并限制100条
     if (!page && !limit) {
-      const games = await Game.find(query).select(listFields).sort({ createdAt: -1 }).lean();
+      const games = await Game.find(query).select(listFields).sort({ createdAt: -1 }).limit(100).lean();
       return res.json(games);
     }
 

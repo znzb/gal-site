@@ -9,8 +9,10 @@ import { appState } from '@/store/appStore'
 const router = useRouter()
 const games = ref<Game[]>([])
 const isLoading = ref(true)
-const visibleCount = ref(30)
 const PAGE_SIZE = 30
+const currentPage = ref(1)
+const totalGames = ref(0)
+const loadingMore = ref(false)
 
 // 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
 const getDisplaySize = (game: Game) => {
@@ -23,19 +25,36 @@ const mockGames: Game[] = []
 
 // 直接用后端分类接口，避免加载全部游戏
 const filteredGames = computed(() => games.value)
-const visibleGames = computed(() => filteredGames.value.slice(0, visibleCount.value))
-const hasMore = computed(() => visibleCount.value < filteredGames.value.length)
-const loadMore = () => { visibleCount.value += PAGE_SIZE }
+const visibleGames = computed(() => filteredGames.value)
+const hasMore = computed(() => currentPage.value * PAGE_SIZE < totalGames.value)
 
 const loadGames = async () => {
   try {
-    const data = await gameApi.getGamesByCategory('柚子社')
-    games.value = Array.isArray(data) ? data : []
+    const data = await gameApi.getGamesByCategoryPage('柚子社', 1, PAGE_SIZE)
+    games.value = Array.isArray(data) ? data : (data.games || [])
+    totalGames.value = data.total || games.value.length
+    currentPage.value = 1
   } catch (error) {
     console.error('Failed to load games:', error)
     games.value = mockGames
   } finally {
     isLoading.value = false
+  }
+}
+
+const loadMore = async () => {
+  if (loadingMore.value) return
+  loadingMore.value = true
+  try {
+    const nextPage = currentPage.value + 1
+    const data = await gameApi.getGamesByCategoryPage('柚子社', nextPage, PAGE_SIZE)
+    const newGames = Array.isArray(data) ? data : (data.games || [])
+    games.value = [...games.value, ...newGames]
+    currentPage.value = nextPage
+  } catch (error) {
+    console.error('Failed to load more:', error)
+  } finally {
+    loadingMore.value = false
   }
 }
 
@@ -126,7 +145,7 @@ onUnmounted(() => {
           @click="loadMore"
           class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
         >
-          加载更多（还剩 {{ filteredGames.length - visibleCount }} 个）
+          加载更多（还剩 {{ totalGames - visibleGames.length }} 个）
         </button>
       </div>
       

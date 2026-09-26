@@ -99,12 +99,13 @@ const loadData = async () => {
   }
   try {
     const [gamesData, bannersData, announcementsData, categoriesData] = await Promise.all([
-      gameApi.getAllGames(),
+      gameApi.getGamesPage(1, 30),
       bannerApi.getAllBanners(),
       announcementApi.getAllAnnouncements(),
       categoryApi.getAllCategories()
     ])
-    games.value = Array.isArray(gamesData) ? gamesData : []
+    // 分页接口返回 { games, total, ... }
+    games.value = Array.isArray(gamesData) ? gamesData : (gamesData.games || [])
     banners.value = Array.isArray(bannersData) ? bannersData : []
     bannersLoaded.value = new Array(banners.value.length).fill(false)
     preloadBannerImages()
