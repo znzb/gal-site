@@ -20,10 +20,13 @@ const loadGames = async () => {
  }
 };
 const filteredGames = () => {
- if (!searchQuery.value)
- return games.value;
- return games.value.filter(game => game.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+ let result = games.value;
+ if (searchQuery.value) {
+ result = games.value.filter(game => game.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
  game.category.toLowerCase().includes(searchQuery.value.toLowerCase()));
+ }
+ // 后台首页只展示前 50 条，避免卡顿；完整列表去游戏管理页
+ return result.slice(0, 50);
 };
 const goToEdit = (gameId: string) => {
  router.push(`/admin/game/${gameId}`);

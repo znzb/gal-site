@@ -3,10 +3,52 @@ import Game from '../models/Game.js';
 
 const router = express.Router();
 
+// 列表页默认裁剪掉大字段，提升响应速度
+const LIST_FIELDS = '-resources -comments -images';
+
+// 构建模糊搜索条件（名称、描述、分类、标签）
+const buildSearchQuery = (keyword) => {
+  if (!keyword) return {};
+  const k = keyword.trim();
+  if (!k) return {};
+  const regex = { $regex: k, $options: 'i' };
+  return {
+    $or: [
+      { name: regex },
+      { description: regex },
+      { category: regex },
+      { tags: regex }
+    ]
+  };
+};
+
 router.get('/', async (req, res) => {
   try {
-    const games = await Game.find();
-    res.json(games);
+    const { page, limit, search } = req.query;
+    const searchQuery = buildSearchQuery(search);
+
+    // 无分页参数时保持兼容，但裁剪大字段
+    if (!page && !limit) {
+      const games = await Game.find(searchQuery).select(LIST_FIELDS).lean();
+      return res.json(games);
+    }
+
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 50;
+    const skip = (pageNum - 1) * limitNum;
+
+    const [games, total] = await Promise.all([
+      Game.find(searchQuery).select(LIST_FIELDS).skip(skip).limit(limitNum).lean(),
+      Game.countDocuments(searchQuery)
+    ]);
+
+    res.json({
+      games,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -28,6 +70,7 @@ router.get('/:id', async (req, res) => {
 router.get('/category/:category', async (req, res) => {
   try {
     const category = req.params.category;
+    const { page, limit } = req.query;
     let query;
     
     // 判断是否包含特定平台（支持中英文）
@@ -54,7 +97,6 @@ router.get('/category/:category', async (req, res) => {
     };
     
     if (category === 'PC资源') {
-      // PC资源：包含PC平台，且不是柚子社
       query = {
         $and: [
           {
@@ -63,7 +105,6 @@ router.get('/category/:category', async (req, res) => {
               { platforms: { $in: ['PC'] } },
               { platforms: { $exists: false }, category: 'PC资源' },
               { platforms: { $exists: false }, category: 'pc资源' },
-              // 支持字符串包含PC
               { platforms: { $regex: 'PC', $options: 'i' } }
             ]
           },
@@ -71,13 +112,10 @@ router.get('/category/:category', async (req, res) => {
         ]
       };
     } else if (category === 'Gal游戏') {
-      // Gal游戏：包含非PC平台（Android/安卓/KR），且不是柚子社
-      // 同时支持PC+Android的游戏也会显示在这里
       query = {
         $and: [
           {
             $or: [
-              // 包含安卓/Android
               { platforms: 'Android' },
               { platforms: { $in: ['Android', '安卓', 'KR'] } },
               { platforms: { $regex: 'Android|安卓|KR', $options: 'i' } },
@@ -89,7 +127,6 @@ router.get('/category/:category', async (req, res) => {
         ]
       };
     } else if (category === '柚子社') {
-      // 柚子社分类
       query = {
         $or: [
           { platforms: '柚子社' },
@@ -100,7 +137,6 @@ router.get('/category/:category', async (req, res) => {
         ]
       };
     } else {
-      // 其他分类使用原来的查询方式
       query = { 
         $or: [
           { category: category },
@@ -109,18 +145,36 @@ router.get('/category/:category', async (req, res) => {
       };
     }
     
-    const games = await Game.find(query);
-    
-    // 后处理过滤，确保柚子社游戏只在柚子社分类
-    const filteredGames = games.filter(game => {
-      if (category === '柚子社') {
-        return true; // 柚子社分类不过滤
-      }
-      // 其他分类过滤掉柚子社游戏
+    // 无分页时保持兼容，但裁剪大字段
+    if (!page && !limit) {
+      const games = await Game.find(query).select(LIST_FIELDS).lean();
+      const filteredGames = games.filter(game => {
+        if (category === '柚子社') return true;
+        return !isYuzusoftGame(game);
+      });
+      return res.json(filteredGames);
+    }
+
+    // 分页模式：先查全量做后处理过滤，再切片（数据量大但分类过滤后数量可控）
+    const allGames = await Game.find(query).select(LIST_FIELDS).lean();
+    const filteredGames = allGames.filter(game => {
+      if (category === '柚子社') return true;
       return !isYuzusoftGame(game);
     });
-    
-    res.json(filteredGames);
+
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 50;
+    const total = filteredGames.length;
+    const skip = (pageNum - 1) * limitNum;
+    const pagedGames = filteredGames.slice(skip, skip + limitNum);
+
+    res.json({
+      games: pagedGames,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

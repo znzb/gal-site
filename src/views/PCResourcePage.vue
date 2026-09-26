@@ -10,6 +10,8 @@ const activeCategory = ref<'all' | 'raw' | 'cooked'>('all')
 const pcGames = ref<Game[]>([])
 const isLoading = ref(true)
 const activeSort = ref('update')
+const visibleCount = ref(30)
+const PAGE_SIZE = 30
 
 // 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
 const getDisplaySize = (game: Game) => {
@@ -24,6 +26,10 @@ const filteredGames = computed(() => {
   }
   return pcGames.value.filter(game => game.subCategory === activeCategory.value)
 })
+
+const visibleGames = computed(() => filteredGames.value.slice(0, visibleCount.value))
+const hasMore = computed(() => visibleCount.value < filteredGames.value.length)
+const loadMore = () => { visibleCount.value += PAGE_SIZE }
 
 const loadGames = async () => {
   try {
@@ -44,6 +50,7 @@ const goToGame = (gameId: string) => {
 
 const setCategory = (category: 'all' | 'raw' | 'cooked') => {
   activeCategory.value = category
+  visibleCount.value = PAGE_SIZE
 }
 
 let dataRefreshTimer: number | null = null
@@ -121,7 +128,7 @@ onUnmounted(() => {
         
         <div class="grid grid-cols-2 gap-4 mt-4">
           <div 
-            v-for="game in filteredGames" 
+            v-for="game in visibleGames" 
             :key="game.id"
             @click="goToGame(game.id)"
             class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer border border-pink-100"
@@ -162,6 +169,15 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div v-if="hasMore" class="flex justify-center py-6">
+          <button 
+            @click="loadMore"
+            class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
+          >
+            加载更多（还剩 {{ filteredGames.length - visibleCount }} 个）
+          </button>
         </div>
         
         <div class="bg-white rounded-xl shadow-sm p-4 mt-6 border border-pink-100">
@@ -259,7 +275,7 @@ onUnmounted(() => {
         <div v-if="filteredGames.length > 0" class="px-4 mt-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div 
-              v-for="game in filteredGames" 
+              v-for="game in visibleGames" 
               :key="game.id" 
               class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-pink-100"
               @click="goToGame(game.id)"
@@ -308,6 +324,15 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div v-if="hasMore" class="flex justify-center py-6">
+          <button 
+            @click="loadMore"
+            class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
+          >
+            加载更多（还剩 {{ filteredGames.length - visibleCount }} 个）
+          </button>
         </div>
         
         <div v-else class="text-center py-20">

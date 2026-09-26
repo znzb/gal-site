@@ -78,8 +78,32 @@ router.get('/', async (req, res) => {
       query = { $and: [query, { name: { $regex: search, $options: 'i' } }] };
     }
 
-    const games = await Game.find(query).sort({ createdAt: -1 });
-    res.json(games);
+    const { page, limit } = req.query;
+    // 列表裁剪大字段：去掉 comments/images，保留 resources 供编辑使用
+    const listFields = '-comments -images';
+
+    // 无分页参数时返回全部（兼容），但仍裁剪大字段
+    if (!page && !limit) {
+      const games = await Game.find(query).select(listFields).sort({ createdAt: -1 }).lean();
+      return res.json(games);
+    }
+
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 50;
+    const skip = (pageNum - 1) * limitNum;
+
+    const [games, total] = await Promise.all([
+      Game.find(query).select(listFields).sort({ createdAt: -1 }).skip(skip).limit(limitNum).lean(),
+      Game.countDocuments(query)
+    ]);
+
+    res.json({
+      games,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, Search, X, Menu } from 'lucide-vue-next'
-import GameCard from '@/components/GameCard.vue'
 import { gameApi, type Game } from '@/api/api'
 import { appState } from '@/store/appStore'
 
@@ -21,79 +20,39 @@ const getDisplaySize = (game: Game) => {
   return game?.resources?.[0]?.size || s || '0MB'
 }
 
-// 计算单个游戏与查询词的相关性得分（越高越相关）
-const calcRelevance = (game: Game, query: string): number => {
-  const q = query.toLowerCase()
-  const name = (game.name || '').toLowerCase()
-  const description = (game.description || '').toLowerCase()
-  const category = (game.category || '').toLowerCase()
-  const tags = (game.tags || []).map(t => t.toLowerCase())
-
-  let score = 0
-  if (name === q) score += 100                    // 完全匹配名称
-  else if (name.startsWith(q)) score += 80        // 名称开头匹配
-  else if (name.includes(q)) score += 60          // 名称包含
-  if (description.includes(q)) score += 20        // 描述包含
-  if (category.includes(q)) score += 15           // 分类包含
-  if (tags.some(t => t === q)) score += 40        // 标签完全匹配
-  else if (tags.some(t => t.includes(q))) score += 25  // 标签包含
-
-  // 字符级模糊匹配：查询词所有字符都在名称中出现（容错输入）
-  if (score === 0) {
-    const chars = q.split('')
-    const allCharsInName = chars.every(c => name.includes(c))
-    if (allCharsInName && chars.length >= 2) {
-      score = 10
-    }
-  }
-  return score
-}
-
-// 实时过滤 + 相关性排序
-const filteredGames = computed(() => {
+// 后端搜索（模糊匹配名称/描述/分类/标签，已裁剪大字段）
+const performSearch = async () => {
   const query = searchQuery.value.trim()
-  if (!query) return []
-  const results = games.value
-    .map(game => ({ game, score: calcRelevance(game, query) }))
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .map(item => item.game)
-  return results
-})
-
-// 加载全部游戏（页面挂载时执行，确保搜索即时可用）
-const loadAllGames = async () => {
+  if (!query) return
+  hasSearched.value = true
   isLoading.value = true
   try {
-    const data = await gameApi.getAllGames()
+    const data = await gameApi.searchGames(query)
     games.value = Array.isArray(data) ? data : []
   } catch (error) {
-    console.error('加载游戏失败:', error)
+    console.error('搜索失败:', error)
     games.value = []
   } finally {
     isLoading.value = false
   }
 }
 
-// 输入变化时实时搜索（防抖 300ms）
+// 输入变化时实时搜索（防抖 400ms）
 watch(searchQuery, (val) => {
   if (debounceTimer) clearTimeout(debounceTimer)
+  if (!val.trim()) {
+    games.value = []
+    hasSearched.value = false
+    return
+  }
   debounceTimer = setTimeout(() => {
-    if (val.trim()) {
-      hasSearched.value = true
-      // 如果游戏尚未加载，先加载再过滤
-      if (games.value.length === 0) {
-        loadAllGames()
-      }
-    }
-  }, 300)
+    performSearch()
+  }, 400)
 })
 
 const handleSearch = () => {
-  hasSearched.value = true
-  if (games.value.length === 0) {
-    loadAllGames()
-  }
+  if (debounceTimer) clearTimeout(debounceTimer)
+  performSearch()
 }
 
 const handleGameClick = (game: Game) => {
@@ -103,19 +62,17 @@ const handleGameClick = (game: Game) => {
 
 const clearSearch = () => {
   searchQuery.value = ''
+  games.value = []
   hasSearched.value = false
 }
 
 const hotTags = ['恋爱', '校园', '奇幻', '冒险', '治愈', '柚子社', 'PC资源']
 
-onMounted(async () => {
-  // 预加载全部游戏，让搜索即时响应
-  await loadAllGames()
-  
+onMounted(() => {
   const queryParam = route.query.q
   if (queryParam && typeof queryParam === 'string') {
     searchQuery.value = decodeURIComponent(queryParam)
-    hasSearched.value = true
+    performSearch()
   }
 })
 </script>
@@ -176,7 +133,7 @@ onMounted(async () => {
         </div>
       </div>
       
-      <div v-else-if="filteredGames.length === 0" class="text-center py-20">
+      <div v-else-if="games.length === 0" class="text-center py-20">
         <div class="text-6xl mb-4">😕</div>
         <p class="text-pink-400 mb-2">未找到"{{ searchQuery }}"相关游戏</p>
         <p class="text-gray-400 text-sm mb-4">试试搜索这些热门关键词：</p>
@@ -199,10 +156,10 @@ onMounted(async () => {
       </div>
       
       <div v-else>
-        <p class="text-sm text-pink-400 mb-3">找到 {{ filteredGames.length }} 个相关游戏</p>
+        <p class="text-sm text-pink-400 mb-3">找到 {{ games.length }} 个相关游戏</p>
         <div class="grid grid-cols-2 gap-4">
         <div 
-          v-for="game in filteredGames" 
+          v-for="game in games" 
           :key="game.id || game._id" 
           class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-pink-100"
           @click="handleGameClick(game)"

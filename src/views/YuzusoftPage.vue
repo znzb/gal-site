@@ -9,6 +9,8 @@ import { appState } from '@/store/appStore'
 const router = useRouter()
 const games = ref<Game[]>([])
 const isLoading = ref(true)
+const visibleCount = ref(30)
+const PAGE_SIZE = 30
 
 // 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
 const getDisplaySize = (game: Game) => {
@@ -19,17 +21,16 @@ const getDisplaySize = (game: Game) => {
 
 const mockGames: Game[] = []
 
-const filteredGames = computed(() => {
-  return games.value.filter(game => game.isYuzusoft === true)
-})
+// 直接用后端分类接口，避免加载全部游戏
+const filteredGames = computed(() => games.value)
+const visibleGames = computed(() => filteredGames.value.slice(0, visibleCount.value))
+const hasMore = computed(() => visibleCount.value < filteredGames.value.length)
+const loadMore = () => { visibleCount.value += PAGE_SIZE }
 
 const loadGames = async () => {
   try {
-    const data = await gameApi.getAllGames()
-    console.log('API返回的原始数据:', data)
-    games.value = Array.isArray(data) ? data : data.games || data || mockGames
-    console.log('处理后的games:', games.value)
-    console.log('筛选后的柚子社游戏:', games.value.filter(game => game.isYuzusoft === true))
+    const data = await gameApi.getGamesByCategory('柚子社')
+    games.value = Array.isArray(data) ? data : []
   } catch (error) {
     console.error('Failed to load games:', error)
     games.value = mockGames
@@ -79,9 +80,9 @@ onUnmounted(() => {
     </div>
     
     <div v-else class="pt-16 px-4 mt-4">
-      <div v-if="filteredGames.length > 0" class="grid grid-cols-2 gap-4">
+      <div v-if="visibleGames.length > 0" class="grid grid-cols-2 gap-4">
         <div 
-          v-for="game in filteredGames" 
+          v-for="game in visibleGames" 
           :key="game.id || game._id" 
           class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-pink-100"
           @click="router.push(`/game/${game.id || game._id}`)"
@@ -118,6 +119,15 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div v-if="hasMore" class="flex justify-center py-6">
+        <button 
+          @click="loadMore"
+          class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
+        >
+          加载更多（还剩 {{ filteredGames.length - visibleCount }} 个）
+        </button>
       </div>
       
       <div v-else class="text-center py-20">

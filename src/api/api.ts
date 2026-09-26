@@ -132,7 +132,16 @@ const fetchApi = async <T>(url: string, options?: RequestInit, retryCount: numbe
   }
 };
 
+export interface PageResult<T> {
+  games: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export const gameApi = {
+  // 列表页已裁剪大字段（无 resources/comments/images），速度更快
   getAllGames: async (): Promise<Game[]> => {
     const cacheKey = 'games_all';
     if (dataCache.has(cacheKey)) {
@@ -141,6 +150,24 @@ export const gameApi = {
     const data = await fetchApi(`${BASE_URL}/games`);
     dataCache.set(cacheKey, data);
     return data;
+  },
+
+  // 分页获取游戏列表（带可选搜索关键词）
+  getGamesPage: async (page: number, limit: number, search?: string): Promise<PageResult<Game>> => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) params.set('search', search);
+    const url = `${BASE_URL}/games?${params.toString()}`;
+    const data = await fetchApi(url);
+    return data;
+  },
+
+  // 后端搜索游戏（模糊匹配名称/描述/分类/标签）
+  searchGames: async (keyword: string): Promise<Game[]> => {
+    const params = new URLSearchParams({ search: keyword });
+    const url = `${BASE_URL}/games?${params.toString()}`;
+    const data = await fetchApi(url);
+    // 无分页参数时返回数组
+    return Array.isArray(data) ? data : (data.games || []);
   },
 
   getGameById: async (id: string): Promise<Game> => {
@@ -160,6 +187,14 @@ export const gameApi = {
     }
     const data = await fetchApi(`${BASE_URL}/games/category/${category}`);
     dataCache.set(cacheKey, data);
+    return data;
+  },
+
+  // 分页获取分类下的游戏
+  getGamesByCategoryPage: async (category: string, page: number, limit: number): Promise<PageResult<Game>> => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    const url = `${BASE_URL}/games/category/${category}?${params.toString()}`;
+    const data = await fetchApi(url);
     return data;
   },
 

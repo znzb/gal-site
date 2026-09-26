@@ -143,10 +143,7 @@ const loadData = async () => {
   relatedCache.value.clear()
   
   try {
-    const [gameData, allGames] = await Promise.all([
-      gameApi.getGameById(gameId.value),
-      gameApi.getAllGames()
-    ])
+    const gameData = await gameApi.getGameById(gameId.value)
     
     if (gameData) {
       game.value = gameData
@@ -154,12 +151,17 @@ const loadData = async () => {
       
       await preloadImage(gameData.cover)
       
-      if (allGames.length > 0) {
-        const filtered = allGames.filter(g => g.id !== gameId.value && g.category === gameData.category).slice(0, 3)
-        relatedGames.value = filtered
-        relatedCache.value.set(gameId.value, filtered)
-        
-        filtered.forEach(g => preloadImage(g.cover))
+      // 用分类接口获取相关游戏，避免加载全部游戏
+      try {
+        const categoryGames = await gameApi.getGamesByCategory(gameData.category)
+        if (Array.isArray(categoryGames) && categoryGames.length > 0) {
+          const filtered = categoryGames.filter(g => (g.id || g._id) !== gameId.value).slice(0, 3)
+          relatedGames.value = filtered
+          relatedCache.value.set(gameId.value, filtered)
+          filtered.forEach(g => preloadImage(g.cover))
+        }
+      } catch (catErr) {
+        console.error('加载相关游戏失败:', catErr)
       }
       
       resources.value = gameData.resources || []

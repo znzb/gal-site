@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Gamepad2, Monitor, Image, BookOpen, Download, FileText, Music, Zap, Cpu, HardDrive, Globe, MessageCircle } from 'lucide-vue-next'
 import Header from '@/components/Header.vue'
@@ -18,6 +18,15 @@ const announcements = ref<Announcement[]>([])
 const categories = ref<CategoryItem[]>([])
 const isLoading = ref(!hasLoadedOnce)
 const showJoinGroupModal = ref(false)
+
+// 首页只展示前 30 个游戏，避免 4000+ 卡片同时渲染卡顿
+const HOT_LIMIT = 30
+const hotGames = computed(() => {
+  return [...games.value]
+    .sort((a, b) => (b.downloads || 0) - (a.downloads || 0))
+    .slice(0, HOT_LIMIT)
+})
+const latestGames = computed(() => games.value.slice(0, HOT_LIMIT))
 
 const groupInfo = ref({
   groupNumber: '123456789',
@@ -278,7 +287,7 @@ onUnmounted(() => {
           
           <div class="grid grid-cols-2 gap-3">
             <GameCard 
-              v-for="game in games" 
+              v-for="game in hotGames" 
               :key="game.id" 
               :game="game"
               @click="handleGameClick"
@@ -458,7 +467,7 @@ onUnmounted(() => {
             
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               <GameCard 
-                v-for="game in games" 
+                v-for="game in latestGames" 
                 :key="game.id" 
                 :game="game"
                 @click="handleGameClick"

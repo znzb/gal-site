@@ -91,6 +91,13 @@
       </div>
     </div>
 
+    <!-- 分页控件 -->
+    <div v-if="totalPages > 1" class="pagination">
+      <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="page-btn">上一页</button>
+      <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 页，共 {{ total }} 条</span>
+      <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="page-btn">下一页</button>
+    </div>
+
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal" @click.stop>
         <h2>{{ editingGame ? '编辑游戏' : '添加游戏' }}</h2>
@@ -338,6 +345,12 @@ const selectedIds = ref([]);
 const { setResources, setComments } = useGameStore();
 const filterCategory = ref('');
 const filterSubCategory = ref('');
+// 分页状态
+const currentPage = ref(1);
+const pageSize = 50;
+const total = ref(0);
+const totalPages = ref(1);
+let searchDebounceTimer = null;
 
 const filteredCategories = computed(() => {
   return categories.value.filter(cat => 
@@ -388,12 +401,11 @@ const gameForm = ref({
   }]
 });
 
+// 搜索和分类走后端，subCategory 做客户端过滤（当前页数据量小）
 const filteredGames = computed(() => {
   return games.value.filter(game => {
-    const matchesSearch = game.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const matchesCategory = !filterCategory.value || game.category === filterCategory.value;
     const matchesSubCategory = !filterSubCategory.value || game.subCategory === filterSubCategory.value;
-    return matchesSearch && matchesCategory && matchesSubCategory;
+    return matchesSubCategory;
   });
 });
 
@@ -448,9 +460,47 @@ onMounted(async () => {
 });
 
 async function loadGames() {
-  games.value = await request('/admin/games');
+  const params = new URLSearchParams({
+    page: String(currentPage.value),
+    limit: String(pageSize)
+  });
+  if (searchQuery.value.trim()) params.set('search', searchQuery.value.trim());
+  if (filterCategory.value) params.set('category', filterCategory.value);
+
+  const data = await request(`/admin/games?${params.toString()}`);
+  // 兼容分页和非分页返回
+  if (data && Array.isArray(data.games)) {
+    games.value = data.games;
+    total.value = data.total || 0;
+    totalPages.value = data.totalPages || 1;
+  } else {
+    games.value = Array.isArray(data) ? data : [];
+    total.value = games.value.length;
+    totalPages.value = 1;
+  }
   selectedIds.value = [];
 }
+
+function goToPage(page) {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+  loadGames();
+}
+
+// 搜索框防抖（400ms）
+watch(searchQuery, () => {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    currentPage.value = 1;
+    loadGames();
+  }, 400);
+});
+
+// 分类变化时重置页码
+watch(filterCategory, () => {
+  currentPage.value = 1;
+  loadGames();
+});
 
 function toggleSelect(id) {
   const idx = selectedIds.value.indexOf(id);
@@ -1258,6 +1308,43 @@ tbody tr:hover {
   background: #faf7fc;
   transition: all 0.2s;
   box-sizing: border-box;
+}
+
+/* 分页控件 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  padding: 8px 18px;
+  border: 1.5px solid #e2dcf0;
+  border-radius: 10px;
+  background: #fff;
+  color: #6c5ce7;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #6c5ce7;
+  color: #fff;
+  border-color: #6c5ce7;
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: #8a86a0;
+  font-size: 14px;
 }
 
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
