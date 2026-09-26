@@ -192,9 +192,14 @@ export const gameApi = {
 
   // 分页获取分类下的游戏
   getGamesByCategoryPage: async (category: string, page: number, limit: number): Promise<PageResult<Game>> => {
+    const cacheKey = `games_category_${category}_p${page}_l${limit}`;
+    if (dataCache.has(cacheKey)) {
+      return dataCache.get<PageResult<Game>>(cacheKey)!;
+    }
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
     const url = `${BASE_URL}/games/category/${category}?${params.toString()}`;
     const data = await fetchApi(url);
+    dataCache.set(cacheKey, data);
     return data;
   },
 

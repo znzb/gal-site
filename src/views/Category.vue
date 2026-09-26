@@ -96,13 +96,13 @@ const loadGamesForCategory = async (type: string) => {
 const goToPage = async (page: number) => {
   if (page < 1 || page > totalPages.value || loadingPage.value) return
   loadingPage.value = true
+  // 保留旧数据，仅滚动到顶部，避免白屏
+  window.scrollTo({ top: 0, behavior: 'smooth' })
   try {
     currentPage.value = page
     const data = await gameApi.getGamesByCategoryPage(categoryType.value, page, PAGE_SIZE)
     filteredGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || filteredGames.value.length
-    // 翻页后滚动到顶部
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   } catch (error) {
     console.error('Failed to load page:', error)
   } finally {
@@ -195,8 +195,11 @@ onUnmounted(() => {
         </div>
       </div>
       
-      <div v-if="visibleGames.length > 0" class="px-4 grid grid-cols-2 gap-4">
-        <div 
+      <div v-if="visibleGames.length > 0" class="px-4 grid grid-cols-2 gap-4 relative">
+        <div v-if="loadingPage" class="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+          <div class="w-10 h-10 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
+        </div>
+        <div
           v-for="game in visibleGames" 
           :key="game.id" 
           class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-pink-100"
@@ -235,30 +238,30 @@ onUnmounted(() => {
           </div>
         </div>
         <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6 col-span-2">
-          <button 
+          <button
             @click="goToPage(currentPage - 1)"
             :disabled="!hasPrev || loadingPage"
             class="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            上一页
+            {{ loadingPage ? '加载中...' : '上一页' }}
           </button>
           <span class="px-4 py-2 bg-white text-pink-600 text-sm font-medium rounded-xl border border-pink-200">
             {{ currentPage }} / {{ totalPages }}
           </span>
-          <button 
+          <button
             @click="goToPage(currentPage + 1)"
             :disabled="!hasNext || loadingPage"
             class="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            下一页
+            {{ loadingPage ? '加载中...' : '下一页' }}
           </button>
         </div>
       </div>
-      
+
       <div v-else class="text-center py-20">
         <div class="text-6xl mb-4">🎮</div>
         <p class="text-pink-400">暂无该分类的游戏</p>
-        <button 
+        <button
           @click="router.push('/')"
           class="mt-4 px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200">
           返回首页
@@ -337,7 +340,10 @@ onUnmounted(() => {
         </div>
       </div>
       
-      <div v-if="visibleGames.length > 0" class="px-4 mt-6">
+      <div v-if="visibleGames.length > 0" class="px-4 mt-6 relative">
+        <div v-if="loadingPage" class="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+          <div class="w-10 h-10 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div 
             v-for="game in visibleGames" 
@@ -390,22 +396,22 @@ onUnmounted(() => {
           </div>
         </div>
         <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6">
-          <button 
+          <button
             @click="goToPage(currentPage - 1)"
             :disabled="!hasPrev || loadingPage"
             class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            上一页
+            {{ loadingPage ? '加载中...' : '上一页' }}
           </button>
           <span class="px-6 py-2 bg-white text-pink-600 text-sm font-medium rounded-xl border border-pink-200">
             第 {{ currentPage }} / {{ totalPages }} 页，共 {{ totalGames }} 个
           </span>
-          <button 
+          <button
             @click="goToPage(currentPage + 1)"
             :disabled="!hasNext || loadingPage"
             class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            下一页
+            {{ loadingPage ? '加载中...' : '下一页' }}
           </button>
         </div>
       </div>

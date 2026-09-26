@@ -73,30 +73,7 @@ router.get('/category/:category', async (req, res) => {
     const category = req.params.category;
     const { page, limit } = req.query;
     let query;
-    
-    // 判断是否包含特定平台（支持中英文）
-    const hasPlatform = (gamePlatforms, platformNames) => {
-      if (!gamePlatforms) return false;
-      if (typeof gamePlatforms === 'string') {
-        return platformNames.some(p => gamePlatforms.includes(p));
-      }
-      if (Array.isArray(gamePlatforms)) {
-        return gamePlatforms.some(gp => platformNames.some(p => gp.includes(p)));
-      }
-      return false;
-    };
-    
-    // 判断是否是柚子社游戏
-    const isYuzusoftGame = (game) => {
-      return game.isYuzusoft || 
-             (game.platforms && (
-               (typeof game.platforms === 'string' && game.platforms.includes('柚子社')) ||
-               (Array.isArray(game.platforms) && game.platforms.some(p => p.includes('柚子社')))
-             )) ||
-             game.category === '柚子社' ||
-             (game.categories && game.categories.includes('柚子社'));
-    };
-    
+
     if (category === 'PC资源') {
       query = {
         $and: [
@@ -148,29 +125,21 @@ router.get('/category/:category', async (req, res) => {
     
     // 无分页时保持兼容，但裁剪大字段并限制返回数量
     if (!page && !limit) {
-      const games = await Game.find(query).select(LIST_FIELDS).slice('resources', 1).lean();
-      const filteredGames = games.filter(game => {
-        if (category === '柚子社') return true;
-        return !isYuzusoftGame(game);
-      }).slice(0, 100);
-      return res.json(filteredGames);
+      const games = await Game.find(query).select(LIST_FIELDS).slice('resources', 1).limit(100).lean();
+      return res.json(games);
     }
-
-    // 分页模式：先查全量做后处理过滤，再切片（数据量大但分类过滤后数量可控）
-    const allGames = await Game.find(query).select(LIST_FIELDS).slice('resources', 1).lean();
-    const filteredGames = allGames.filter(game => {
-      if (category === '柚子社') return true;
-      return !isYuzusoftGame(game);
-    });
 
     const pageNum = parseInt(page) || 1;
     const limitNum = parseInt(limit) || 50;
-    const total = filteredGames.length;
     const skip = (pageNum - 1) * limitNum;
-    const pagedGames = filteredGames.slice(skip, skip + limitNum);
+
+    const [games, total] = await Promise.all([
+      Game.find(query).select(LIST_FIELDS).slice('resources', 1).skip(skip).limit(limitNum).lean(),
+      Game.countDocuments(query)
+    ]);
 
     res.json({
-      games: pagedGames,
+      games,
       total,
       page: pageNum,
       limit: limitNum,
