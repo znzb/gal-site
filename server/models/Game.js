@@ -12,7 +12,9 @@ const resourceSchema = new mongoose.Schema({
   dateDisplay: { type: String },
   authorName: { type: String },
   authorAvatar: { type: String },
-  authorResources: { type: Number, default: 0 }
+  authorResources: { type: Number, default: 0 },
+  likes: { type: Number, default: 0 },
+  downloads: { type: Number, default: 0 }
 });
 
 const commentSchema = new mongoose.Schema({

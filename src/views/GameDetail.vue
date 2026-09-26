@@ -126,6 +126,35 @@ const handleDownload = async () => {
   }
 }
 
+// 资源点赞
+const likeResource = async (resourceId: string) => {
+  if (!game.value) return
+  try {
+    const result = await gameApi.likeResource(game.value.id, resourceId)
+    const res = resources.value.find(r => (r.id || r._id) === resourceId)
+    if (res) {
+      res.likes = result.likes
+    }
+  } catch (error) {
+    console.error('点赞失败:', error)
+  }
+}
+
+// 资源下载统计
+const onResourceDownload = async (resourceId: string) => {
+  if (!game.value) return
+  try {
+    const result = await gameApi.recordResourceDownload(game.value.id, resourceId)
+    game.value.downloads = result.downloads
+    const res = resources.value.find(r => (r.id || r._id) === resourceId)
+    if (res) {
+      res.downloads = result.resourceDownloads
+    }
+  } catch (error) {
+    console.error('下载统计失败:', error)
+  }
+}
+
 const gameCache = ref<Map<string, Game>>(new Map())
 const relatedCache = ref<Map<string, Game[]>>(new Map())
 
@@ -515,14 +544,15 @@ onUnmounted(() => {
                   </div>
                   
                   <div class="flex items-center gap-3">
-                    <button class="flex items-center gap-1 text-pink-400 hover:text-pink-500 transition-colors">
+                    <button @click="likeResource(resource.id || resource._id)" class="flex items-center gap-1 text-pink-400 hover:text-pink-500 transition-colors">
                       <Heart class="w-5 h-5" />
-                      <span class="text-sm">0</span>
+                      <span class="text-sm">{{ resource.likes || 0 }}</span>
                     </button>
-                    <a 
-                      :href="resource.url" 
+                    <a
+                      :href="resource.url"
                       target="_blank"
                       rel="noopener noreferrer"
+                      @click="onResourceDownload(resource.id || resource._id)"
                       class="w-11 h-11 bg-gradient-to-br from-pink-400 to-pink-500 rounded-xl flex items-center justify-center text-white hover:shadow-lg transition-all"
                     >
                       <Download class="w-5 h-5" />

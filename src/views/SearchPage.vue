@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, Search, X, Menu } from 'lucide-vue-next'
-import { gameApi, type Game } from '@/api/api'
+import { gameApi, searchLogApi, type Game } from '@/api/api'
 import { appState } from '@/store/appStore'
 
 const router = useRouter()
@@ -29,6 +29,8 @@ const performSearch = async () => {
   try {
     const data = await gameApi.searchGames(query)
     games.value = Array.isArray(data) ? data : []
+    // 异步记录搜索日志，不阻塞结果
+    searchLogApi.recordSearch(query).catch(() => {})
   } catch (error) {
     console.error('搜索失败:', error)
     games.value = []

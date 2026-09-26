@@ -4,44 +4,53 @@ import { authMiddleware } from './adminAuth.js';
 
 const router = express.Router();
 
-router.get('/trending', async (req, res) => {
-  try {
-    const logs = await SearchLog.find()
-      .sort({ count: -1 })
-      .limit(20);
-    res.json(logs);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-router.get('/logs', authMiddleware, async (req, res) => {
-  try {
-    const logs = await SearchLog.find()
-      .sort({ lastSearched: -1 })
-      .limit(100);
-    res.json(logs);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
+// 记录搜索（公开接口）
 router.post('/', async (req, res) => {
   try {
     const { keyword } = req.body;
-    let log = await SearchLog.findOne({ keyword });
-    
+    if (!keyword || !keyword.trim()) {
+      return res.status(400).json({ message: '关键词不能为空' });
+    }
+    const kw = keyword.trim();
+    const log = await SearchLog.findOne({ keyword: kw });
     if (log) {
       log.count += 1;
       log.lastSearched = new Date();
+      await log.save();
     } else {
-      log = new SearchLog({ keyword });
+      await SearchLog.create({ keyword: kw, count: 1, lastSearched: new Date() });
     }
-    
-    await log.save();
-    res.json(log);
+    res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// 热门搜索（公开）
+router.get('/trending', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 20;
+    const logs = await SearchLog.find()
+      .sort({ count: -1, lastSearched: -1 })
+      .limit(limit)
+      .lean();
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// 管理端：热门搜索统计
+router.get('/admin/trending', authMiddleware, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const logs = await SearchLog.find()
+      .sort({ count: -1, lastSearched: -1 })
+      .limit(limit)
+      .lean();
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

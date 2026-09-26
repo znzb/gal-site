@@ -206,4 +206,43 @@ router.post('/:id/download', async (req, res) => {
   }
 });
 
+// 资源点赞
+router.post('/:id/resources/:resourceId/like', async (req, res) => {
+  try {
+    const game = await Game.findOne({ id: req.params.id });
+    if (!game) {
+      return res.status(404).json({ message: '游戏不存在' });
+    }
+    const resource = game.resources.find(r => (r.id || r._id?.toString()) === req.params.resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: '资源不存在' });
+    }
+    resource.likes = (resource.likes || 0) + 1;
+    await game.save();
+    res.json({ likes: resource.likes });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// 资源下载统计（点击资源链接时调用）
+router.post('/:id/resources/:resourceId/download', async (req, res) => {
+  try {
+    const game = await Game.findOne({ id: req.params.id });
+    if (!game) {
+      return res.status(404).json({ message: '游戏不存在' });
+    }
+    const resource = game.resources.find(r => (r.id || r._id?.toString()) === req.params.resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: '资源不存在' });
+    }
+    resource.downloads = (resource.downloads || 0) + 1;
+    game.downloads += 1;
+    await game.save();
+    res.json({ downloads: game.downloads, resourceDownloads: resource.downloads });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 export default router;

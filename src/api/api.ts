@@ -6,6 +6,7 @@ const BASE_URL = RENDER_URL + '/api';
 
 export interface ResourceLink {
   id?: string;
+  _id?: string;
   name: string;
   url: string;
   type: 'main' | 'patch' | 'update';
@@ -17,6 +18,8 @@ export interface ResourceLink {
   authorName: string;
   authorAvatar: string;
   authorResources: number;
+  likes?: number;
+  downloads?: number;
 }
 
 export interface Comment {
@@ -224,6 +227,14 @@ export const gameApi = {
 
   downloadGame: async (id: string): Promise<{ downloads: number }> => {
     return fetchApi(`${BASE_URL}/games/${id}/download`, { method: 'POST' });
+  },
+
+  likeResource: async (gameId: string, resourceId: string): Promise<{ likes: number }> => {
+    return fetchApi(`${BASE_URL}/games/${gameId}/resources/${resourceId}/like`, { method: 'POST' });
+  },
+
+  recordResourceDownload: async (gameId: string, resourceId: string): Promise<{ downloads: number; resourceDownloads: number }> => {
+    return fetchApi(`${BASE_URL}/games/${gameId}/resources/${resourceId}/download`, { method: 'POST' });
   }
 };
 
@@ -388,6 +399,18 @@ export interface ToolGuide {
   items: ToolGuideItem[];
   tutorials?: TutorialCard[];
 }
+
+export const searchLogApi = {
+  recordSearch: async (keyword: string): Promise<{ success: boolean }> => {
+    return fetchApi(`${BASE_URL}/search`, {
+      method: 'POST',
+      body: JSON.stringify({ keyword })
+    });
+  },
+  getTrending: async (limit = 20): Promise<{ keyword: string; count: number }[]> => {
+    return fetchApi(`${BASE_URL}/search/trending?limit=${limit}`);
+  }
+};
 
 export const toolApi = {
   getAllTools: async (): Promise<Tool[]> => {
