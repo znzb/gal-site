@@ -15,42 +15,36 @@
         <div class="card-icon">🐧</div>
         <h2>QQ群</h2>
         
-        <div class="qrcode-section">
-          <img v-if="groupInfo.qrCode" :src="groupInfo.qrCode" alt="群二维码" class="qrcode-img" onerror="this.style.display='none'" />
-          <div v-else class="qrcode-placeholder">
-            <div class="qrcode-icon">📱</div>
-            <p>群二维码</p>
-          </div>
-        </div>
-
         <div class="group-info">
+          <div v-if="groupInfo.groupName" class="info-item">
+            <span class="label">群名称</span>
+            <span class="value">{{ groupInfo.groupName }}</span>
+          </div>
           <div class="info-item">
             <span class="label">群号</span>
             <span class="value">{{ groupInfo.groupNumber }}</span>
             <button @click="copyGroupNumber" class="copy-btn">复制</button>
           </div>
-          <div v-if="groupInfo.groupName" class="info-item">
-            <span class="label">群名称</span>
-            <span class="value">{{ groupInfo.groupName }}</span>
-          </div>
         </div>
+
+        <!-- 直接加入Q群按钮 -->
+        <a
+          :href="joinLink"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="join-btn"
+        >
+          <span class="join-btn-icon">💬</span>
+          <span>加入Q群</span>
+        </a>
 
         <div v-if="groupInfo.description" class="description">
           <p>{{ groupInfo.description }}</p>
         </div>
 
-        <div class="instructions">
-          <h3>加群方式</h3>
-          <ul>
-            <li>方法一：扫描上方二维码</li>
-            <li>方法二：复制群号搜索添加</li>
-            <li>方法三：点击复制按钮后直接粘贴搜索</li>
-          </ul>
-        </div>
-
         <div class="notice">
           <div class="notice-icon">ℹ️</div>
-          <p>入群申请会在24小时内通过，请耐心等待</p>
+          <p>点击上方按钮自动唤起QQ加群，如未跳转请复制群号手动搜索</p>
         </div>
       </div>
     </div>
@@ -59,7 +53,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const router = useRouter()
 const isLoading = ref(true)
@@ -67,7 +61,13 @@ const groupInfo = ref({
   groupNumber: '123456789',
   groupName: '',
   qrCode: '',
+  joinUrl: '',
   description: ''
+})
+
+const joinLink = computed(() => {
+  if (groupInfo.value.joinUrl) return groupInfo.value.joinUrl
+  return 'https://qm.qq.com/q/' + groupInfo.value.groupNumber
 })
 
 const loadGroupInfo = async () => {
@@ -79,6 +79,7 @@ const loadGroupInfo = async () => {
         groupNumber: data.groupNumber || '123456789',
         groupName: data.groupName || '',
         qrCode: data.qrCode || '',
+        joinUrl: data.joinUrl || '',
         description: data.description || ''
       }
     }

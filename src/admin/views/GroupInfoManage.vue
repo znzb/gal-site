@@ -33,17 +33,14 @@
           </div>
 
           <div class="form-group">
-            <label>二维码图片URL</label>
-            <input 
-              v-model="formData.qrCode" 
-              type="text" 
-              placeholder="请输入二维码图片链接"
+            <label>加群链接</label>
+            <input
+              v-model="formData.joinUrl"
+              type="text"
+              placeholder="请输入QQ加群链接，如 https://qm.qq.com/q/xxxxx"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
             />
-            <div v-if="formData.qrCode" class="mt-4">
-              <p class="text-sm text-gray-500 mb-2">预览：</p>
-              <img :src="formData.qrCode" alt="二维码预览" class="w-40 h-40 object-cover rounded-lg border border-gray-200" onerror="this.style.display='none'" />
-            </div>
+            <p class="text-sm text-gray-400 mt-2">获取方式：QQ群 → 设置 → 群分享 → 复制链接</p>
           </div>
 
           <div class="form-group">
@@ -75,18 +72,18 @@
             </div>
             
             <div class="p-6 text-center">
-              <div class="w-40 h-40 bg-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-100">
-                <span class="text-6xl">{{ formData.qrCode ? '📷' : '🐧' }}</span>
+              <div class="w-20 h-20 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-pink-100">
+                <span class="text-4xl">🐧</span>
               </div>
-              
+
               <div class="bg-pink-50 rounded-xl p-4 mb-4 border border-pink-100">
                 <p class="text-gray-600 text-sm mb-2">{{ formData.groupName }}</p>
                 <p class="text-2xl font-bold text-gray-800 mb-3">{{ formData.groupNumber }}</p>
                 <button class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg">
-                  复制群号
+                  加入Q群
                 </button>
               </div>
-              
+
               <p class="text-sm text-gray-500">{{ formData.description }}</p>
             </div>
           </div>
@@ -106,6 +103,7 @@ const formData = ref({
   groupNumber: '',
   groupName: '',
   qrCode: '',
+  joinUrl: '',
   description: ''
 });
 
@@ -117,6 +115,7 @@ const loadGroupInfo = async () => {
         groupNumber: data.groupNumber || '',
         groupName: data.groupName || '',
         qrCode: data.qrCode || '',
+        joinUrl: data.joinUrl || '',
         description: data.description || ''
       };
     }

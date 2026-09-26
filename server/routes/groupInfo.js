@@ -22,17 +22,18 @@ router.get('/', async (req, res) => {
 
 router.put('/', authMiddleware, async (req, res) => {
   try {
-    const { groupNumber, groupName, qrCode, description } = req.body;
+    const { groupNumber, groupName, qrCode, joinUrl, description } = req.body;
     let groupInfo = await GroupInfo.findOne({ id: 'group-info' });
-    
+
     if (!groupInfo) {
       groupInfo = new GroupInfo({ id: 'group-info' });
     }
-    
-    groupInfo.groupNumber = groupNumber || groupInfo.groupNumber;
-    groupInfo.groupName = groupName || groupInfo.groupName;
-    groupInfo.qrCode = qrCode || groupInfo.qrCode;
-    groupInfo.description = description || groupInfo.description;
+
+    groupInfo.groupNumber = groupNumber !== undefined ? groupNumber : groupInfo.groupNumber;
+    groupInfo.groupName = groupName !== undefined ? groupName : groupInfo.groupName;
+    groupInfo.qrCode = qrCode !== undefined ? qrCode : groupInfo.qrCode;
+    groupInfo.joinUrl = joinUrl !== undefined ? joinUrl : groupInfo.joinUrl;
+    groupInfo.description = description !== undefined ? description : groupInfo.description;
     groupInfo.updatedAt = new Date();
     
     await groupInfo.save();

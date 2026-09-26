@@ -5,6 +5,7 @@ const groupInfoSchema = new mongoose.Schema({
   groupNumber: { type: String, default: '123456789' },
   groupName: { type: String, default: 'GalGame资源共享' },
   qrCode: { type: String, default: '' },
+  joinUrl: { type: String, default: '' },
   description: { type: String, default: '欢迎加入我们的QQ群！' },
   updatedAt: { type: Date, default: Date.now }
 });
