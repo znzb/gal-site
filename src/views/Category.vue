@@ -66,10 +66,23 @@ const loadGames = async () => {
     const data = await gameApi.getGamesByCategoryPage(categoryType.value, currentPage.value, PAGE_SIZE)
     filteredGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || filteredGames.value.length
+    prefetchAdjacent(currentPage.value)
   } catch (error) {
     console.error('Failed to load games:', error)
   } finally {
     isLoading.value = false
+  }
+}
+
+// 静默预加载相邻页，翻页时走缓存秒开
+const prefetchAdjacent = (page: number) => {
+  const next = page + 1
+  const prev = page - 1
+  if (next <= totalPages.value) {
+    gameApi.getGamesByCategoryPage(categoryType.value, next, PAGE_SIZE).catch(() => {})
+  }
+  if (prev >= 1) {
+    gameApi.getGamesByCategoryPage(categoryType.value, prev, PAGE_SIZE).catch(() => {})
   }
 }
 
@@ -85,6 +98,7 @@ const loadGamesForCategory = async (type: string) => {
     const data = await gameApi.getGamesByCategoryPage(type, 1, PAGE_SIZE)
     filteredGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || filteredGames.value.length
+    prefetchAdjacent(1)
   } catch (error) {
     console.error('Failed to load games:', error)
   } finally {
@@ -96,13 +110,13 @@ const loadGamesForCategory = async (type: string) => {
 const goToPage = async (page: number) => {
   if (page < 1 || page > totalPages.value || loadingPage.value) return
   loadingPage.value = true
-  // 保留旧数据，仅滚动到顶部，避免白屏
   window.scrollTo({ top: 0, behavior: 'smooth' })
   try {
-    currentPage.value = page
     const data = await gameApi.getGamesByCategoryPage(categoryType.value, page, PAGE_SIZE)
+    currentPage.value = page
     filteredGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || filteredGames.value.length
+    prefetchAdjacent(page)
   } catch (error) {
     console.error('Failed to load page:', error)
   } finally {
