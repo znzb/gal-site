@@ -4,7 +4,8 @@ import Game from '../models/Game.js';
 const router = express.Router();
 
 // 列表页默认裁剪掉大字段，提升响应速度
-const LIST_FIELDS = '-resources -comments -images';
+// resources 只取第一个元素（用于显示大小），避免返回全部资源
+const LIST_FIELDS = '-comments -images';
 
 // 构建模糊搜索条件（名称、描述、分类、标签）
 const buildSearchQuery = (keyword) => {
@@ -29,7 +30,7 @@ router.get('/', async (req, res) => {
 
     // 无分页参数时保持兼容，但裁剪大字段并限制返回数量（避免4000+条超时）
     if (!page && !limit) {
-      const games = await Game.find(searchQuery).select(LIST_FIELDS).limit(100).lean();
+      const games = await Game.find(searchQuery).select(LIST_FIELDS).slice('resources', 1).limit(100).lean();
       return res.json(games);
     }
 
@@ -38,7 +39,7 @@ router.get('/', async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     const [games, total] = await Promise.all([
-      Game.find(searchQuery).select(LIST_FIELDS).skip(skip).limit(limitNum).lean(),
+      Game.find(searchQuery).select(LIST_FIELDS).slice('resources', 1).skip(skip).limit(limitNum).lean(),
       Game.countDocuments(searchQuery)
     ]);
 
@@ -147,7 +148,7 @@ router.get('/category/:category', async (req, res) => {
     
     // 无分页时保持兼容，但裁剪大字段并限制返回数量
     if (!page && !limit) {
-      const games = await Game.find(query).select(LIST_FIELDS).lean();
+      const games = await Game.find(query).select(LIST_FIELDS).slice('resources', 1).lean();
       const filteredGames = games.filter(game => {
         if (category === '柚子社') return true;
         return !isYuzusoftGame(game);
@@ -156,7 +157,7 @@ router.get('/category/:category', async (req, res) => {
     }
 
     // 分页模式：先查全量做后处理过滤，再切片（数据量大但分类过滤后数量可控）
-    const allGames = await Game.find(query).select(LIST_FIELDS).lean();
+    const allGames = await Game.find(query).select(LIST_FIELDS).slice('resources', 1).lean();
     const filteredGames = allGames.filter(game => {
       if (category === '柚子社') return true;
       return !isYuzusoftGame(game);

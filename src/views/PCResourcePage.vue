@@ -13,13 +13,13 @@ const activeSort = ref('update')
 const PAGE_SIZE = 30
 const currentPage = ref(1)
 const totalGames = ref(0)
-const loadingMore = ref(false)
+const loadingPage = ref(false)
 
 // 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
 const getDisplaySize = (game: Game) => {
   const s = game?.size
   if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s
-  return game?.resources?.[0]?.size || s || '0MB'
+  return game?.resources?.[0]?.size || '0MB'
 }
 
 const filteredGames = computed(() => {
@@ -30,14 +30,15 @@ const filteredGames = computed(() => {
 })
 
 const visibleGames = computed(() => filteredGames.value)
-const hasMore = computed(() => currentPage.value * PAGE_SIZE < totalGames.value)
+const totalPages = computed(() => Math.ceil(totalGames.value / PAGE_SIZE))
+const hasPrev = computed(() => currentPage.value > 1)
+const hasNext = computed(() => currentPage.value < totalPages.value)
 
 const loadGames = async () => {
   try {
-    const data = await gameApi.getGamesByCategoryPage('PC资源', 1, PAGE_SIZE)
+    const data = await gameApi.getGamesByCategoryPage('PC资源', currentPage.value, PAGE_SIZE)
     pcGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || pcGames.value.length
-    currentPage.value = 1
   } catch (error) {
     console.error('Failed to load games:', error)
   } finally {
@@ -45,19 +46,19 @@ const loadGames = async () => {
   }
 }
 
-const loadMore = async () => {
-  if (loadingMore.value) return
-  loadingMore.value = true
+const goToPage = async (page: number) => {
+  if (page < 1 || page > totalPages.value || loadingPage.value) return
+  loadingPage.value = true
   try {
-    const nextPage = currentPage.value + 1
-    const data = await gameApi.getGamesByCategoryPage('PC资源', nextPage, PAGE_SIZE)
-    const newGames = Array.isArray(data) ? data : (data.games || [])
-    pcGames.value = [...pcGames.value, ...newGames]
-    currentPage.value = nextPage
+    currentPage.value = page
+    const data = await gameApi.getGamesByCategoryPage('PC资源', page, PAGE_SIZE)
+    pcGames.value = Array.isArray(data) ? data : (data.games || [])
+    totalGames.value = data.total || pcGames.value.length
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   } catch (error) {
-    console.error('Failed to load more:', error)
+    console.error('Failed to load page:', error)
   } finally {
-    loadingMore.value = false
+    loadingPage.value = false
   }
 }
 
@@ -187,12 +188,23 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div v-if="hasMore" class="flex justify-center py-6">
+        <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6">
           <button 
-            @click="loadMore"
-            class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
+            @click="goToPage(currentPage - 1)"
+            :disabled="!hasPrev || loadingPage"
+            class="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            加载更多（还剩 {{ totalGames - visibleGames.length }} 个）
+            上一页
+          </button>
+          <span class="px-4 py-2 bg-white text-pink-600 text-sm font-medium rounded-xl border border-pink-200">
+            {{ currentPage }} / {{ totalPages }}
+          </span>
+          <button 
+            @click="goToPage(currentPage + 1)"
+            :disabled="!hasNext || loadingPage"
+            class="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            下一页
           </button>
         </div>
         
@@ -342,12 +354,23 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div v-if="hasMore" class="flex justify-center py-6">
+        <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6">
           <button 
-            @click="loadMore"
-            class="px-8 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200"
+            @click="goToPage(currentPage - 1)"
+            :disabled="!hasPrev || loadingPage"
+            class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            加载更多（还剩 {{ totalGames - visibleGames.length }} 个）
+            上一页
+          </button>
+          <span class="px-6 py-2 bg-white text-pink-600 text-sm font-medium rounded-xl border border-pink-200">
+            第 {{ currentPage }} / {{ totalPages }} 页，共 {{ totalGames }} 个
+          </span>
+          <button 
+            @click="goToPage(currentPage + 1)"
+            :disabled="!hasNext || loadingPage"
+            class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            下一页
           </button>
         </div>
         
