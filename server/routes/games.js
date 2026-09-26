@@ -71,7 +71,7 @@ router.get('/:id', async (req, res) => {
 router.get('/category/:category', async (req, res) => {
   try {
     const category = req.params.category;
-    const { page, limit } = req.query;
+    const { page, limit, subCategory } = req.query;
     let query;
 
     if (category === 'PC资源') {
@@ -122,7 +122,11 @@ router.get('/category/:category', async (req, res) => {
         ]
       };
     }
-    
+
+    if (subCategory === 'raw' || subCategory === 'cooked') {
+      query = { $and: [query, { subCategory }] };
+    }
+
     // 无分页时保持兼容，但裁剪大字段并限制返回数量
     if (!page && !limit) {
       const games = await Game.find(query).select(LIST_FIELDS).slice('resources', 1).limit(100).lean();

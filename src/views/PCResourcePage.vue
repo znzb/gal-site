@@ -22,21 +22,18 @@ const getDisplaySize = (game: Game) => {
   return game?.resources?.[0]?.size || '0MB'
 }
 
-const filteredGames = computed(() => {
-  if (activeCategory.value === 'all') {
-    return pcGames.value
-  }
-  return pcGames.value.filter(game => game.subCategory === activeCategory.value)
-})
+const filteredGames = computed(() => pcGames.value)
 
 const visibleGames = computed(() => filteredGames.value)
 const totalPages = computed(() => Math.ceil(totalGames.value / PAGE_SIZE))
 const hasPrev = computed(() => currentPage.value > 1)
 const hasNext = computed(() => currentPage.value < totalPages.value)
 
+const subCategoryParam = computed(() => activeCategory.value === 'all' ? undefined : (activeCategory.value as 'raw' | 'cooked'))
+
 const loadGames = async () => {
   try {
-    const data = await gameApi.getGamesByCategoryPage('PC资源', currentPage.value, PAGE_SIZE)
+    const data = await gameApi.getGamesByCategoryPage('PC资源', currentPage.value, PAGE_SIZE, subCategoryParam.value)
     pcGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || pcGames.value.length
   } catch (error) {
@@ -49,12 +46,12 @@ const loadGames = async () => {
 const goToPage = async (page: number) => {
   if (page < 1 || page > totalPages.value || loadingPage.value) return
   loadingPage.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' })
   try {
     currentPage.value = page
-    const data = await gameApi.getGamesByCategoryPage('PC资源', page, PAGE_SIZE)
+    const data = await gameApi.getGamesByCategoryPage('PC资源', page, PAGE_SIZE, subCategoryParam.value)
     pcGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || pcGames.value.length
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   } catch (error) {
     console.error('Failed to load page:', error)
   } finally {
@@ -67,7 +64,11 @@ const goToGame = (gameId: string) => {
 }
 
 const setCategory = (category: 'all' | 'raw' | 'cooked') => {
+  if (activeCategory.value === category) return
   activeCategory.value = category
+  currentPage.value = 1
+  isLoading.value = true
+  loadGames()
 }
 
 let dataRefreshTimer: number | null = null
@@ -143,16 +144,16 @@ onUnmounted(() => {
           </button>
         </div>
         
-        <div class="grid grid-cols-2 gap-4 mt-4">
-          <div 
-            v-for="game in visibleGames" 
+        <div v-if="visibleGames.length > 0" class="grid grid-cols-2 gap-4 mt-4">
+          <div
+            v-for="game in visibleGames"
             :key="game.id"
             @click="goToGame(game.id)"
             class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer border border-pink-100"
           >
             <div class="aspect-[3/4] relative">
-              <img 
-                :src="game.cover" 
+              <img
+                :src="game.cover"
                 :alt="game.name"
                 class="w-full h-full object-cover"
               />
@@ -167,8 +168,8 @@ onUnmounted(() => {
             <div class="p-3">
               <p class="text-gray-600 text-xs line-clamp-2 mb-2 leading-relaxed">{{ game.description }}</p>
               <div class="flex flex-wrap gap-1 mb-2">
-                <span 
-                  v-for="tag in game.tags.slice(0, 3)" 
+                <span
+                  v-for="tag in game.tags.slice(0, 3)"
                   :key="tag"
                   class="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full border border-pink-200"
                 >
@@ -177,7 +178,7 @@ onUnmounted(() => {
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-xs text-gray-500">{{ game.downloads.toLocaleString() }} 下载</span>
-                <button 
+                <button
                   @click.stop="goToGame(game.id)"
                   class="bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs px-4 py-1 rounded-full hover:opacity-90 transition-opacity"
                 >
@@ -188,7 +189,12 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6">
+        <div v-else-if="!isLoading" class="text-center py-20">
+          <div class="text-6xl mb-4">🎮</div>
+          <p class="text-pink-400">暂无该分类的游戏</p>
+        </div>
+
+        <div v-if="visibleGames.length > 0 && totalPages > 1" class="flex justify-center items-center gap-2 py-6">
           <button 
             @click="goToPage(currentPage - 1)"
             :disabled="!hasPrev || loadingPage"
@@ -302,16 +308,16 @@ onUnmounted(() => {
         
         <div v-if="filteredGames.length > 0" class="px-4 mt-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div 
-              v-for="game in visibleGames" 
-              :key="game.id" 
+            <div
+              v-for="game in visibleGames"
+              :key="game.id"
               class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-pink-100"
               @click="goToGame(game.id)"
             >
               <div class="flex">
                 <div class="w-32 sm:w-40 flex-shrink-0">
-                  <img 
-                    :src="game.cover" 
+                  <img
+                    :src="game.cover"
                     :alt="game.name"
                     class="w-full h-full object-cover aspect-[3/4]"
                   />
@@ -320,8 +326,8 @@ onUnmounted(() => {
                   <h3 class="font-bold text-gray-800 text-base sm:text-lg mb-2 line-clamp-1">{{ game.name }}</h3>
                   <p class="text-gray-500 text-sm line-clamp-2 mb-3">{{ game.description }}</p>
                   <div class="flex flex-wrap gap-1 mb-3">
-                    <span 
-                      v-for="tag in game.tags.slice(0, 3)" 
+                    <span
+                      v-for="tag in game.tags.slice(0, 3)"
                       :key="tag"
                       class="px-2 py-0.5 bg-pink-50 text-pink-600 text-xs rounded-full border border-pink-100"
                     >
@@ -354,8 +360,13 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6">
-          <button 
+        <div v-else-if="!isLoading" class="text-center py-20">
+          <div class="text-6xl mb-4">🎮</div>
+          <p class="text-pink-400">暂无该分类的游戏</p>
+        </div>
+
+        <div v-if="filteredGames.length > 0 && totalPages > 1" class="flex justify-center items-center gap-2 py-6">
+          <button
             @click="goToPage(currentPage - 1)"
             :disabled="!hasPrev || loadingPage"
             class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -365,22 +376,12 @@ onUnmounted(() => {
           <span class="px-6 py-2 bg-white text-pink-600 text-sm font-medium rounded-xl border border-pink-200">
             第 {{ currentPage }} / {{ totalPages }} 页，共 {{ totalGames }} 个
           </span>
-          <button 
+          <button
             @click="goToPage(currentPage + 1)"
             :disabled="!hasNext || loadingPage"
             class="px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             下一页
-          </button>
-        </div>
-        
-        <div v-else class="text-center py-20">
-          <div class="text-6xl mb-4">🎮</div>
-          <p class="text-pink-400">暂无该分类的游戏</p>
-          <button 
-            @click="router.push('/')"
-            class="mt-4 px-6 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200">
-            返回首页
           </button>
         </div>
         

@@ -30,16 +30,13 @@ const showSubCategory = computed(() => {
   return !['图集资源11', '图集资源', '游戏CG', '新人必读'].includes(categoryType.value)
 })
 
-const displayGames = computed(() => {
-  let games = filteredGames.value
-  if (showSubCategory.value && activeSubCategory.value !== 'all') {
-    games = games.filter(game => game.subCategory === activeSubCategory.value)
-  }
-  return games
+const subCategoryParam = computed(() => {
+  if (!showSubCategory.value || activeSubCategory.value === 'all') return undefined
+  return activeSubCategory.value as 'raw' | 'cooked'
 })
 
 // 翻页模式：只显示当前页数据
-const visibleGames = computed(() => displayGames.value)
+const visibleGames = computed(() => filteredGames.value)
 const totalPages = computed(() => Math.ceil(totalGames.value / PAGE_SIZE))
 const hasPrev = computed(() => currentPage.value > 1)
 const hasNext = computed(() => currentPage.value < totalPages.value)
@@ -63,7 +60,7 @@ const loadCategoryInfo = async () => {
 
 const loadGames = async () => {
   try {
-    const data = await gameApi.getGamesByCategoryPage(categoryType.value, currentPage.value, PAGE_SIZE)
+    const data = await gameApi.getGamesByCategoryPage(categoryType.value, currentPage.value, PAGE_SIZE, subCategoryParam.value)
     filteredGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || filteredGames.value.length
     prefetchAdjacent(currentPage.value)
@@ -78,16 +75,21 @@ const loadGames = async () => {
 const prefetchAdjacent = (page: number) => {
   const next = page + 1
   const prev = page - 1
+  const sub = subCategoryParam.value
   if (next <= totalPages.value) {
-    gameApi.getGamesByCategoryPage(categoryType.value, next, PAGE_SIZE).catch(() => {})
+    gameApi.getGamesByCategoryPage(categoryType.value, next, PAGE_SIZE, sub).catch(() => {})
   }
   if (prev >= 1) {
-    gameApi.getGamesByCategoryPage(categoryType.value, prev, PAGE_SIZE).catch(() => {})
+    gameApi.getGamesByCategoryPage(categoryType.value, prev, PAGE_SIZE, sub).catch(() => {})
   }
 }
 
 const setSubCategory = (sub: 'all' | 'raw' | 'cooked') => {
+  if (activeSubCategory.value === sub) return
   activeSubCategory.value = sub
+  currentPage.value = 1
+  isLoading.value = true
+  loadGames()
 }
 
 const loadGamesForCategory = async (type: string) => {
@@ -112,7 +114,7 @@ const goToPage = async (page: number) => {
   loadingPage.value = true
   window.scrollTo({ top: 0, behavior: 'smooth' })
   try {
-    const data = await gameApi.getGamesByCategoryPage(categoryType.value, page, PAGE_SIZE)
+    const data = await gameApi.getGamesByCategoryPage(categoryType.value, page, PAGE_SIZE, subCategoryParam.value)
     currentPage.value = page
     filteredGames.value = Array.isArray(data) ? data : (data.games || [])
     totalGames.value = data.total || filteredGames.value.length
@@ -251,7 +253,7 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-        <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6 col-span-2">
+        <div v-if="visibleGames.length > 0 && totalPages > 1" class="flex justify-center items-center gap-2 py-6 col-span-2">
           <button
             @click="goToPage(currentPage - 1)"
             :disabled="!hasPrev || loadingPage"
@@ -300,7 +302,7 @@ onUnmounted(() => {
             </div>
             <div>
               <h2 class="text-xl sm:text-2xl font-bold text-white mb-1">{{ categoryType }}</h2>
-              <span class="text-sm text-white/80">共 {{ displayGames.length }} 篇</span>
+              <span class="text-sm text-white/80">共 {{ totalGames }} 篇</span>
             </div>
           </div>
           <p class="text-white/80 text-sm">{{ categoryInfo.desc }}</p>
@@ -409,7 +411,7 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-        <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 py-6">
+        <div v-if="visibleGames.length > 0 && totalPages > 1" class="flex justify-center items-center gap-2 py-6">
           <button
             @click="goToPage(currentPage - 1)"
             :disabled="!hasPrev || loadingPage"
