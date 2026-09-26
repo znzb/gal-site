@@ -1,5 +1,6 @@
 import express from 'express';
 import FAQ from '../models/FAQ.js';
+import { authMiddleware } from './adminAuth.js';
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const faq = new FAQ({
       question: req.body.question,
@@ -26,7 +27,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const updatedFaq = await FAQ.findByIdAndUpdate(
       req.params.id,
@@ -43,7 +44,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     await FAQ.findByIdAndDelete(req.params.id);
     res.json({ message: 'FAQ deleted' });

@@ -12,6 +12,7 @@ import SearchLogsManage from './views/SearchLogsManage.vue';
 import ToolsManage from './views/ToolsManage.vue';
 import BatchImport from './views/BatchImport.vue';
 import GroupInfoManage from './views/GroupInfoManage.vue';
+import FaqManage from './views/FaqManage.vue';
 
 const routes = [
   {
@@ -76,6 +77,11 @@ const routes = [
         path: 'group-info',
         name: 'GroupInfoManage',
         component: GroupInfoManage
+      },
+      {
+        path: 'faq',
+        name: 'FaqManage',
+        component: FaqManage
       }
     ]
   }

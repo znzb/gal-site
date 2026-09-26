@@ -141,6 +141,19 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+router.delete('/batch', authMiddleware, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: '请选择要删除的游戏' });
+    }
+    const result = await Game.deleteMany({ id: { $in: ids } });
+    res.json({ message: `成功删除 ${result.deletedCount} 个游戏`, deletedCount: result.deletedCount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const game = await Game.findOneAndDelete({ id: req.params.id });

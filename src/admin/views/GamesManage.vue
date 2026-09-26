@@ -6,6 +6,9 @@
         <p class="page-subtitle">管理站点游戏资源，支持添加、编辑、删除</p>
       </div>
       <button @click="showAddModal = true" class="add-btn">+ 添加游戏</button>
+      <button v-if="selectedIds.length > 0" @click="batchDelete" class="batch-delete-btn">
+        🗑️ 批量删除 ({{ selectedIds.length }})
+      </button>
     </div>
 
     <div class="filters">
@@ -27,6 +30,7 @@
       <table>
         <thead>
           <tr>
+            <th class="check-col"><input type="checkbox" :checked="allSelected" @change="toggleSelectAll" /></th>
             <th>封面</th>
             <th>游戏名称</th>
             <th>分类</th>
@@ -38,6 +42,7 @@
         </thead>
         <tbody>
           <tr v-for="game in filteredGames" :key="game._id">
+            <td class="check-col"><input type="checkbox" :checked="selectedIds.includes(game.id)" @change="toggleSelect(game.id)" /></td>
             <td><img :src="game.cover" class="game-cover-small" /></td>
             <td>{{ game.name }}</td>
             <td><span class="category-tag">{{ game.category }}</span></td>
@@ -60,6 +65,7 @@
     <div class="games-cards mobile-only">
       <div v-for="game in filteredGames" :key="game._id" class="game-card">
         <div class="game-card-main">
+          <input type="checkbox" class="card-check" :checked="selectedIds.includes(game.id)" @change="toggleSelect(game.id)" />
           <img :src="game.cover" class="game-card-cover" />
           <div class="game-card-info">
             <h3 class="game-card-name">{{ game.name }}</h3>
@@ -328,6 +334,7 @@ import { useGameStore } from '@/store/gameStore';
 const games = ref([]);
 const categories = ref([]);
 const searchQuery = ref('');
+const selectedIds = ref([]);
 const { setResources, setComments } = useGameStore();
 const filterCategory = ref('');
 const filterSubCategory = ref('');
@@ -390,6 +397,11 @@ const filteredGames = computed(() => {
   });
 });
 
+const allSelected = computed(() => {
+  return filteredGames.value.length > 0 &&
+    filteredGames.value.every(g => selectedIds.value.includes(g.id));
+});
+
 // 统计无效资源（缺少名称或链接）
 const invalidResources = computed(() => {
   return gameForm.value.resources.filter(r => !r.name || !r.url);
@@ -430,6 +442,31 @@ onMounted(async () => {
 
 async function loadGames() {
   games.value = await request('/admin/games');
+  selectedIds.value = [];
+}
+
+function toggleSelect(id) {
+  const idx = selectedIds.value.indexOf(id);
+  if (idx >= 0) selectedIds.value.splice(idx, 1);
+  else selectedIds.value.push(id);
+}
+
+function toggleSelectAll(e) {
+  if (e.target.checked) {
+    selectedIds.value = filteredGames.value.map(g => g.id);
+  } else {
+    selectedIds.value = [];
+  }
+}
+
+async function batchDelete() {
+  if (!confirm(`确定要删除选中的 ${selectedIds.value.length} 个游戏吗？此操作不可恢复！`)) return;
+  await request('/admin/games/batch', {
+    method: 'DELETE',
+    body: JSON.stringify({ ids: selectedIds.value })
+  });
+  selectedIds.value = [];
+  await loadGames();
 }
 
 async function loadCategories() {
@@ -709,6 +746,28 @@ function resetForm() {
   transition: all 0.25s;
 }
 
+.batch-delete-btn {
+  padding: 10px 22px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.25s;
+}
+.batch-delete-btn:hover { opacity: 0.9; }
+
+.check-col { width: 40px; text-align: center; }
+.check-col input[type="checkbox"],
+.card-check {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #c44fff;
+}
+
 .add-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(196, 79, 255, 0.45);
@@ -758,8 +817,8 @@ function resetForm() {
   border: 1px solid rgba(0,0,0,0.03);
 }
 
-.desktop-only { display: block; }
-.mobile-only { display: none; }
+.desktop-only { display: block !important; }
+.mobile-only { display: none !important; }
 
 .games-cards {
   display: flex;

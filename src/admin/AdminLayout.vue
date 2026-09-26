@@ -60,6 +60,10 @@
           <span class="nav-icon">🐧</span>
           <span>Q群管理</span>
         </router-link>
+        <router-link to="/admin/faq" class="nav-item" @click.native="showSidebar = false">
+          <span class="nav-icon">❓</span>
+          <span>帮助中心</span>
+        </router-link>
       </nav>
       <button @click="logout" class="logout-btn">
         <span>🚪</span> 退出登录
