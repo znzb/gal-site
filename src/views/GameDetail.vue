@@ -149,21 +149,8 @@ const loadData = async () => {
       game.value = gameData
       gameCache.value.set(gameId.value, gameData)
       
-      await preloadImage(gameData.cover)
-      
-      // 用分类接口获取相关游戏，只取一页避免加载过多
-      try {
-        const data = await gameApi.getGamesByCategoryPage(gameData.category, 1, 10)
-        const categoryGames = Array.isArray(data) ? data : (data.games || [])
-        if (categoryGames.length > 0) {
-          const filtered = categoryGames.filter(g => (g.id || g._id) !== gameId.value).slice(0, 3)
-          relatedGames.value = filtered
-          relatedCache.value.set(gameId.value, filtered)
-          filtered.forEach(g => preloadImage(g.cover))
-        }
-      } catch (catErr) {
-        console.error('加载相关游戏失败:', catErr)
-      }
+      // 不再 await 封面图预加载，让浏览器 <img> 原生加载，页面立即渲染
+      preloadImage(gameData.cover).catch(() => {})
       
       resources.value = gameData.resources || []
       comments.value = (gameData.comments || []).map(c => ({ ...c, liked: false }))
@@ -175,11 +162,30 @@ const loadData = async () => {
         languages: gameData.languages || [],
         requirements: gameData.requirements || ''
       }
+      
+      // 相关游戏改为非阻塞，不影响主内容显示
+      loadRelatedGames(gameData.category).catch(() => {})
     }
   } catch (error) {
     console.error('Failed to load game data:', error)
   } finally {
     isLoading.value = false
+  }
+}
+
+// 相关游戏加载（独立函数，非阻塞）
+const loadRelatedGames = async (category: string) => {
+  try {
+    const data = await gameApi.getGamesByCategoryPage(category, 1, 10)
+    const categoryGames = Array.isArray(data) ? data : (data.games || [])
+    if (categoryGames.length > 0) {
+      const filtered = categoryGames.filter(g => (g.id || g._id) !== gameId.value).slice(0, 3)
+      relatedGames.value = filtered
+      relatedCache.value.set(gameId.value, filtered)
+      filtered.forEach(g => preloadImage(g.cover))
+    }
+  } catch (catErr) {
+    console.error('加载相关游戏失败:', catErr)
   }
 }
 
@@ -283,6 +289,7 @@ onUnmounted(() => {
           :src="game.cover" 
           :alt="game.name"
           class="w-full h-full object-contain"
+          decoding="async"
         />
         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
         
@@ -413,6 +420,7 @@ onUnmounted(() => {
                   :src="img" 
                   :alt="`${game.name} 截图${idx + 1}`"
                   class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100 cursor-pointer"
+                  loading="lazy" decoding="async"
                   @click="previewImage(img)"
                 />
               </div>
@@ -421,6 +429,7 @@ onUnmounted(() => {
                   :src="game.cover" 
                   :alt="game.name"
                   class="w-full h-24 sm:h-32 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
+                  loading="lazy" decoding="async"
                 />
               </div>
             </div>
@@ -496,6 +505,7 @@ onUnmounted(() => {
                       :src="resource.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20boy%20white%20hair&image_size=square'" 
                       alt="用户头像"
                       class="w-10 h-10 rounded-full object-cover border-2 border-pink-200"
+                      loading="lazy" decoding="async"
                       @error="handleAvatarError($event, resource.authorName || '愚者')"
                     />
                     <div>
@@ -557,6 +567,7 @@ onUnmounted(() => {
                   :src="comment.avatar" 
                   :alt="comment.user"
                   class="w-12 h-12 rounded-full object-cover border-2 border-pink-200"
+                  loading="lazy" decoding="async"
                 />
                 <div class="flex-1">
                   <div class="flex items-center justify-between mb-2">
@@ -614,7 +625,7 @@ onUnmounted(() => {
             class="flex-shrink-0 w-32 cursor-pointer"
           >
             <div class="aspect-[3/4] rounded-2xl overflow-hidden mb-2 shadow-lg border border-pink-100">
-              <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" />
+              <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" loading="lazy" decoding="async" />
             </div>
             <p class="text-sm text-gray-700 truncate font-medium">{{ related.name }}</p>
           </div>
@@ -654,6 +665,7 @@ onUnmounted(() => {
           :src="game.cover" 
           :alt="game.name"
           class="w-full h-64 sm:h-96 object-cover"
+          decoding="async"
         />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
         
@@ -709,6 +721,7 @@ onUnmounted(() => {
                 :src="resources[0]?.authorAvatar || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20avatar%20male%20purple%20hair&image_size=square'" 
                 alt="作者头像"
                 class="w-14 h-14 rounded-full object-cover border-2 border-pink-200"
+                loading="lazy" decoding="async"
                 @error="handleAvatarError($event, resources[0]?.authorName || '愚者')"
               />
               <div>
@@ -758,7 +771,8 @@ onUnmounted(() => {
                 :src="img" 
                 :alt="`${game.name} 截图${idx + 1}`"
                 class="w-full h-44 sm:h-60 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100 cursor-pointer"
-                @click="previewImage(img)"
+                  loading="lazy" decoding="async"
+                  @click="previewImage(img)"
               />
             </div>
             <div v-else class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -766,6 +780,7 @@ onUnmounted(() => {
                 :src="game.cover" 
                 :alt="game.name"
                 class="w-full h-44 sm:h-60 object-cover rounded-xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-pink-100"
+                loading="lazy" decoding="async"
               />
             </div>
           </div>
@@ -960,7 +975,7 @@ onUnmounted(() => {
             class="cursor-pointer"
           >
             <div class="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border border-pink-100">
-              <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" />
+              <img :src="related.cover" :alt="related.name" class="w-full h-full object-cover" loading="lazy" decoding="async" />
             </div>
             <p class="text-sm text-gray-700 truncate font-medium mt-2">{{ related.name }}</p>
           </div>

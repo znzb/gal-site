@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { dataCache } from '@/utils/cache'
 import Home from '@/views/Home.vue'
-import GameDetail from '@/views/GameDetail.vue'
 import Category from '@/views/Category.vue'
 import AnnouncementsPage from '@/views/AnnouncementsPage.vue'
 import JoinGroupPage from '@/views/JoinGroupPage.vue'
@@ -36,7 +35,7 @@ const routes = [
   {
     path: '/game/:id',
     name: 'GameDetail',
-    component: GameDetail,
+    component: () => import('@/views/GameDetail.vue'),
     meta: { keepAlive: false }
   },
   {
