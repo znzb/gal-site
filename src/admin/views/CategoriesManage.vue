@@ -37,7 +37,7 @@
               <tr v-for="game in filteredGames" :key="game._id">
                 <td><img :src="game.cover" class="game-cover-small" /></td>
                 <td>{{ game.name }}</td>
-                <td>{{ game.size }}</td>
+                <td>{{ getDisplaySize(game) }}</td>
                 <td>{{ game.downloads }}</td>
                 <td class="actions">
                   <button @click="editGame(game)" class="edit-btn">编辑</button>
@@ -55,7 +55,7 @@
               <div class="game-card-info">
                 <h3 class="game-card-name">{{ game.name }}</h3>
                 <div class="game-card-meta">
-                  <span>📦 {{ game.size }}</span>
+                  <span>📦 {{ getDisplaySize(game) }}</span>
                   <span>⬇️ {{ game.downloads }}</span>
                 </div>
               </div>
@@ -546,6 +546,13 @@ const filteredGames = computed(() => {
     return gameCategoryLower === categoryNameLower;
   });
 });
+
+// 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
+function getDisplaySize(game) {
+  const s = game?.size;
+  if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s;
+  return game?.resources?.[0]?.size || s || '0MB';
+}
 
 function getGameCount(categoryName) {
   const categoryNameLower = categoryName.toLowerCase();

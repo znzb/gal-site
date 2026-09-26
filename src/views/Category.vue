@@ -15,6 +15,13 @@ const isLoading = ref(true)
 const activeSubCategory = ref<'all' | 'raw' | 'cooked'>('all')
 const activeSort = ref('update')
 
+// 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
+const getDisplaySize = (game: Game) => {
+  const s = game?.size
+  if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s
+  return game?.resources?.[0]?.size || s || '0MB'
+}
+
 const showSubCategory = computed(() => {
   return !['图集资源11', '图集资源', '游戏CG', '新人必读'].includes(categoryType.value)
 })
@@ -169,7 +176,7 @@ onUnmounted(() => {
               class="w-full aspect-[3/4] object-cover"
             />
             <div class="absolute top-2 right-2 px-3 py-1 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs font-medium rounded-full shadow-md shadow-pink-200">
-              {{ game.size }}
+              {{ getDisplaySize(game) }}
             </div>
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
               <h3 class="text-white font-bold text-sm">{{ game.name }}</h3>

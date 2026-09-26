@@ -13,8 +13,6 @@ const games = ref<Game[]>([])
 const isLoading = ref(false)
 const hasSearched = ref(false)
 
-const mockGames: Game[] = []
-
 const filteredGames = computed(() => {
   if (!searchQuery.value.trim()) return []
   const query = searchQuery.value.toLowerCase()
@@ -30,6 +28,13 @@ const filteredGames = computed(() => {
   })
 })
 
+// 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
+const getDisplaySize = (game: Game) => {
+  const s = game?.size
+  if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s
+  return game?.resources?.[0]?.size || s || '0MB'
+}
+
 const performSearch = async () => {
   if (!searchQuery.value.trim()) return
   
@@ -37,11 +42,11 @@ const performSearch = async () => {
   isLoading.value = true
   
   try {
-    const data = await gameApi.searchGames(searchQuery.value)
-    games.value = data.games || data || mockGames
+    const data = await gameApi.getAllGames()
+    games.value = Array.isArray(data) ? data : []
   } catch (error) {
     console.error('Search failed:', error)
-    games.value = mockGames
+    games.value = []
   } finally {
     isLoading.value = false
   }
@@ -64,8 +69,6 @@ const clearSearch = () => {
 }
 
 onMounted(() => {
-  games.value = mockGames
-  
   const queryParam = route.query.q
   if (queryParam && typeof queryParam === 'string') {
     searchQuery.value = decodeURIComponent(queryParam)
@@ -155,7 +158,7 @@ onMounted(() => {
               class="w-full aspect-[3/4] object-cover"
             />
             <div class="absolute top-2 right-2 px-3 py-1 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs font-medium rounded-full shadow-md shadow-pink-200">
-              {{ game.size }}
+              {{ getDisplaySize(game) }}
             </div>
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
               <h3 class="text-white font-bold text-sm">{{ game.name }}</h3>

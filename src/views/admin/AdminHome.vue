@@ -37,6 +37,12 @@ const deleteGame = async (gameId: string) => {
 const addGame = () => {
  router.push('/admin/game/new');
 };
+// 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
+const getDisplaySize = (game: Game) => {
+ const s = game?.size;
+ if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s;
+ return game?.resources?.[0]?.size || s || '0MB';
+};
 loadGames();
 </script>
 
@@ -134,7 +140,7 @@ loadGames();
                 <span class="text-sm text-gray-600">{{ game.category }}</span>
               </td>
               <td class="py-4 px-4">
-                <span class="text-sm text-gray-600">{{ game.size }}</span>
+                <span class="text-sm text-gray-600">{{ getDisplaySize(game) }}</span>
               </td>
               <td class="py-4 px-4">
                 <span class="text-sm text-gray-600">{{ game.downloads.toLocaleString() }}</span>

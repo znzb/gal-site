@@ -51,7 +51,7 @@
               <span v-else-if="game.subCategory === 'cooked'" class="subcategory-tag cooked">🍳 熟肉</span>
               <span v-else class="subcategory-tag none">-</span>
             </td>
-            <td>{{ game.size }}</td>
+            <td>{{ getDisplaySize(game) }}</td>
             <td>{{ game.downloads }}</td>
             <td class="actions">
               <button @click="editGame(game)" class="edit-btn">编辑</button>
@@ -75,7 +75,7 @@
               <span v-else-if="game.subCategory === 'cooked'" class="subcategory-tag cooked">🍳 熟肉</span>
             </div>
             <div class="game-card-meta">
-              <span>📦 {{ game.size }}</span>
+              <span>📦 {{ getDisplaySize(game) }}</span>
               <span>⬇️ {{ game.downloads }}</span>
             </div>
           </div>
@@ -396,6 +396,13 @@ const filteredGames = computed(() => {
     return matchesSearch && matchesCategory && matchesSubCategory;
   });
 });
+
+// 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
+function getDisplaySize(game) {
+  const s = game?.size;
+  if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s;
+  return game?.resources?.[0]?.size || s || '0MB';
+}
 
 const allSelected = computed(() => {
   return filteredGames.value.length > 0 &&

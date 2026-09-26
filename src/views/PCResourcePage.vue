@@ -11,6 +11,13 @@ const pcGames = ref<Game[]>([])
 const isLoading = ref(true)
 const activeSort = ref('update')
 
+// 游戏大小兜底：优先 game.size，无效则取第一个资源的大小
+const getDisplaySize = (game: Game) => {
+  const s = game?.size
+  if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s
+  return game?.resources?.[0]?.size || s || '0MB'
+}
+
 const filteredGames = computed(() => {
   if (activeCategory.value === 'all') {
     return pcGames.value
@@ -126,7 +133,7 @@ onUnmounted(() => {
                 class="w-full h-full object-cover"
               />
               <div class="absolute top-2 right-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs px-3 py-1 rounded-full shadow-lg shadow-pink-200 font-medium">
-                {{ game.size }}
+                {{ getDisplaySize(game) }}
               </div>
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div class="absolute bottom-2 left-2 right-2">
