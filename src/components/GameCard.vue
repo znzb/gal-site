@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Download } from 'lucide-vue-next'
 import { type Game } from '@/api/api'
 
-defineProps<{
+const props = defineProps<{
   game: Game
 }>()
 
@@ -16,6 +16,13 @@ const router = useRouter()
 
 const imageLoaded = ref(false)
 const imageError = ref(false)
+
+// 游戏大小：优先显示游戏自身大小，若为 0MB/空 则兜底取第一个资源的大小
+const displaySize = computed(() => {
+  const s = props.game?.size
+  if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s
+  return props.game?.resources?.[0]?.size || s || '0MB'
+})
 
 const handleDownload = (gameId: string) => {
   router.push(`/game/${gameId}?tab=resources`)
@@ -56,7 +63,7 @@ const handleDownload = (gameId: string) => {
       </div>
       
       <div class="absolute top-2 right-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs px-3 py-1 rounded-full shadow-lg shadow-pink-200 font-medium">
-        {{ game.size }}
+        {{ displaySize }}
       </div>
       
       <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3">
