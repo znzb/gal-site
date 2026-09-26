@@ -1,8 +1,88 @@
 import express from 'express';
 import Game from '../models/Game.js';
+import Category from '../models/Category.js';
 import { authMiddleware } from './adminAuth.js';
 
 const router = express.Router();
+
+function buildCategoryQuery(categoryName) {
+  const cn = categoryName.toLowerCase();
+  if (cn === 'pc资源') {
+    return {
+      $and: [
+        {
+          $or: [
+            { platforms: 'PC' },
+            { platforms: { $in: ['PC'] } },
+            { platforms: { $exists: false }, category: 'PC资源' },
+            { platforms: { $exists: false }, category: 'pc资源' }
+          ]
+        },
+        {
+          $nor: [
+            { platforms: '柚子社' },
+            { platforms: { $in: ['柚子社'] } },
+            { isYuzusoft: true }
+          ]
+        }
+      ]
+    };
+  }
+  if (cn === 'gal游戏') {
+    return {
+      $and: [
+        {
+          $or: [
+            { platforms: { $in: ['Android', 'KR'] } },
+            { platforms: { $all: ['PC', 'Android'] } },
+            { platforms: { $all: ['PC', 'KR'] } },
+            { platforms: { $size: 3 } },
+            { platforms: { $exists: false }, category: 'Gal游戏' },
+            { platforms: { $exists: false }, category: 'gal游戏' }
+          ]
+        },
+        {
+          $nor: [
+            { platforms: '柚子社' },
+            { platforms: { $in: ['柚子社'] } },
+            { isYuzusoft: true }
+          ]
+        }
+      ]
+    };
+  }
+  if (cn === '柚子社') {
+    return {
+      $or: [
+        { platforms: '柚子社' },
+        { platforms: { $in: ['柚子社'] } },
+        { isYuzusoft: true },
+        { category: '柚子社' },
+        { categories: '柚子社' }
+      ]
+    };
+  }
+  return {
+    $or: [
+      { category: categoryName },
+      { categories: categoryName }
+    ]
+  };
+}
+
+router.get('/count', async (req, res) => {
+  try {
+    const categories = await Category.find().sort({ order: 1 });
+    const counts = {};
+    for (const cat of categories) {
+      const query = buildCategoryQuery(cat.name);
+      counts[cat.name] = await Game.countDocuments(query);
+    }
+    res.json(counts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 router.get('/', async (req, res) => {
   try {

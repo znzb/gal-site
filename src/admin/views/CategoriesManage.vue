@@ -137,7 +137,7 @@
         <div class="drag-handle">⇅</div>
         <div class="category-icon">{{ cat.icon || '📁' }}</div>
         <h3>{{ cat.name }}</h3>
-        <p class="game-count">{{ getGameCount(cat.name) }} 个游戏</p>
+        <p class="game-count">{{ categoryCounts[cat.name] ?? 0 }} 个游戏</p>
         <div class="category-actions">
           <button @click.stop="editCategory(cat)" class="edit-btn">编辑</button>
           <button @click.stop="deleteCategory(cat)" class="delete-btn">删除</button>
@@ -416,6 +416,7 @@ import { request } from '../api';
 
 const categories = ref([]);
 const games = ref([]);
+const categoryCounts = ref({});
 const faqs = ref([]);
 const showAddModal = ref(false);
 const showAddGameModal = ref(false);
@@ -471,7 +472,7 @@ const platformOptions = ['Android', 'PC', 'KR'];
 
 onMounted(async () => {
   await loadCategories();
-  await loadGames();
+  await Promise.all([loadGames(), loadCategoryCounts()]);
 });
 
 async function loadCategories() {
@@ -480,6 +481,14 @@ async function loadCategories() {
 
 async function loadGames() {
   games.value = await request('/admin/games');
+}
+
+async function loadCategoryCounts() {
+  try {
+    categoryCounts.value = await request('/admin/games/count');
+  } catch (e) {
+    console.error('加载分类数量失败:', e);
+  }
 }
 
 const hasPlatform = (gamePlatforms, platform) => {
@@ -552,52 +561,6 @@ function getDisplaySize(game) {
   const s = game?.size;
   if (s && s !== '0MB' && s !== '0' && s.trim() !== '') return s;
   return game?.resources?.[0]?.size || s || '0MB';
-}
-
-function getGameCount(categoryName) {
-  const categoryNameLower = categoryName.toLowerCase();
-  
-  return games.value.filter(game => {
-    // 柚子社分类
-    if (categoryNameLower === '柚子社') {
-      return hasPlatform(game.platforms, '柚子社') || game.isYuzusoft;
-    }
-    
-    // PC资源分类
-    if (categoryNameLower === 'pc资源') {
-      if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
-        return false;
-      }
-      const platformsExist = game.platforms !== undefined && game.platforms !== null;
-      if (platformsExist) {
-        return hasPlatform(game.platforms, 'PC');
-      }
-      const gameCategoryLower = (game.category || '').toLowerCase();
-      return gameCategoryLower === 'pc资源';
-    }
-    
-    // Gal游戏分类
-    if (categoryNameLower === 'gal游戏') {
-      if (hasPlatform(game.platforms, '柚子社') || game.isYuzusoft) {
-        return false;
-      }
-      const platformsExist = game.platforms !== undefined && game.platforms !== null;
-      if (!platformsExist) {
-        const gameCategoryLower = (game.category || '').toLowerCase();
-        return gameCategoryLower === 'gal游戏';
-      }
-      const platforms = Array.isArray(game.platforms) ? game.platforms : [game.platforms];
-      const hasAndroid = platforms.includes('Android');
-      const hasKR = platforms.includes('KR');
-      const hasPC = platforms.includes('PC');
-      const platformCount = platforms.length;
-      return hasAndroid || hasKR || (hasPC && (hasAndroid || hasKR)) || platformCount === 3;
-    }
-    
-    // 其他分类（不区分大小写）
-    const gameCategoryLower = (game.category || '').toLowerCase();
-    return gameCategoryLower === categoryNameLower;
-  }).length;
 }
 
 function viewCategory(cat) {
@@ -884,7 +847,7 @@ async function saveGame() {
     showAddGameModal.value = false;
     editingGameItem.value = null;
     resetGameForm();
-    await loadGames();
+    await Promise.all([loadGames(), loadCategoryCounts()]);
     alert('保存成功！');
   } catch (error) {
     console.error('保存游戏失败:', error);
@@ -897,7 +860,7 @@ async function saveGame() {
 async function deleteGame(game) {
   if (confirm('确定要删除这个游戏吗?')) {
     await request('/admin/games/' + (game.id || game._id), { method: 'DELETE' });
-    await loadGames();
+    await Promise.all([loadGames(), loadCategoryCounts()]);
   }
 }
 
