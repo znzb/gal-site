@@ -24,6 +24,7 @@ import SearchLogsManage from '@/admin/views/SearchLogsManage.vue'
 import ToolsManage from '@/admin/views/ToolsManage.vue'
 import BatchImport from '@/admin/views/BatchImport.vue'
 import GroupInfoManage from '@/admin/views/GroupInfoManage.vue'
+import FaqManage from '@/admin/views/FaqManage.vue'
 
 const routes = [
   {
@@ -160,6 +161,11 @@ const routes = [
         path: 'group-info',
         name: 'GroupInfoManage',
         component: GroupInfoManage
+      },
+      {
+        path: 'faq',
+        name: 'FaqManage',
+        component: FaqManage
       }
     ]
   }
@@ -211,6 +217,15 @@ const router = createRouter({
       return savedPosition
     }
     return { top: 0 }
+  }
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('adminToken')
+  if (to.path.startsWith('/admin') && to.path !== '/admin/login' && !token) {
+    next('/admin/login')
+  } else {
+    next()
   }
 })
 

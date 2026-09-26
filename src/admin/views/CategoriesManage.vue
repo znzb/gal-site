@@ -1092,8 +1092,8 @@ function resetGameForm() {
   overflow: hidden;
 }
 
-.desktop-only { display: block; }
-.mobile-only { display: none; }
+.desktop-only { display: block !important; }
+.mobile-only { display: none !important; }
 
 .games-cards, .faq-cards {
   display: flex;
