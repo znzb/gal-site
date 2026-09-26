@@ -116,7 +116,7 @@ const fetchApi = async <T>(url: string, options?: RequestInit, retryCount: numbe
         'Content-Type': 'application/json; charset=utf-8',
         ...options?.headers
       },
-      signal: createTimeoutSignal(25000)
+      signal: createTimeoutSignal(60000) // 60s：Render免费版冷启动需30-50s
     });
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);

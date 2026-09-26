@@ -4,6 +4,9 @@
   "framework": null,
   "installCommand": "npm install",
   "devCommand": "npm run dev",
+  "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.galzb.cc.cd" }], "destination": "https://galzb.cc.cd/:path*", "permanent": true }
+  ],
   "routes": [
     { "src": "/admin(.*)", "dest": "/admin.html" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },

@@ -17,6 +17,7 @@ const banners = ref<Banner[]>([])
 const announcements = ref<Announcement[]>([])
 const categories = ref<CategoryItem[]>([])
 const isLoading = ref(!hasLoadedOnce)
+const loadError = ref(false)
 const showJoinGroupModal = ref(false)
 
 // 首页只展示前 30 个游戏，避免 4000+ 卡片同时渲染卡顿
@@ -113,6 +114,7 @@ const loadData = async () => {
     categories.value = Array.isArray(categoriesData) ? categoriesData : []
   } catch (error) {
     console.error('Failed to load from API:', error)
+    loadError.value = true
     games.value = []
     banners.value = []
     announcements.value = []
@@ -121,6 +123,11 @@ const loadData = async () => {
     isLoading.value = false
     hasLoadedOnce = true
   }
+}
+
+const retryLoad = () => {
+  loadError.value = false
+  loadData()
 }
 
 let dataRefreshTimer: number | null = null
@@ -174,8 +181,23 @@ onUnmounted(() => {
     <Header />
     
     <!-- Loading状态 -->
-    <div v-if="isLoading" class="flex items-center justify-center h-40 pt-10">
+    <div v-if="isLoading" class="flex flex-col items-center justify-center h-60 pt-10">
       <div class="w-10 h-10 border-3 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-pink-400 text-sm mt-4">正在加载，请稍候...</p>
+    </div>
+    
+    <!-- 加载失败提示 -->
+    <div v-else-if="loadError" class="flex flex-col items-center justify-center h-60 pt-10">
+      <div class="text-5xl mb-4">😓</div>
+      <p class="text-gray-600 font-medium mb-2">加载失败，服务器可能正在唤醒中</p>
+      <p class="text-gray-400 text-sm mb-4">Render 免费版会在空闲后休眠，首次访问需 30-50 秒唤醒</p>
+      <button 
+        @click="retryLoad"
+        class="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-pink-200 flex items-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        重新加载
+      </button>
     </div>
     
     <div v-else>
